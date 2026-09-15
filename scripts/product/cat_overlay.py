@@ -152,6 +152,11 @@ class CatOverlayWindow:
         canvas.delete("all")
         self._click_regions = []
         options = self._view.get("options")
+        visible_options = (
+            [item for item in options[:3] if isinstance(item, Mapping)]
+            if isinstance(options, list)
+            else []
+        )
         refresh_available = (
             self.on_refresh is not None
             and self._view.get("refresh_available") is True
@@ -191,12 +196,36 @@ class CatOverlayWindow:
             fill=INK,
             font=("Microsoft YaHei UI", 12, "bold"),
         )
+        option_height = (
+            48 + max(0, len(visible_options) - 1) * 54
+            if visible_options
+            else 0
+        )
+        latest_option_y = bubble_bottom - option_height
+        max_message_bottom = (
+            latest_option_y - 16 if visible_options else bubble_bottom - 12
+        )
         message_box = canvas.bbox(message_item)
-        y = max(92, (message_box[3] + 16) if message_box else 92)
-        if isinstance(options, list):
-            for option in options[:3]:
-                if not isinstance(option, Mapping):
-                    continue
+        if message_box and message_box[3] > max_message_bottom:
+            low, high, best = 0, len(message), ""
+            while low <= high:
+                middle = (low + high) // 2
+                candidate = message[:middle].rstrip() + "…"
+                canvas.itemconfigure(message_item, text=candidate)
+                candidate_box = canvas.bbox(message_item)
+                if candidate_box and candidate_box[3] <= max_message_bottom:
+                    best = candidate
+                    low = middle + 1
+                else:
+                    high = middle - 1
+            canvas.itemconfigure(message_item, text=best or "…")
+            message_box = canvas.bbox(message_item)
+        y = min(
+            max(92, (message_box[3] + 16) if message_box else 92),
+            latest_option_y,
+        )
+        if visible_options:
+            for option in visible_options:
                 available = option.get("available") is True
                 option_id = str(option.get("id") or "")
                 title = str(option.get("title") or "")

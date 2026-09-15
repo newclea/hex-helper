@@ -27,11 +27,20 @@ class ProductController:
         self._match_id: str | None = None
         self._hero: str | None = None
         self._champ_select_page = "advice"
+        self._advice_page = 0
 
     def select_strategy(self, strategy_id: str) -> None:
         hero = str(self._last_snapshot.get("champion") or "").strip()
         match_id = str(self._last_snapshot.get("match_id") or "").strip()
         if not hero or not match_id:
+            return
+        if (
+            strategy_id == "__next_advice__"
+            and self._last_snapshot.get("phase") == "ChampSelect"
+        ):
+            self._advice_page += 1
+            if self.on_change is not None:
+                self.on_change()
             return
         if (
             strategy_id == "__show_strategy__"
@@ -67,6 +76,7 @@ class ProductController:
             self._strategy_id = None
             self._hero = None
             self._champ_select_page = "advice"
+            self._advice_page = 0
         if not hero and phase == "ChampSelect" and bench:
             selection_lines = self.engine.champion_select_recommendations(
                 current_hero=None,
@@ -96,6 +106,7 @@ class ProductController:
             self._hero = hero
             self._strategy_id = None
             self._champ_select_page = "advice"
+            self._advice_page = 0
         persisted = self.store.load(match_id)
         if (
             self._strategy_id is None
@@ -123,13 +134,23 @@ class ProductController:
 
         if self._strategy_id is None:
             if phase == "ChampSelect" and self._champ_select_page == "advice":
+                page_size = 2
+                page_count = max(1, (len(selection_lines) + page_size - 1) // page_size)
+                self._advice_page = min(self._advice_page, page_count - 1)
+                start = self._advice_page * page_size
+                page_lines = selection_lines[start : start + page_size]
+                has_more = start + page_size < len(selection_lines)
                 return {
                     "state": "champ_select_advice",
-                    "message": "\n".join(selection_lines),
+                    "message": "\n".join(page_lines),
                     "options": [{
-                        "id": "__show_strategy__",
-                        "title": "选择本局推荐方式",
-                        "subtitle": "查看胜率优先和两种趣味玩法",
+                        "id": "__next_advice__" if has_more else "__show_strategy__",
+                        "title": "继续查看建议" if has_more else "选择本局推荐方式",
+                        "subtitle": (
+                            f"第 {self._advice_page + 1}/{page_count} 页，点击查看下一页"
+                            if has_more
+                            else "查看胜率优先和两种趣味玩法"
+                        ),
                         "available": True,
                     }],
                 }

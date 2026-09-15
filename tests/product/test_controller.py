@@ -16,6 +16,30 @@ from test_recommendation_engine import engine
 
 
 class ProductControllerTest(unittest.TestCase):
+    def test_champ_select_advice_is_paginated_before_strategy(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            recommendation_engine = engine()
+            recommendation_engine.champion_select_recommendations = (
+                lambda **_kwargs: ["建议一", "建议二", "建议三", "建议四"]
+            )
+            controller = ProductController(
+                engine=recommendation_engine,
+                store=StrategyStore(Path(directory) / "strategy.json"),
+            )
+            snapshot = {
+                "match_id": "match-pages",
+                "champion": "小明",
+                "phase": "ChampSelect",
+                "bench": [],
+            }
+            first = controller.present(snapshot)
+            self.assertEqual("建议一\n建议二", first["message"])
+            self.assertEqual("__next_advice__", first["options"][0]["id"])
+            controller.select_strategy("__next_advice__")
+            second = controller.present(snapshot)
+            self.assertEqual("建议三\n建议四", second["message"])
+            self.assertEqual("__show_strategy__", second["options"][0]["id"])
+
     def test_snapshot_flow_uses_real_selected_history(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             controller = ProductController(
