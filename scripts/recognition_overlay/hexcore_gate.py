@@ -1,14 +1,14 @@
 """Hexcore timing helpers for overlay copy and when OCR may run.
 
-After a pick is recorded, OCR stays off until the next hexcore level
+The first offer opens at level 3. After a pick is recorded, OCR stays off until the next hexcore level
 and a death (or the fountain window right after that death). Missing
 Live Client data fails open so a later offer is not skipped. The first
-offer is open from match start until that pick.
+offer stays open from level 3 until that pick.
 """
 
 from __future__ import annotations
 
-HEXCORE_LEVELS = (1, 7, 11, 15)
+HEXCORE_LEVELS = (3, 7, 11, 15)
 START_FOUNTAIN_SECONDS = 180.0
 RESPAWN_FOUNTAIN_SECONDS = 75.0
 PICK_PROBE_SECONDS = 90.0
@@ -21,7 +21,7 @@ def next_hexcore_level(completed: int) -> int | None:
 
 
 def eligible_offer_count(level: int | None) -> int:
-    if type(level) is not int or level < 1:
+    if type(level) is not int or level < 3:
         return 0
     if level >= 15:
         return 4
@@ -89,13 +89,15 @@ def hexcore_ocr_open(
         return False
     if completed >= 4:
         return False
+    threshold = next_hexcore_level(completed)
+    if threshold is None:
+        return False
+    if type(level) is int and level < threshold:
+        return False
     if offer_visible and not round_closed:
         return True
     if not round_closed:
         return True
-    threshold = next_hexcore_level(completed)
-    if threshold is None:
-        return False
     if type(level) is not int:
         return True
     if level < threshold:

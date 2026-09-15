@@ -75,7 +75,7 @@ python -m unittest tests.recognition_overlay.test_recognition_overlay tests.reco
 
 当前实时上下文分工：LCU 读取 `gameflowPhase`，并在 ChampSelect 读取 `championId`；局内 `championName/level/isDead/respawnTimer/currentHealth/maxHealth/healthPercent` 由固定的 `https://127.0.0.1:2999` 读取；海克斯三选一仍只来自屏幕 OCR/图标识别。三路事件彼此独立，任一路不可用都不会伪造数据或覆盖手工英雄。
 
-ARAM: Mayhem 选牌时序已接入主动调度：第一轮直接监测界面；后续三轮分别在达到 7/11/15 级后布防，并在首次死亡上升沿开启有界的 20 FPS 视觉检测窗口。它只调整屏幕检测频率，不会读游戏内存或模拟输入。
+ARAM: Mayhem 选牌时序已接入主动调度：第一轮从 3 级开始监测；后续三轮分别在达到 7/11/15 级后布防，并在该阈值之后的死亡或复活泉水窗口开启视觉检测。因此 7 级未死亡、8～10 级才死亡也会触发第二轮。它只调整屏幕检测频率，不会读游戏内存或模拟输入。
 
 国服客户端的 `LeagueClient\lockfile` 实测为空，因此 LCU 自动发现使用普通可读的 `LeagueClientUx.log`，并要求日志中的 PID 确实拥有对应的 loopback 监听端口。token 不进入命令行、JSON 或日志。
 

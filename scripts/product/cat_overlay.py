@@ -26,6 +26,7 @@ class CatOverlayWindow:
         *,
         cat_path: Path,
         on_strategy: Callable[[str], None],
+        on_refresh: Callable[[], None] | None = None,
         on_ready: Callable[[], None] | None = None,
         on_close: Callable[[], None] | None = None,
         width: int = 560,
@@ -34,9 +35,10 @@ class CatOverlayWindow:
     ) -> None:
         self.cat_path = cat_path
         self.on_strategy = on_strategy
+        self.on_refresh = on_refresh
         self.on_ready = on_ready
         self.on_close = on_close
-        self.width = max(480, width)
+        self.width = max(640, width)
         self.height = max(220, min(340, height))
         self._updates: queue.SimpleQueue[dict[str, Any]] = queue.SimpleQueue()
         self._view: dict[str, Any] = {
@@ -91,10 +93,14 @@ class CatOverlayWindow:
         canvas.delete("all")
         self._click_regions = []
         options = self._view.get("options")
-        clickable = isinstance(options, list) and any(
+        refresh_available = (
+            self.on_refresh is not None
+            and self._view.get("refresh_available") is True
+        )
+        clickable = refresh_available or (isinstance(options, list) and any(
             isinstance(item, Mapping) and item.get("available") is True
             for item in options
-        )
+        ))
         bubble_left, bubble_top = 8, 12
         bubble_right = self.width - 130
         bubble_bottom = self.height - 18
@@ -126,7 +132,7 @@ class CatOverlayWindow:
             fill=INK,
             font=("Microsoft YaHei UI", 12, "bold"),
         )
-        y = 92
+        y = 154 if message.count("\n") >= 3 else 92
         if isinstance(options, list):
             for option in options[:3]:
                 if not isinstance(option, Mapping):
@@ -155,12 +161,19 @@ class CatOverlayWindow:
                 y += 54
         if self._cat is not None:
             canvas.create_image(self.width - 72, 74, image=self._cat, anchor="center")
+            if refresh_available:
+                self._click_regions.append(
+                    (self.width - 130, 16, self.width - 12, 140, "__refresh__")
+                )
         self._set_click_through(not clickable)
 
     def _on_click(self, event: Any) -> None:
         for left, top, right, bottom, option_id in self._click_regions:
             if left <= event.x <= right and top <= event.y <= bottom:
-                self.on_strategy(option_id)
+                if option_id == "__refresh__" and self.on_refresh is not None:
+                    self.on_refresh()
+                else:
+                    self.on_strategy(option_id)
                 return
 
     def _poll(self) -> None:
@@ -216,4 +229,3 @@ class CatOverlayWindow:
             root.after(0, self.on_ready)
         root.mainloop()
         return 0
-

@@ -1425,8 +1425,10 @@ class ViewModelTests(unittest.TestCase):
     def test_vision_only_during_hexcore_window(self) -> None:
         model = _model()
         model.phase = "InProgress"
-        model.live_level = 1
+        model.live_level = 2
         model.live_is_dead = False
+        self.assertFalse(model.vision_allowed())
+        model.live_level = 3
         self.assertTrue(model.vision_allowed())
         model.offer = [
             {"slot": "LEFT", "augment_id": "ARAM_ADAPt", "name": "物理转魔法"},
@@ -1995,14 +1997,14 @@ class LiveClientTests(unittest.TestCase):
 
 class HexcoreGateTests(unittest.TestCase):
     def test_levels_and_fountain(self) -> None:
-        self.assertEqual(hexcore_gate.next_hexcore_level(0), 1)
+        self.assertEqual(hexcore_gate.next_hexcore_level(0), 3)
         self.assertEqual(hexcore_gate.next_hexcore_level(1), 7)
         self.assertEqual(hexcore_gate.next_hexcore_level(3), 15)
         self.assertIsNone(hexcore_gate.next_hexcore_level(4))
         self.assertEqual(hexcore_gate.eligible_offer_count(5), 1)
         self.assertEqual(hexcore_gate.eligible_offer_count(7), 2)
         self.assertEqual(hexcore_gate.pending_offer_count(5, 1), 0)
-        self.assertTrue(
+        self.assertFalse(
             hexcore_gate.hexcore_screen_open(
                 level=1,
                 is_dead=False,
@@ -2094,7 +2096,7 @@ class HexcoreGateTests(unittest.TestCase):
                 seconds_since_respawn=None,
             )
         )
-        self.assertTrue(
+        self.assertFalse(
             hexcore_gate.hexcore_ocr_open(
                 completed=0,
                 level=1,
@@ -2114,6 +2116,14 @@ class HexcoreGateTests(unittest.TestCase):
             hexcore_gate.hexcore_ocr_open(
                 completed=1,
                 level=7,
+                is_dead=True,
+                round_closed=True,
+            )
+        )
+        self.assertTrue(
+            hexcore_gate.hexcore_ocr_open(
+                completed=1,
+                level=10,
                 is_dead=True,
                 round_closed=True,
             )

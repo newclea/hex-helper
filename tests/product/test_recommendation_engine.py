@@ -21,9 +21,9 @@ def engine() -> RecommendationEngine:
             {"name": "禁用戊", "enabled": False},
         ],
         win_rows=[
-            {"英雄名": "测试英雄 小明", "海克斯名称": "核心甲", "海克斯胜率": "51.00%", "海克斯场次": 100, "海克斯胜率排名": 3},
-            {"英雄名": "测试英雄 小明", "海克斯名称": "搭配丙", "海克斯胜率": "52.00%", "海克斯场次": 100, "海克斯胜率排名": 2},
-            {"英雄名": "测试英雄 小明", "海克斯名称": "稳健丁", "海克斯胜率": "60.00%", "海克斯场次": 100, "海克斯胜率排名": 1},
+            {"英雄名": "测试英雄 小明", "英雄胜率": "55.00%", "海克斯名称": "核心甲", "海克斯胜率": "51.00%", "海克斯场次": 100, "海克斯胜率排名": 3},
+            {"英雄名": "测试英雄 小明", "英雄胜率": "55.00%", "海克斯名称": "搭配丙", "海克斯胜率": "52.00%", "海克斯场次": 100, "海克斯胜率排名": 2},
+            {"英雄名": "测试英雄 小明", "英雄胜率": "55.00%", "海克斯名称": "稳健丁", "海克斯胜率": "60.00%", "海克斯场次": 100, "海克斯胜率排名": 1},
         ],
         fun_builds=[
             {"英雄名": "测试英雄 小明", "英雄ID": "1", "趣味玩法名称": "测试流", "海克斯": "核心甲、核心乙、搭配丙、禁用戊", "装备": "", "评级": "S", "趣味玩法更新时间": "2026-09-01", "来源": "测试", "来源链接": "https://example.com"},
@@ -53,6 +53,22 @@ class RecommendationEngineTest(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertEqual("稳健丁", result.augment)
         self.assertEqual("RIGHT", result.slot)
+
+    def test_partial_ocr_chooses_best_recognized_card(self) -> None:
+        result = self.engine.recommend(
+            hero="小明",
+            strategy_id="win_rate",
+            choices=[{"slot": "CENTER", "name": "搭配丙"}],
+        )
+        self.assertIsNotNone(result)
+        self.assertEqual("搭配丙", result.augment)
+
+    def test_champion_select_includes_win_and_fun_lines(self) -> None:
+        lines = self.engine.champion_select_recommendations(
+            current_hero="小明", bench=[], seed="match-1"
+        )
+        self.assertIn("胜率推荐", lines[0])
+        self.assertTrue(any("测试流" in line for line in lines))
 
     def test_fun_mode_prioritizes_core(self) -> None:
         strategy = self.engine.strategy_options("小明")[1].id
@@ -88,9 +104,8 @@ class RecommendationEngineTest(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertEqual("稳健丁", result.augment)
         self.assertEqual("win_rate_fallback", result.matched_by)
-        self.assertIn("没有刷到", result.reason)
+        self.assertIn("没有抽到", result.reason)
 
 
 if __name__ == "__main__":
     unittest.main()
-

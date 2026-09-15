@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from datetime import date
 import json
 from pathlib import Path
+import random
 import re
 from typing import Any, Mapping, Sequence
 
@@ -127,6 +128,8 @@ class RecommendationEngine:
             raise RecommendationDataError("knowledge pool has no enabled augments")
         self._enabled_augments = enabled
         self._win_by_hero: dict[str, dict[str, Mapping[str, Any]]] = {}
+        self._hero_win_rates: dict[str, float] = {}
+        self._hero_labels: dict[str, str] = {}
         self._hero_aliases: dict[str, str] = {}
         for row in win_rows:
             hero = str(row.get("英雄名") or "").strip()
@@ -137,6 +140,10 @@ class RecommendationEngine:
             hero_key = normalize_name(hero)
             self._register_hero_aliases(hero, hero_key)
             self._win_by_hero.setdefault(hero_key, {})[normalize_name(augment)] = row
+            self._hero_labels.setdefault(hero_key, hero)
+            hero_rate = _percentage(row.get("英雄胜率"))
+            if hero_rate is not None:
+                self._hero_win_rates[hero_key] = hero_rate
 
         raw_plans: list[FunPlan] = []
         for index, row in enumerate(fun_builds):
@@ -164,6 +171,7 @@ class RecommendationEngine:
             )
             raw_plans.append(plan)
             self._register_hero_aliases(hero, normalize_name(hero))
+            self._hero_labels.setdefault(self._resolve_hero_key(hero), hero)
 
         self._plans_by_hero: dict[str, list[FunPlan]] = {}
         seen: set[tuple[str, str]] = set()
@@ -255,6 +263,62 @@ class RecommendationEngine:
                 )
         return options
 
+    def champion_select_recommendations(
+        self,
+        *,
+        current_hero: str | None,
+        bench: Sequence[str],
+        seed: str,
+    ) -> list[str]:
+        """Return one win-rate line and up to three stable fun suggestions."""
+
+        candidates: list[str] = []
+        seen: set[str] = set()
+        for hero in ([current_hero] if current_hero else []) + list(bench):
+            key = self._resolve_hero_key(str(hero or ""))
+            if key and key not in seen:
+                seen.add(key)
+                candidates.append(key)
+        if not candidates:
+            return []
+
+        lines: list[str] = []
+        rated = [key for key in candidates if key in self._hero_win_rates]
+        if rated:
+            winner = max(
+                rated,
+                key=lambda key: (self._hero_win_rates[key], self._hero_labels.get(key, key)),
+            )
+            label = self._hero_labels.get(winner, winner)
+            rate = self._hero_win_rates[winner]
+            current_key = self._resolve_hero_key(current_hero or "")
+            action = f"当前{label}即首选" if winner == current_key else f"建议从待选席换成{label}"
+            lines.append(f"胜率推荐：{action}，英雄胜率 {rate:.2f}%。")
+
+        def newest_first(plan: FunPlan) -> tuple[int, str, str]:
+            try:
+                ordinal = -date.fromisoformat(plan.updated_on).toordinal()
+            except ValueError:
+                ordinal = 0
+            return (ordinal, plan.hero, plan.name)
+
+        recent_plans = sorted(
+            (
+                plan
+                for key in candidates
+                for plan in self._plans_by_hero.get(key, [])
+            ),
+            key=newest_first,
+        )[:10]
+        rng = random.Random(seed)
+        chosen = rng.sample(recent_plans, min(3, len(recent_plans)))
+        for index, plan in enumerate(chosen, start=1):
+            lines.append(
+                f"趣味{index}：{plan.hero}的「{plan.name}」，"
+                f"核心海克斯：{' + '.join(plan.core_augments)}。"
+            )
+        return lines
+
     def _plan(self, hero: str, strategy_id: str) -> FunPlan | None:
         if not strategy_id.startswith(MODE_FUN_PREFIX):
             return None
@@ -303,7 +367,7 @@ class RecommendationEngine:
         choices: Sequence[Mapping[str, str]],
         selected_augments: Sequence[str] = (),
     ) -> Recommendation | None:
-        if len(choices) != 3:
+        if not 1 <= len(choices) <= 3:
             return None
         normalized_cards: list[dict[str, str]] = []
         seen_slots: set[str] = set()
@@ -314,16 +378,17 @@ class RecommendationEngine:
                 return None
             seen_slots.add(slot)
             normalized_cards.append({"slot": slot, "name": name})
-        if seen_slots != set(SLOTS):
-            return None
-
         plan = self._plan(hero, strategy_id)
         if strategy_id == MODE_WIN_RATE:
             card, rate = self._best_by_win_rate(hero, normalized_cards)
+            scope = "这三张" if len(normalized_cards) == 3 else "已识别候选"
             reason = (
-                f"它是这三张中当前英雄胜率最高的选择（{rate:.2f}%）。"
+                f"它是{scope}中当前英雄胜率最高的选择（{rate:.2f}%）。"
                 if rate is not None
-                else "胜率池暂无这三张的有效数据，临时按稳定槽位选择左侧。"
+                else (
+                    f"胜率池暂无{scope}的有效数据，"
+                    f"临时按稳定槽位选择{SLOT_LABELS[card['slot']]}。"
+                )
             )
             return Recommendation(
                 augment=card["name"],
@@ -371,17 +436,22 @@ class RecommendationEngine:
             )
 
         card, rate = self._best_by_win_rate(hero, normalized_cards)
+        scope = "三张" if len(normalized_cards) == 3 else "已识别候选"
         if rate is not None:
-            fallback = f"先选三张中胜率最高的一张（{rate:.2f}%）"
+            fallback = f"先选{scope}中胜率最高的一张（{rate:.2f}%）"
         else:
-            fallback = "胜率池也暂无有效数据，临时选左侧"
+            fallback = (
+                "胜率池也暂无有效数据，"
+                f"临时选{SLOT_LABELS[card['slot']]}"
+            )
         return Recommendation(
             augment=card["name"],
             slot=card["slot"],
             position=SLOT_LABELS[card["slot"]],
             reason=(
-                f"这轮没有刷到「{plan.name}」的体系海克斯，"
-                f"{fallback}；下轮继续寻找核心。"
+                f"哎呀，「{plan.name}」需要的"
+                f"{' / '.join(plan.core_augments)}海克斯没有抽到呢，"
+                f"那我们{fallback}吧！"
             ),
             matched_by="win_rate_fallback",
             win_rate=rate,
