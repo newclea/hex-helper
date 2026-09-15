@@ -202,6 +202,8 @@ class VisionSupervisor:
         self._thread: threading.Thread | None = None
         self._process: subprocess.Popen[str] | None = None
         self._stderr_path = self._workspace / "vision_stderr.log"
+        self._force_ocr_until = 0.0
+        self._force_ocr_lock = threading.Lock()
 
     @property
     def mode(self) -> str:
@@ -235,6 +237,20 @@ class VisionSupervisor:
             thread.join(timeout=2.0)
         self._thread = None
 
+    def request_reread(self, timeout_seconds: float = 3.0) -> None:
+        """Temporarily open the OCR gate until one frame result arrives."""
+        with self._force_ocr_lock:
+            self._force_ocr_until = time.monotonic() + max(0.5, timeout_seconds)
+        self._sync_ocr_hold()
+
+    def _force_ocr_active(self) -> bool:
+        with self._force_ocr_lock:
+            return time.monotonic() < self._force_ocr_until
+
+    def _finish_forced_reread(self) -> None:
+        with self._force_ocr_lock:
+            self._force_ocr_until = 0.0
+
     def _stop_process(self) -> None:
         process = self._process
         self._process = None
@@ -265,6 +281,8 @@ class VisionSupervisor:
             return False
 
     def _ocr_open(self) -> bool:
+        if self._force_ocr_active():
+            return True
         if self._should_ocr is None:
             return True
         try:
@@ -397,6 +415,8 @@ class VisionSupervisor:
                     "live_client_state",
                 }:
                     self._on_payload(kind, payload)
+                    if kind == "frame_result" and self._force_ocr_active():
+                        self._finish_forced_reread()
                     self._sync_ocr_hold()
             if self._stop.is_set():
                 break

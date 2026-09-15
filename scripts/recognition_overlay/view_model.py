@@ -233,6 +233,7 @@ class RecognitionViewModel:
             "mayhem_pending": self.mayhem_pending,
             "live_level": self.live_level,
             "vision_status": self.vision_status,
+            "ocr_allowed": self.vision_allowed(),
             "vision_detail": self.vision_detail,
             "recognize_seq": self.recognize_seq,
             "last_reason": self.last_reason,
@@ -995,6 +996,7 @@ class RecognitionViewModel:
         self.ocr_preview = []
         self._probe_key = None
         self._probe_until = None
+        self.mayhem_status = "SELECTION_CONFIRMED"
 
     def _start_new_match(self) -> None:
         self.match_id = _utc_now()

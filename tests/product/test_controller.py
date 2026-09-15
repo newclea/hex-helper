@@ -32,6 +32,9 @@ class ProductControllerTest(unittest.TestCase):
                 "selected": [],
             }
             choosing = controller.present(snapshot)
+            self.assertEqual("champ_select_advice", choosing["state"])
+            controller.select_strategy("__show_strategy__")
+            choosing = controller.present(snapshot)
             self.assertEqual("choose_strategy", choosing["state"])
             strategy = choosing["options"][1]["id"]
             controller.select_strategy(strategy)
@@ -49,6 +52,7 @@ class ProductControllerTest(unittest.TestCase):
             snapshot["offer"] = []
             snapshot["selected"] = [{"name": "核心甲"}]
             snapshot["mayhem_status"] = "DEATH_TRIGGERED"
+            snapshot["ocr_allowed"] = True
             waiting = controller.present(snapshot)
             self.assertEqual("ocr_unavailable", waiting["state"])
             self.assertIn("点击猫咪", waiting["message"])
@@ -56,6 +60,38 @@ class ProductControllerTest(unittest.TestCase):
             snapshot["champion"] = "另一个英雄"
             changed = controller.present(snapshot)
             self.assertEqual("choose_strategy", changed["state"])
+
+    def test_running_vision_does_not_imply_ocr_is_expected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            controller = ProductController(
+                engine=engine(),
+                store=StrategyStore(Path(directory) / "strategy.json"),
+            )
+            snapshot = {
+                "match_id": "match-gate",
+                "champion": "小明",
+                "phase": "ChampSelect",
+                "bench": [],
+                "game_mode": None,
+                "offer": [],
+                "selected": [],
+            }
+            controller.present(snapshot)
+            controller.select_strategy("__show_strategy__")
+            choosing = controller.present(snapshot)
+            controller.select_strategy(choosing["options"][0]["id"])
+            snapshot.update({
+                "phase": "InProgress",
+                "game_mode": "ARAM",
+                "vision_status": "识别中",
+                "ocr_allowed": False,
+                "selected": [{"name": "核心甲"}],
+            })
+            waiting = controller.present(snapshot)
+            self.assertEqual("in_game", waiting["state"])
+            snapshot["ocr_allowed"] = True
+            unavailable = controller.present(snapshot)
+            self.assertEqual("ocr_unavailable", unavailable["state"])
 
     def test_non_aram_mode_is_blocked(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
