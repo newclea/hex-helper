@@ -1,0 +1,165 @@
+{
+  "schema_version": "phase2_benchmark_input_v1",
+  "samples": [
+    {
+      "sample_id": "all-correct",
+      "metadata": {
+        "provenance": "real",
+        "resolution": {"width": 1920, "height": 1080},
+        "ui_scale": "100%",
+        "ocr_preprocessing_variant": {
+          "grayscale": false,
+          "contrast": null,
+          "threshold": null,
+          "scale": "2x",
+          "variant_id": "color-2x"
+        }
+      },
+      "annotation": {
+        "screen_present": true,
+        "cards": [
+          {"slot": "LEFT", "valid": true, "augment_id": "augment.a", "ocr_text": "Alpha", "icon_id": "icon.a"},
+          {"slot": "CENTER", "valid": true, "augment_id": "augment.b", "ocr_text": "Bravo", "icon_id": "icon.b"},
+          {"slot": "RIGHT", "valid": true, "augment_id": "augment.c", "ocr_text": "Charlie", "icon_id": "icon.c"}
+        ]
+      },
+      "recognition_result": {
+        "screen_detected": true,
+        "latency_ms": 10,
+        "cards": [
+          {"slot": "LEFT", "state": "RECOGNIZED", "augment_id": "augment.a", "ocr_text": "Alpha", "icon_id": "icon.a"},
+          {"slot": "CENTER", "state": "RECOGNIZED", "augment_id": "augment.b", "ocr_text": "Bravo", "icon_id": "icon.b"},
+          {"slot": "RIGHT", "state": "RECOGNIZED", "augment_id": "augment.c", "ocr_text": "Charlie", "icon_id": "icon.c"}
+        ]
+      }
+    },
+    {
+      "sample_id": "one-wrong",
+      "metadata": {
+        "provenance": "real",
+        "resolution": {"width": 1920, "height": 1080},
+        "ui_scale": "100%",
+        "ocr_preprocessing_variant": {
+          "grayscale": true,
+          "contrast": 1.25,
+          "threshold": null,
+          "scale": "2x",
+          "variant_id": "gray-contrast-2x"
+        }
+      },
+      "annotation": {
+        "screen_present": true,
+        "cards": [
+          {"slot": "LEFT", "valid": true, "augment_id": "augment.d", "ocr_text": "Delta", "icon_id": "icon.d"},
+          {"slot": "CENTER", "valid": true, "augment_id": "augment.e", "ocr_text": "Echo", "icon_id": "icon.e"},
+          {"slot": "RIGHT", "valid": true, "augment_id": "augment.f", "ocr_text": "Foxtrot", "icon_id": "icon.f"}
+        ]
+      },
+      "recognition_result": {
+        "screen_detected": true,
+        "latency_ms": 20,
+        "cards": [
+          {"slot": "LEFT", "state": "RECOGNIZED", "augment_id": "augment.d", "ocr_text": "Delta", "icon_id": "icon.d"},
+          {"slot": "CENTER", "state": "RECOGNIZED", "augment_id": "augment.wrong", "ocr_text": "Wrong", "icon_id": "icon.wrong"},
+          {"slot": "RIGHT", "state": "RECOGNIZED", "augment_id": "augment.f", "ocr_text": "Foxtrot", "icon_id": "icon.f"}
+        ]
+      }
+    },
+    {
+      "sample_id": "unknown-card",
+      "metadata": {
+        "provenance": "real",
+        "resolution": {"width": 2560, "height": 1440},
+        "ui_scale": "125%",
+        "ocr_preprocessing_variant": {
+          "grayscale": true,
+          "contrast": 1.25,
+          "threshold": 128,
+          "scale": "3x",
+          "variant_id": "gray-contrast-threshold-3x"
+        }
+      },
+      "annotation": {
+        "screen_present": true,
+        "cards": [
+          {"slot": "LEFT", "valid": true, "augment_id": "augment.g", "ocr_text": "Golf", "icon_id": "icon.g"},
+          {"slot": "CENTER", "valid": true, "augment_id": "augment.h", "ocr_text": "Hotel", "icon_id": "icon.h"},
+          {"slot": "RIGHT", "valid": true, "augment_id": "augment.i", "ocr_text": "India", "icon_id": "icon.i"}
+        ]
+      },
+      "recognition_result": {
+        "screen_detected": true,
+        "latency_ms": 30,
+        "cards": [
+          {"slot": "LEFT", "state": "UNKNOWN"},
+          {"slot": "CENTER", "state": "RECOGNIZED", "augment_id": "augment.h", "ocr_text": "Hotel", "icon_id": "icon.h"},
+          {"slot": "RIGHT", "state": "RECOGNIZED", "augment_id": "augment.i", "ocr_text": "India", "icon_id": "icon.i"}
+        ]
+      }
+    },
+    {
+      "sample_id": "invalid-card",
+      "metadata": {
+        "provenance": "real",
+        "resolution": {"width": 2560, "height": 1440},
+        "ui_scale": "125%",
+        "ocr_preprocessing_variant": {
+          "grayscale": true,
+          "contrast": 1.25,
+          "threshold": 128,
+          "scale": "3x",
+          "variant_id": "gray-contrast-threshold-3x"
+        }
+      },
+      "annotation": {
+        "screen_present": true,
+        "cards": [
+          {"slot": "LEFT", "valid": true, "augment_id": "augment.j", "ocr_text": "Juliett", "icon_id": "icon.j"},
+          {"slot": "CENTER", "valid": false},
+          {"slot": "RIGHT", "valid": true, "augment_id": "augment.l", "ocr_text": "Lima", "icon_id": "icon.l"}
+        ]
+      },
+      "recognition_result": {
+        "screen_detected": false,
+        "latency_ms": 40,
+        "cards": [
+          {"slot": "LEFT", "state": "RECOGNIZED", "augment_id": "augment.j", "ocr_text": "Juliett", "icon_id": "icon.j"},
+          {"slot": "CENTER", "state": "RECOGNIZED", "augment_id": "ignored.invalid.card", "ocr_text": "Ignored", "icon_id": "ignored.icon"},
+          {"slot": "RIGHT", "state": "RECOGNIZED", "augment_id": "augment.l", "ocr_text": "Lima", "icon_id": "icon.l"}
+        ]
+      }
+    },
+    {
+      "sample_id": "synthetic-all-correct",
+      "metadata": {
+        "provenance": "synthetic",
+        "resolution": {"width": 3840, "height": 2160},
+        "ui_scale": "150%",
+        "ocr_preprocessing_variant": {
+          "grayscale": false,
+          "contrast": null,
+          "threshold": null,
+          "scale": "3x",
+          "variant_id": "synthetic-must-not-count"
+        }
+      },
+      "annotation": {
+        "screen_present": true,
+        "cards": [
+          {"slot": "LEFT", "valid": true, "augment_id": "synthetic.a", "ocr_text": "Synthetic A", "icon_id": "synthetic.icon.a"},
+          {"slot": "CENTER", "valid": true, "augment_id": "synthetic.b", "ocr_text": "Synthetic B", "icon_id": "synthetic.icon.b"},
+          {"slot": "RIGHT", "valid": true, "augment_id": "synthetic.c", "ocr_text": "Synthetic C", "icon_id": "synthetic.icon.c"}
+        ]
+      },
+      "recognition_result": {
+        "screen_detected": true,
+        "latency_ms": 1000,
+        "cards": [
+          {"slot": "LEFT", "state": "RECOGNIZED", "augment_id": "synthetic.a", "ocr_text": "Synthetic A", "icon_id": "synthetic.icon.a"},
+          {"slot": "CENTER", "state": "RECOGNIZED", "augment_id": "synthetic.b", "ocr_text": "Synthetic B", "icon_id": "synthetic.icon.b"},
+          {"slot": "RIGHT", "state": "RECOGNIZED", "augment_id": "synthetic.c", "ocr_text": "Synthetic C", "icon_id": "synthetic.icon.c"}
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+﻿SHA256  outputs/tmp/build/bin/lol_augment_assistant.exe
+CEE929E6EB02F04DB418859877AB1DBFAC832D180E9CDDBA015602D36AFCF50D
+built   2026-09-15 00:54:25 (local)
+note    Release; dark-card detector + overlay OCR raw text

@@ -1,0 +1,518 @@
+{
+  "annotated_sample_count": 4,
+  "benchmark_eligible_sample_count": 1,
+  "benchmark_excluded_counts": {
+    "invalid_or_unannotated_real": 8,
+    "synthetic": 0,
+    "unknown": 0
+  },
+  "benchmark_use_counts": {
+    "excluded": 0,
+    "original_wgc_metrics": 6,
+    "real_scenario_calibration": 3
+  },
+  "capture_boundary_counts": {
+    "original_wgc": 6,
+    "other_real_capture": 0,
+    "preview_derived": 3,
+    "synthetic": 0,
+    "unknown": 0
+  },
+  "dataset_root": "F:\\Realworld\\lol\\data\\dataset\\augment_offers",
+  "duplicate_sample_hashes": [],
+  "duplicate_sample_ids": [],
+  "invalid_card_count": 0,
+  "issues": [],
+  "knowledge_path": "F:\\Realworld\\lol\\data\\knowledge\\augments.zh-CN.json",
+  "original_wgc_benchmark_eligible_sample_count": 1,
+  "preview_derived_benchmark_excluded_sample_count": 3,
+  "preview_derived_sample_count": 3,
+  "provenance_counts": {
+    "real": 9,
+    "synthetic": 0,
+    "unknown": 0
+  },
+  "real_sample_count": 9,
+  "resolution_distribution": {
+    "CENTER": {
+      "238x353": 3,
+      "513x880": 6
+    },
+    "LEFT": {
+      "238x353": 3,
+      "512x880": 6
+    },
+    "RAW": {
+      "1280x800": 3,
+      "2560x1600": 6
+    },
+    "RIGHT": {
+      "238x353": 3,
+      "512x880": 6
+    }
+  },
+  "sample_count": 9,
+  "samples": [
+    {
+      "annotated": true,
+      "annotation_status": "complete",
+      "artifact_naming": "legacy_deprecated",
+      "benchmark_eligible": false,
+      "benchmark_use": "real_scenario_calibration",
+      "capture_boundary": "preview_derived",
+      "derived_from_preview": true,
+      "issues": [],
+      "path": "real/real-preview-1787670257978-f010",
+      "provenance": "real",
+      "sample_id": "real-preview-1787670257978-f010",
+      "sample_sha256": "230bf62a4db80c529b00a19e64181f03290f0a4da43cff415b289c3114a04ba1",
+      "skip_reason": null,
+      "source_kind": "manual_capture",
+      "valid": true,
+      "warnings": [
+        {
+          "code": "deprecated_artifact_names",
+          "message": "LEFT.png/CENTER.png/RIGHT.png 仅用于一次迁移兼容；请迁移为 LEFT_CARD.png/CENTER_CARD.png/RIGHT_CARD.png",
+          "path": "real/real-preview-1787670257978-f010",
+          "provenance": "real",
+          "sample_id": "real-preview-1787670257978-f010"
+        },
+        {
+          "code": "legacy_benchmark_boundary_inferred",
+          "message": "legacy metadata 缺少 capture_boundary/benchmark_use；validator 已按现有来源信号保守推断",
+          "path": "real/real-preview-1787670257978-f010/metadata.json",
+          "provenance": "real",
+          "sample_id": "real-preview-1787670257978-f010"
+        },
+        {
+          "code": "preview_derived_excluded_from_original_wgc_benchmark",
+          "message": "preview-derived 真实场景素材仅用于校准，禁止进入 original-WGC 指标；信号: derived_from_preview=true, source.kind=manual_capture",
+          "path": "real/real-preview-1787670257978-f010/metadata.json",
+          "provenance": "real",
+          "sample_id": "real-preview-1787670257978-f010"
+        }
+      ]
+    },
+    {
+      "annotated": true,
+      "annotation_status": "complete",
+      "artifact_naming": "legacy_deprecated",
+      "benchmark_eligible": false,
+      "benchmark_use": "real_scenario_calibration",
+      "capture_boundary": "preview_derived",
+      "derived_from_preview": true,
+      "issues": [],
+      "path": "real/real-preview-1787670257978-f020",
+      "provenance": "real",
+      "sample_id": "real-preview-1787670257978-f020",
+      "sample_sha256": "170dcf19361ba634bd12e763d08161ad7b5131eba6c62d0104dad82088d137d9",
+      "skip_reason": null,
+      "source_kind": "manual_capture",
+      "valid": true,
+      "warnings": [
+        {
+          "code": "deprecated_artifact_names",
+          "message": "LEFT.png/CENTER.png/RIGHT.png 仅用于一次迁移兼容；请迁移为 LEFT_CARD.png/CENTER_CARD.png/RIGHT_CARD.png",
+          "path": "real/real-preview-1787670257978-f020",
+          "provenance": "real",
+          "sample_id": "real-preview-1787670257978-f020"
+        },
+        {
+          "code": "legacy_benchmark_boundary_inferred",
+          "message": "legacy metadata 缺少 capture_boundary/benchmark_use；validator 已按现有来源信号保守推断",
+          "path": "real/real-preview-1787670257978-f020/metadata.json",
+          "provenance": "real",
+          "sample_id": "real-preview-1787670257978-f020"
+        },
+        {
+          "code": "preview_derived_excluded_from_original_wgc_benchmark",
+          "message": "preview-derived 真实场景素材仅用于校准，禁止进入 original-WGC 指标；信号: derived_from_preview=true, source.kind=manual_capture",
+          "path": "real/real-preview-1787670257978-f020/metadata.json",
+          "provenance": "real",
+          "sample_id": "real-preview-1787670257978-f020"
+        }
+      ]
+    },
+    {
+      "annotated": true,
+      "annotation_status": "complete",
+      "artifact_naming": "legacy_deprecated",
+      "benchmark_eligible": false,
+      "benchmark_use": "real_scenario_calibration",
+      "capture_boundary": "preview_derived",
+      "derived_from_preview": true,
+      "issues": [],
+      "path": "real/real-preview-1787670572085-f0025",
+      "provenance": "real",
+      "sample_id": "real-preview-1787670572085-f0025",
+      "sample_sha256": "4bf7980c84a184bb93bbb83438ebbbcac5ef5832c5e8f4ea5618e4046602fe8a",
+      "skip_reason": null,
+      "source_kind": "manual_capture",
+      "valid": true,
+      "warnings": [
+        {
+          "code": "deprecated_artifact_names",
+          "message": "LEFT.png/CENTER.png/RIGHT.png 仅用于一次迁移兼容；请迁移为 LEFT_CARD.png/CENTER_CARD.png/RIGHT_CARD.png",
+          "path": "real/real-preview-1787670572085-f0025",
+          "provenance": "real",
+          "sample_id": "real-preview-1787670572085-f0025"
+        },
+        {
+          "code": "legacy_benchmark_boundary_inferred",
+          "message": "legacy metadata 缺少 capture_boundary/benchmark_use；validator 已按现有来源信号保守推断",
+          "path": "real/real-preview-1787670572085-f0025/metadata.json",
+          "provenance": "real",
+          "sample_id": "real-preview-1787670572085-f0025"
+        },
+        {
+          "code": "preview_derived_excluded_from_original_wgc_benchmark",
+          "message": "preview-derived 真实场景素材仅用于校准，禁止进入 original-WGC 指标；信号: derived_from_preview=true, source.kind=manual_capture",
+          "path": "real/real-preview-1787670572085-f0025/metadata.json",
+          "provenance": "real",
+          "sample_id": "real-preview-1787670572085-f0025"
+        }
+      ]
+    },
+    {
+      "annotated": false,
+      "annotation_status": "skipped",
+      "artifact_naming": "canonical",
+      "benchmark_eligible": false,
+      "benchmark_use": "original_wgc_metrics",
+      "capture_boundary": "original_wgc",
+      "derived_from_preview": null,
+      "issues": [],
+      "path": "real/sample_1787673873611452_f2_p30896_n0_0309c4711657f988",
+      "provenance": "real",
+      "sample_id": "sample_1787673873611452_f2_p30896_n0_0309c4711657f988",
+      "sample_sha256": "880304a40a4b350f21bcf3593477cb793f17817b72dbfdf73e722bf4420329c9",
+      "skip_reason": "modal_disconnect_or_afk_occlusion",
+      "source_kind": "windows_graphics_capture",
+      "valid": true,
+      "warnings": [
+        {
+          "code": "legacy_benchmark_boundary_inferred",
+          "message": "legacy metadata 缺少 capture_boundary/benchmark_use；validator 已按现有来源信号保守推断",
+          "path": "real/sample_1787673873611452_f2_p30896_n0_0309c4711657f988/metadata.json",
+          "provenance": "real",
+          "sample_id": "sample_1787673873611452_f2_p30896_n0_0309c4711657f988"
+        },
+        {
+          "code": "annotation_skipped",
+          "message": "样本被人工跳过，不能计入准确率；skip_reason='modal_disconnect_or_afk_occlusion'",
+          "path": "real/sample_1787673873611452_f2_p30896_n0_0309c4711657f988/annotation.json",
+          "provenance": "real",
+          "sample_id": "sample_1787673873611452_f2_p30896_n0_0309c4711657f988"
+        }
+      ]
+    },
+    {
+      "annotated": false,
+      "annotation_status": "skipped",
+      "artifact_naming": "canonical",
+      "benchmark_eligible": false,
+      "benchmark_use": "original_wgc_metrics",
+      "capture_boundary": "original_wgc",
+      "derived_from_preview": null,
+      "issues": [],
+      "path": "real/sample_1787673874882312_f69_p30896_n1_77c5f72fbff68bea",
+      "provenance": "real",
+      "sample_id": "sample_1787673874882312_f69_p30896_n1_77c5f72fbff68bea",
+      "sample_sha256": "7b057d8a53c5658f04935193cff6b0129316573e58b1f08393339b1133528342",
+      "skip_reason": "modal_disconnect_or_afk_occlusion",
+      "source_kind": "windows_graphics_capture",
+      "valid": true,
+      "warnings": [
+        {
+          "code": "legacy_benchmark_boundary_inferred",
+          "message": "legacy metadata 缺少 capture_boundary/benchmark_use；validator 已按现有来源信号保守推断",
+          "path": "real/sample_1787673874882312_f69_p30896_n1_77c5f72fbff68bea/metadata.json",
+          "provenance": "real",
+          "sample_id": "sample_1787673874882312_f69_p30896_n1_77c5f72fbff68bea"
+        },
+        {
+          "code": "annotation_skipped",
+          "message": "样本被人工跳过，不能计入准确率；skip_reason='modal_disconnect_or_afk_occlusion'",
+          "path": "real/sample_1787673874882312_f69_p30896_n1_77c5f72fbff68bea/annotation.json",
+          "provenance": "real",
+          "sample_id": "sample_1787673874882312_f69_p30896_n1_77c5f72fbff68bea"
+        }
+      ]
+    },
+    {
+      "annotated": false,
+      "annotation_status": "skipped",
+      "artifact_naming": "canonical",
+      "benchmark_eligible": false,
+      "benchmark_use": "original_wgc_metrics",
+      "capture_boundary": "original_wgc",
+      "derived_from_preview": null,
+      "issues": [],
+      "path": "real/sample_1787673876034130_f134_p30896_n2_7d20cfaed875701d",
+      "provenance": "real",
+      "sample_id": "sample_1787673876034130_f134_p30896_n2_7d20cfaed875701d",
+      "sample_sha256": "3a4cb893d151b265d022ed9dbffcad6897550078a4abf5f7d345788ea5952771",
+      "skip_reason": "modal_disconnect_or_afk_occlusion",
+      "source_kind": "windows_graphics_capture",
+      "valid": true,
+      "warnings": [
+        {
+          "code": "legacy_benchmark_boundary_inferred",
+          "message": "legacy metadata 缺少 capture_boundary/benchmark_use；validator 已按现有来源信号保守推断",
+          "path": "real/sample_1787673876034130_f134_p30896_n2_7d20cfaed875701d/metadata.json",
+          "provenance": "real",
+          "sample_id": "sample_1787673876034130_f134_p30896_n2_7d20cfaed875701d"
+        },
+        {
+          "code": "annotation_skipped",
+          "message": "样本被人工跳过，不能计入准确率；skip_reason='modal_disconnect_or_afk_occlusion'",
+          "path": "real/sample_1787673876034130_f134_p30896_n2_7d20cfaed875701d/annotation.json",
+          "provenance": "real",
+          "sample_id": "sample_1787673876034130_f134_p30896_n2_7d20cfaed875701d"
+        }
+      ]
+    },
+    {
+      "annotated": false,
+      "annotation_status": "skipped",
+      "artifact_naming": "canonical",
+      "benchmark_eligible": false,
+      "benchmark_use": "original_wgc_metrics",
+      "capture_boundary": "original_wgc",
+      "derived_from_preview": null,
+      "issues": [],
+      "path": "real/sample_1787673877200290_f199_p30896_n3_47d9c66595f20b78",
+      "provenance": "real",
+      "sample_id": "sample_1787673877200290_f199_p30896_n3_47d9c66595f20b78",
+      "sample_sha256": "2b055614f7748cf70c23803e6b3f8375dc31ca18a71051ca3a5838b964fcd665",
+      "skip_reason": "modal_disconnect_or_afk_occlusion",
+      "source_kind": "windows_graphics_capture",
+      "valid": true,
+      "warnings": [
+        {
+          "code": "legacy_benchmark_boundary_inferred",
+          "message": "legacy metadata 缺少 capture_boundary/benchmark_use；validator 已按现有来源信号保守推断",
+          "path": "real/sample_1787673877200290_f199_p30896_n3_47d9c66595f20b78/metadata.json",
+          "provenance": "real",
+          "sample_id": "sample_1787673877200290_f199_p30896_n3_47d9c66595f20b78"
+        },
+        {
+          "code": "annotation_skipped",
+          "message": "样本被人工跳过，不能计入准确率；skip_reason='modal_disconnect_or_afk_occlusion'",
+          "path": "real/sample_1787673877200290_f199_p30896_n3_47d9c66595f20b78/annotation.json",
+          "provenance": "real",
+          "sample_id": "sample_1787673877200290_f199_p30896_n3_47d9c66595f20b78"
+        }
+      ]
+    },
+    {
+      "annotated": false,
+      "annotation_status": "skipped",
+      "artifact_naming": "canonical",
+      "benchmark_eligible": false,
+      "benchmark_use": "original_wgc_metrics",
+      "capture_boundary": "original_wgc",
+      "derived_from_preview": null,
+      "issues": [],
+      "path": "real/sample_1787673880393715_f382_p30896_n4_d56184b2891fa1ac",
+      "provenance": "real",
+      "sample_id": "sample_1787673880393715_f382_p30896_n4_d56184b2891fa1ac",
+      "sample_sha256": "ccc5112ff32811c0595db5b0be965bcd026e99ac8c1ae516cee9a52a8653d241",
+      "skip_reason": "modal_disconnect_or_afk_occlusion",
+      "source_kind": "windows_graphics_capture",
+      "valid": true,
+      "warnings": [
+        {
+          "code": "legacy_benchmark_boundary_inferred",
+          "message": "legacy metadata 缺少 capture_boundary/benchmark_use；validator 已按现有来源信号保守推断",
+          "path": "real/sample_1787673880393715_f382_p30896_n4_d56184b2891fa1ac/metadata.json",
+          "provenance": "real",
+          "sample_id": "sample_1787673880393715_f382_p30896_n4_d56184b2891fa1ac"
+        },
+        {
+          "code": "annotation_skipped",
+          "message": "样本被人工跳过，不能计入准确率；skip_reason='modal_disconnect_or_afk_occlusion'",
+          "path": "real/sample_1787673880393715_f382_p30896_n4_d56184b2891fa1ac/annotation.json",
+          "provenance": "real",
+          "sample_id": "sample_1787673880393715_f382_p30896_n4_d56184b2891fa1ac"
+        }
+      ]
+    },
+    {
+      "annotated": true,
+      "annotation_status": "complete",
+      "artifact_naming": "canonical",
+      "benchmark_eligible": true,
+      "benchmark_use": "original_wgc_metrics",
+      "capture_boundary": "original_wgc",
+      "derived_from_preview": null,
+      "issues": [],
+      "path": "real/sample_1787673884705782_f595_p30896_n5_4d4a1700e84b73c6",
+      "provenance": "real",
+      "sample_id": "sample_1787673884705782_f595_p30896_n5_4d4a1700e84b73c6",
+      "sample_sha256": "5757333fc110b9ab0e4ce3bb0291543e641c77f23a54e7c033b912cc9abf8291",
+      "skip_reason": null,
+      "source_kind": "windows_graphics_capture",
+      "valid": true,
+      "warnings": [
+        {
+          "code": "legacy_benchmark_boundary_inferred",
+          "message": "legacy metadata 缺少 capture_boundary/benchmark_use；validator 已按现有来源信号保守推断",
+          "path": "real/sample_1787673884705782_f595_p30896_n5_4d4a1700e84b73c6/metadata.json",
+          "provenance": "real",
+          "sample_id": "sample_1787673884705782_f595_p30896_n5_4d4a1700e84b73c6"
+        }
+      ]
+    }
+  ],
+  "schema_version": 1,
+  "skipped_excluded_sample_count": 5,
+  "synthetic_sample_count": 0,
+  "unannotated_sample_count": 5,
+  "unknown_sample_count": 0,
+  "valid": true,
+  "valid_card_count": 12,
+  "warning_count": 20,
+  "warnings": [
+    {
+      "code": "deprecated_artifact_names",
+      "message": "LEFT.png/CENTER.png/RIGHT.png 仅用于一次迁移兼容；请迁移为 LEFT_CARD.png/CENTER_CARD.png/RIGHT_CARD.png",
+      "path": "real/real-preview-1787670257978-f010",
+      "provenance": "real",
+      "sample_id": "real-preview-1787670257978-f010"
+    },
+    {
+      "code": "legacy_benchmark_boundary_inferred",
+      "message": "legacy metadata 缺少 capture_boundary/benchmark_use；validator 已按现有来源信号保守推断",
+      "path": "real/real-preview-1787670257978-f010/metadata.json",
+      "provenance": "real",
+      "sample_id": "real-preview-1787670257978-f010"
+    },
+    {
+      "code": "preview_derived_excluded_from_original_wgc_benchmark",
+      "message": "preview-derived 真实场景素材仅用于校准，禁止进入 original-WGC 指标；信号: derived_from_preview=true, source.kind=manual_capture",
+      "path": "real/real-preview-1787670257978-f010/metadata.json",
+      "provenance": "real",
+      "sample_id": "real-preview-1787670257978-f010"
+    },
+    {
+      "code": "deprecated_artifact_names",
+      "message": "LEFT.png/CENTER.png/RIGHT.png 仅用于一次迁移兼容；请迁移为 LEFT_CARD.png/CENTER_CARD.png/RIGHT_CARD.png",
+      "path": "real/real-preview-1787670257978-f020",
+      "provenance": "real",
+      "sample_id": "real-preview-1787670257978-f020"
+    },
+    {
+      "code": "legacy_benchmark_boundary_inferred",
+      "message": "legacy metadata 缺少 capture_boundary/benchmark_use；validator 已按现有来源信号保守推断",
+      "path": "real/real-preview-1787670257978-f020/metadata.json",
+      "provenance": "real",
+      "sample_id": "real-preview-1787670257978-f020"
+    },
+    {
+      "code": "preview_derived_excluded_from_original_wgc_benchmark",
+      "message": "preview-derived 真实场景素材仅用于校准，禁止进入 original-WGC 指标；信号: derived_from_preview=true, source.kind=manual_capture",
+      "path": "real/real-preview-1787670257978-f020/metadata.json",
+      "provenance": "real",
+      "sample_id": "real-preview-1787670257978-f020"
+    },
+    {
+      "code": "deprecated_artifact_names",
+      "message": "LEFT.png/CENTER.png/RIGHT.png 仅用于一次迁移兼容；请迁移为 LEFT_CARD.png/CENTER_CARD.png/RIGHT_CARD.png",
+      "path": "real/real-preview-1787670572085-f0025",
+      "provenance": "real",
+      "sample_id": "real-preview-1787670572085-f0025"
+    },
+    {
+      "code": "legacy_benchmark_boundary_inferred",
+      "message": "legacy metadata 缺少 capture_boundary/benchmark_use；validator 已按现有来源信号保守推断",
+      "path": "real/real-preview-1787670572085-f0025/metadata.json",
+      "provenance": "real",
+      "sample_id": "real-preview-1787670572085-f0025"
+    },
+    {
+      "code": "preview_derived_excluded_from_original_wgc_benchmark",
+      "message": "preview-derived 真实场景素材仅用于校准，禁止进入 original-WGC 指标；信号: derived_from_preview=true, source.kind=manual_capture",
+      "path": "real/real-preview-1787670572085-f0025/metadata.json",
+      "provenance": "real",
+      "sample_id": "real-preview-1787670572085-f0025"
+    },
+    {
+      "code": "legacy_benchmark_boundary_inferred",
+      "message": "legacy metadata 缺少 capture_boundary/benchmark_use；validator 已按现有来源信号保守推断",
+      "path": "real/sample_1787673873611452_f2_p30896_n0_0309c4711657f988/metadata.json",
+      "provenance": "real",
+      "sample_id": "sample_1787673873611452_f2_p30896_n0_0309c4711657f988"
+    },
+    {
+      "code": "annotation_skipped",
+      "message": "样本被人工跳过，不能计入准确率；skip_reason='modal_disconnect_or_afk_occlusion'",
+      "path": "real/sample_1787673873611452_f2_p30896_n0_0309c4711657f988/annotation.json",
+      "provenance": "real",
+      "sample_id": "sample_1787673873611452_f2_p30896_n0_0309c4711657f988"
+    },
+    {
+      "code": "legacy_benchmark_boundary_inferred",
+      "message": "legacy metadata 缺少 capture_boundary/benchmark_use；validator 已按现有来源信号保守推断",
+      "path": "real/sample_1787673874882312_f69_p30896_n1_77c5f72fbff68bea/metadata.json",
+      "provenance": "real",
+      "sample_id": "sample_1787673874882312_f69_p30896_n1_77c5f72fbff68bea"
+    },
+    {
+      "code": "annotation_skipped",
+      "message": "样本被人工跳过，不能计入准确率；skip_reason='modal_disconnect_or_afk_occlusion'",
+      "path": "real/sample_1787673874882312_f69_p30896_n1_77c5f72fbff68bea/annotation.json",
+      "provenance": "real",
+      "sample_id": "sample_1787673874882312_f69_p30896_n1_77c5f72fbff68bea"
+    },
+    {
+      "code": "legacy_benchmark_boundary_inferred",
+      "message": "legacy metadata 缺少 capture_boundary/benchmark_use；validator 已按现有来源信号保守推断",
+      "path": "real/sample_1787673876034130_f134_p30896_n2_7d20cfaed875701d/metadata.json",
+      "provenance": "real",
+      "sample_id": "sample_1787673876034130_f134_p30896_n2_7d20cfaed875701d"
+    },
+    {
+      "code": "annotation_skipped",
+      "message": "样本被人工跳过，不能计入准确率；skip_reason='modal_disconnect_or_afk_occlusion'",
+      "path": "real/sample_1787673876034130_f134_p30896_n2_7d20cfaed875701d/annotation.json",
+      "provenance": "real",
+      "sample_id": "sample_1787673876034130_f134_p30896_n2_7d20cfaed875701d"
+    },
+    {
+      "code": "legacy_benchmark_boundary_inferred",
+      "message": "legacy metadata 缺少 capture_boundary/benchmark_use；validator 已按现有来源信号保守推断",
+      "path": "real/sample_1787673877200290_f199_p30896_n3_47d9c66595f20b78/metadata.json",
+      "provenance": "real",
+      "sample_id": "sample_1787673877200290_f199_p30896_n3_47d9c66595f20b78"
+    },
+    {
+      "code": "annotation_skipped",
+      "message": "样本被人工跳过，不能计入准确率；skip_reason='modal_disconnect_or_afk_occlusion'",
+      "path": "real/sample_1787673877200290_f199_p30896_n3_47d9c66595f20b78/annotation.json",
+      "provenance": "real",
+      "sample_id": "sample_1787673877200290_f199_p30896_n3_47d9c66595f20b78"
+    },
+    {
+      "code": "legacy_benchmark_boundary_inferred",
+      "message": "legacy metadata 缺少 capture_boundary/benchmark_use；validator 已按现有来源信号保守推断",
+      "path": "real/sample_1787673880393715_f382_p30896_n4_d56184b2891fa1ac/metadata.json",
+      "provenance": "real",
+      "sample_id": "sample_1787673880393715_f382_p30896_n4_d56184b2891fa1ac"
+    },
+    {
+      "code": "annotation_skipped",
+      "message": "样本被人工跳过，不能计入准确率；skip_reason='modal_disconnect_or_afk_occlusion'",
+      "path": "real/sample_1787673880393715_f382_p30896_n4_d56184b2891fa1ac/annotation.json",
+      "provenance": "real",
+      "sample_id": "sample_1787673880393715_f382_p30896_n4_d56184b2891fa1ac"
+    },
+    {
+      "code": "legacy_benchmark_boundary_inferred",
+      "message": "legacy metadata 缺少 capture_boundary/benchmark_use；validator 已按现有来源信号保守推断",
+      "path": "real/sample_1787673884705782_f595_p30896_n5_4d4a1700e84b73c6/metadata.json",
+      "provenance": "real",
+      "sample_id": "sample_1787673884705782_f595_p30896_n5_4d4a1700e84b73c6"
+    }
+  ]
+}

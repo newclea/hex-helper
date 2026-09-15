@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "source_record.schema.json",
+  "title": "Phase3 Source Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_id",
+    "source_type",
+    "source_url",
+    "source_name",
+    "publish_date",
+    "crawl_date",
+    "patch"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "source_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+    "source_type": {"enum": ["OFFICIAL", "STATISTICAL", "GUIDE", "COMMUNITY", "INFERENCE"]},
+    "source_url": {"type": ["string", "null"]},
+    "source_name": {"type": "string", "minLength": 1, "maxLength": 200},
+    "publish_date": {"type": ["string", "null"], "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+    "crawl_date": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+    "patch": {"type": "string", "pattern": "^(UNKNOWN|[1-9][0-9]?\\.[1-9][0-9]?[a-z]?)$"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"source_type": {"const": "INFERENCE"}}, "required": ["source_type"]},
+      "then": {
+        "properties": {
+          "source_url": {"const": null},
+          "source_name": {"const": "INTERNAL_INFERENCE"},
+          "publish_date": {"const": null}
+        }
+      },
+      "else": {
+        "properties": {
+          "source_url": {"type": "string", "pattern": "^https?://[^\\s#]+$"},
+          "publish_date": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}
+        }
+      }
+    }
+  ]
+}

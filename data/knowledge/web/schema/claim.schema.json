@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "claim.schema.json",
+  "title": "Phase3 Atomic Claim",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "claim_id",
+    "source_id",
+    "claim_type",
+    "patch",
+    "champion",
+    "augment",
+    "items",
+    "summary",
+    "confidence",
+    "conflict_group"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "claim_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+    "source_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+    "claim_type": {"enum": ["ITEM_IMPACT", "AUGMENT_SYNERGY"]},
+    "patch": {"type": "string", "pattern": "^(UNKNOWN|[1-9][0-9]?\\.[1-9][0-9]?[a-z]?)$"},
+    "champion": {"type": "string", "minLength": 1, "maxLength": 128},
+    "augment": {"type": "string", "minLength": 1, "maxLength": 128},
+    "items": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 128}
+    },
+    "summary": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "confidence": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+    "conflict_group": {
+      "anyOf": [
+        {"type": "null"},
+        {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"}
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"claim_type": {"const": "ITEM_IMPACT"}}, "required": ["claim_type"]},
+      "then": {"properties": {"items": {"minItems": 1}}}
+    }
+  ]
+}

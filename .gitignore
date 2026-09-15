@@ -1,0 +1,65 @@
+# The Phase 1 scripts keep all generated build products under this directory.
+/outputs/tmp/foundation_build/
+
+# Guard against accidental in-tree IDE/CMake output.
+/.vs/
+/build/
+/out/
+/CMakeFiles/
+/CMakeCache.txt
+/cmake_install.cmake
+/*.sln
+/*.vcxproj
+/*.vcxproj.filters
+
+# Compiler and linker products must not live beside source files.
+*.obj
+*.pdb
+*.ilk
+*.idb
+*.tlog
+
+# Generated analysis, build, runtime, and handoff payloads.
+/outputs/
+/stage*/outputs/
+/stage*/scripts/
+/stage*/next/files/
+/stage*/tmp/
+/stage*/SHA256SUMS.txt
+
+# Portable delivery bundles duplicate tracked source/data and contain binaries.
+/result/bin/
+/result/config/
+/result/data/
+/result/runtime/
+/result/scripts/
+/result/SHA256SUMS.txt
+
+# Real match captures remain local: they may contain player-identifying UI data.
+/data/dataset/augment_offers/real/
+/data/dataset/augment_offers/unknown/
+/data/screenshots/
+/data/sessions/
+
+# Runtime state and generated logs.
+*.sqlite
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+*.db
+*.log
+*.jsonl
+*.stderr
+*.stdout
+
+# Python caches and local environments.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Local secrets and credentials.
+.env
+.env.*
+!.env.example

@@ -1,0 +1,352 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:lol-augment-offers:phase2:v1",
+  "title": "Phase2 augment offer metadata or annotation",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/metadata"
+    },
+    {
+      "$ref": "#/$defs/annotation"
+    }
+  ],
+  "$defs": {
+    "sampleId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "not": {
+        "enum": [
+          ".",
+          ".."
+        ]
+      }
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "kind",
+        "reference"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "windows_graphics_capture",
+            "desktop_duplication",
+            "replay",
+            "stub",
+            "unknown",
+            "phase1_capture",
+            "manual_capture",
+            "debug_preview",
+            "synthetic"
+          ]
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "captureBoundary": {
+      "type": "string",
+      "enum": [
+        "original_wgc",
+        "preview_derived",
+        "other_real_capture",
+        "synthetic",
+        "unknown"
+      ],
+      "description": "Typed pixel-origin boundary. preview_derived is real-scene calibration material, not an original WGC frame."
+    },
+    "benchmarkUse": {
+      "type": "string",
+      "enum": [
+        "original_wgc_metrics",
+        "real_scenario_calibration",
+        "excluded"
+      ],
+      "description": "Intended benchmark use. Only original_wgc_metrics can be eligible for original-WGC metrics."
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "sample_id",
+        "provenance",
+        "source"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "sample_id": {
+          "$ref": "#/$defs/sampleId"
+        },
+        "provenance": {
+          "enum": [
+            "real",
+            "synthetic",
+            "unknown"
+          ]
+        },
+        "sample_kind": {
+          "enum": [
+            "real",
+            "synthetic",
+            "unknown"
+          ]
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "derived_from_preview": {
+          "type": "boolean"
+        },
+        "capture_boundary": {
+          "$ref": "#/$defs/captureBoundary"
+        },
+        "benchmark_use": {
+          "$ref": "#/$defs/benchmarkUse"
+        },
+        "captured_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "provenance": {
+                "const": "real"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "source": {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "windows_graphics_capture",
+                      "desktop_duplication",
+                      "phase1_capture",
+                      "manual_capture",
+                      "debug_preview"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provenance": {
+                "const": "synthetic"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "source": {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "replay",
+                      "stub",
+                      "synthetic"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provenance": {
+                "const": "unknown"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "source": {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "unknown",
+                      "replay",
+                      "stub"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "cardAnnotation": {
+      "type": "object",
+      "required": [
+        "augment_id",
+        "augment_name",
+        "valid"
+      ],
+      "properties": {
+        "augment_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "augment_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "valid": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "valid": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "augment_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "augment_name": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "augment_id": {
+                "type": "null"
+              },
+              "augment_name": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "cards": {
+      "type": "object",
+      "properties": {
+        "left": {
+          "$ref": "#/$defs/cardAnnotation"
+        },
+        "center": {
+          "$ref": "#/$defs/cardAnnotation"
+        },
+        "right": {
+          "$ref": "#/$defs/cardAnnotation"
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotation": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "sample_id",
+        "status",
+        "cards",
+        "skip_reason",
+        "updated_at_utc"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "sample_id": {
+          "$ref": "#/$defs/sampleId"
+        },
+        "status": {
+          "enum": [
+            "in_progress",
+            "complete",
+            "skipped"
+          ]
+        },
+        "cards": {
+          "$ref": "#/$defs/cards"
+        },
+        "skip_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "updated_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "complete"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "cards": {
+                "required": [
+                  "left",
+                  "center",
+                  "right"
+                ]
+              },
+              "skip_reason": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "skipped"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "skip_reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

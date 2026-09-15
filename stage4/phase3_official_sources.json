@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.0.0",
+  "research_id": "Wave1-R2",
+  "title": "官方固定页面事实表",
+  "crawl_date": "2026-08-26",
+  "crawl_timezone": "Asia/Shanghai",
+  "scope": {
+    "page_count": 3,
+    "fixed_urls_only": true,
+    "additional_search_performed": false,
+    "non_official_sources_used": false,
+    "urls": [
+      "https://www.leagueoflegends.com/en-gb/news/game-updates/league-of-legends-patch-26-16-notes/",
+      "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-12-notes/",
+      "https://developer.riotgames.com/docs/lol"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://www.leagueoflegends.com/en-gb/news/game-updates/league-of-legends-patch-26-16-notes/",
+      "title": "League of Legends Patch 26.16 Notes",
+      "publish_date": "2026-08-11",
+      "crawl_date": "2026-08-26",
+      "patch": "26.16",
+      "summary": "官方 26.16 补丁页；ARAM: Mayhem 部分聚焦战士体验，加入 Upgrade Sundered Sky 与 Upgrade Ravenous Hydra 两个 Gold Augment，调整 Locke 和多项 Augment，并修复多项交互问题。",
+      "type": "OFFICIAL"
+    },
+    {
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-12-notes/",
+      "title": "League of Legends Patch 26.12 Notes",
+      "publish_date": "2026-06-09",
+      "crawl_date": "2026-08-26",
+      "patch": "26.12",
+      "summary": "官方 26.12 补丁页；ARAM: Mayhem 加入 Ability Augments 与 Quest Augments，引入可多阶段成长的 Quest Augment，移除当季 Trait System，并把部分 Trait 效果改为独立 Augment。",
+      "type": "OFFICIAL"
+    },
+    {
+      "url": "https://developer.riotgames.com/docs/lol",
+      "title": "Developer API Policy",
+      "publish_date": null,
+      "crawl_date": "2026-08-26",
+      "patch": null,
+      "summary": "LoL 第三方产品政策页；规定注册、变现、安全与游戏完整性边界，并列出获批及不获批用例。页面未提供可核验的发布或最后修改日期。",
+      "type": "OFFICIAL"
+    }
+  ],
+  "conclusions": {
+    "patch_26_12": {
+      "status": "OFFICIAL_EXPLICIT",
+      "summary": "ARAM: Mayhem 加入 Ability Augments 与 Quest Augments，Quest 可多阶段成长；当季 Trait System 被移除，部分 Trait 效果转为独立 Augment。"
+    },
+    "patch_26_16": {
+      "status": "OFFICIAL_EXPLICIT",
+      "summary": "ARAM: Mayhem 聚焦战士体验，新增两个战士物品升级类 Gold Augment，并调整 Locke、多项 Augment 和相关交互。"
+    },
+    "multiple_choices_policy": {
+      "status": "OFFICIAL_EXPLICIT",
+      "summary": "产品不得移除玩家决策；可以突出重要决策并提供多个选择帮助玩家自行判断。替玩家规定决定的应用是不获批准用例。",
+      "product_boundary": "可提供多个中性选择和取舍，不可给出唯一处方、自动选择或实质移除玩家决策。"
+    },
+    "augment_win_rate_policy": {
+      "status": "OFFICIAL_EXPLICIT",
+      "prohibited": true,
+      "applies_to": [
+        "websites",
+        "applications",
+        "overlays"
+      ],
+      "tft_only": false,
+      "tft_only_reason": "禁令逐字出现在 LoL /docs/lol 的 Game Policy 不获批用例中，原文不含 TFT，并同时提及 Arena Mode items。",
+      "mayhem_application": {
+        "status": "OFFICIAL_COMBINED_READING",
+        "summary": "26.12 与 26.16 的 LoL 补丁页把 ARAM: Mayhem 选择称为 Augments，因此 LoL 政策的 Augment 胜率禁令适用于 Mayhem Augments。政策原句本身没有逐字写 ARAM: Mayhem。"
+      },
+      "tft_policy_separately_checked": false
+    },
+    "specific_product_approval": {
+      "status": "NOT_ESTABLISHED",
+      "summary": "通用政策不构成 Riot 对某个具体产品或用户流程的单独批准；面向玩家的产品仍需注册。"
+    }
+  }
+}

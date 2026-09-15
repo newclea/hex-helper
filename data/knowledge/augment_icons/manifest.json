@@ -1,0 +1,4806 @@
+{
+  "catalog": {
+    "sha256": "aa8d5bf621241f749feac0cd3a7e1138c8f5253afd35694edeced1f6bb5839a7",
+    "source": "F:/Realworld/lol/data/knowledge/augments.zh-CN.json",
+    "version": "lcu-static-sha256-930846434976ffd1"
+  },
+  "content_hash": "4f47c954bf62f2c2d77ecf61a62c60ed87fa92dbafa50d1ec58e8fb182583d25",
+  "patch_version": "16.16.805.442",
+  "schema_version": 1,
+  "sources": [
+    {
+      "kind": "asset_root",
+      "path": "F:/Realworld/lol/outputs/tmp/game_assets"
+    },
+    {
+      "kind": "extractor",
+      "path": "F:/Realworld/lol/outputs/tmp/game_assets/wadtools-0.5.7/wadtools.exe",
+      "sha256": "91b44abf44a18fe40c51d308dd8a5ba818bf3c29bad9b71db2c58805b13cd651"
+    },
+    {
+      "kind": "hashtable_manifest",
+      "path": "F:/Realworld/lol/outputs/tmp/game_assets/hashes/manifest.json",
+      "sha256": "4b01214636708a4956e8ab2cb63204bc2cd548a9990bba462f533696c1a400c1"
+    },
+    {
+      "kind": "wad",
+      "path": "F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad",
+      "sha256": "b7b38b1c563b12993ad7fee564b01cbb0b26d5413ae0f7136c560bdcf86e6fa7",
+      "size": 3519598188
+    }
+  ],
+  "summary": {
+    "difference_hash_ambiguity_groups": 54,
+    "imported_mode_distribution": {
+      "KIWI": 220,
+      "KIWI_JADE": 188
+    },
+    "imported_source_icon_paths": 208,
+    "imported_template_count": 245,
+    "missing_template_count": 0,
+    "requested_mode_distribution": {
+      "KIWI": 220,
+      "KIWI_JADE": 188
+    },
+    "requested_source_icon_paths": 208,
+    "requested_template_count": 245,
+    "shared_source_icon_groups": 21,
+    "unique_image_files": 163,
+    "unresolved": []
+  },
+  "templates": [
+    {
+      "augment_id": "ARAM_ADAPt",
+      "candidate_ids_for_source_icon": [
+        "ARAM_ADAPt"
+      ],
+      "difference_hash": "0026060240110100",
+      "file": "icons/e3f6be61bceb9ebdfb35f93caced9be22171b26a1ba65b297a16f47e03b72ff2.png",
+      "height": 64,
+      "icon_sha256": "e3f6be61bceb9ebdfb35f93caced9be22171b26a1ba65b297a16f47e03b72ff2",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/ADAPt_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_AllForYou",
+      "candidate_ids_for_source_icon": [
+        "ARAM_AllForYou"
+      ],
+      "difference_hash": "0002091212441000",
+      "file": "icons/8e91f07a91cab23ed37073536ee9787fcfc31e3c2e95163a23274a4e76190658.png",
+      "height": 64,
+      "icon_sha256": "8e91f07a91cab23ed37073536ee9787fcfc31e3c2e95163a23274a4e76190658",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/AllForYou_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_ApexInventor",
+      "candidate_ids_for_source_icon": [
+        "ARAM_ApexInventor"
+      ],
+      "difference_hash": "0014020141320400",
+      "file": "icons/d7dc2e007c8944d256fc42742f4283aace2d5bbe9a92d7d67087faae7d2174c5.png",
+      "height": 64,
+      "icon_sha256": "d7dc2e007c8944d256fc42742f4283aace2d5bbe9a92d7d67087faae7d2174c5",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/ApexInventor_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Archmage",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Archmage",
+        "ARAM_Eureka"
+      ],
+      "difference_hash": "0026040c48050100",
+      "file": "icons/cdf7f1e5de925525857a43f3edec27ce700aba92986dbf5d98d56dc70419fa3c.png",
+      "height": 64,
+      "icon_sha256": "cdf7f1e5de925525857a43f3edec27ce700aba92986dbf5d98d56dc70419fa3c",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Eureka_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_BacktoBasics",
+      "candidate_ids_for_source_icon": [
+        "ARAM_BacktoBasics"
+      ],
+      "difference_hash": "0014294949010200",
+      "file": "icons/b387a9a568f94156e6801d829c2a59f47ac3c9e5cf792c0cfb06bfb9b22f9109.png",
+      "height": 64,
+      "icon_sha256": "b387a9a568f94156e6801d829c2a59f47ac3c9e5cf792c0cfb06bfb9b22f9109",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/BackToBasics_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_BangBang",
+      "candidate_ids_for_source_icon": [
+        "ARAM_BangBang"
+      ],
+      "difference_hash": "0026101446110100",
+      "file": "icons/1543c76b7407d7bc86e5c070992c3d15304937cb229853a98643255d1730f20f.png",
+      "height": 64,
+      "icon_sha256": "1543c76b7407d7bc86e5c070992c3d15304937cb229853a98643255d1730f20f",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/QuestBangBang_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_BigBrain",
+      "candidate_ids_for_source_icon": [
+        "ARAM_BigBrain"
+      ],
+      "difference_hash": "0002495541450408",
+      "file": "icons/072185e14d71122a622f9ec7486817498ce62b1685ce7f48274cd112b7539c60.png",
+      "height": 64,
+      "icon_sha256": "072185e14d71122a622f9ec7486817498ce62b1685ce7f48274cd112b7539c60",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/BigBrain_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_BladeWaltz",
+      "candidate_ids_for_source_icon": [
+        "ARAM_BladeWaltz"
+      ],
+      "difference_hash": "002c291515061200",
+      "file": "icons/94455fb481862225055969fc0388d8b7d6e41accd2da7d373657695c54278a3e.png",
+      "height": 64,
+      "icon_sha256": "94455fb481862225055969fc0388d8b7d6e41accd2da7d373657695c54278a3e",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/BladeWaltz_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_BluntForce",
+      "candidate_ids_for_source_icon": [
+        "ARAM_BluntForce"
+      ],
+      "difference_hash": "002c291515061200",
+      "file": "icons/94455fb481862225055969fc0388d8b7d6e41accd2da7d373657695c54278a3e.png",
+      "height": 64,
+      "icon_sha256": "94455fb481862225055969fc0388d8b7d6e41accd2da7d373657695c54278a3e",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/BluntForce_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_BreadAndButter",
+      "candidate_ids_for_source_icon": [
+        "ARAM_BreadAndButter",
+        "ARAM_BreadAndCheese",
+        "ARAM_BreadAndJam",
+        "ARAM_Quickstep",
+        "ARAM_SpecializedRecursion",
+        "ChainReaction",
+        "LittleExtraHelp",
+        "MercysStrike",
+        "SnapBack",
+        "VoidDash"
+      ],
+      "difference_hash": "000002140c080000",
+      "file": "icons/c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1.png",
+      "height": 64,
+      "icon_sha256": "c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Gold.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_BreadAndCheese",
+      "candidate_ids_for_source_icon": [
+        "ARAM_BreadAndButter",
+        "ARAM_BreadAndCheese",
+        "ARAM_BreadAndJam",
+        "ARAM_Quickstep",
+        "ARAM_SpecializedRecursion",
+        "ChainReaction",
+        "LittleExtraHelp",
+        "MercysStrike",
+        "SnapBack",
+        "VoidDash"
+      ],
+      "difference_hash": "000002140c080000",
+      "file": "icons/c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1.png",
+      "height": 64,
+      "icon_sha256": "c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Gold.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_BreadAndJam",
+      "candidate_ids_for_source_icon": [
+        "ARAM_BreadAndButter",
+        "ARAM_BreadAndCheese",
+        "ARAM_BreadAndJam",
+        "ARAM_Quickstep",
+        "ARAM_SpecializedRecursion",
+        "ChainReaction",
+        "LittleExtraHelp",
+        "MercysStrike",
+        "SnapBack",
+        "VoidDash"
+      ],
+      "difference_hash": "000002140c080000",
+      "file": "icons/c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1.png",
+      "height": 64,
+      "icon_sha256": "c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Gold.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_CantTouchThis",
+      "candidate_ids_for_source_icon": [
+        "ARAM_CantTouchThis"
+      ],
+      "difference_hash": "0002494949610408",
+      "file": "icons/03a0afee300a01d6b8e519d3d629be0edb7efb26869fd7770855ed41844bd510.png",
+      "height": 64,
+      "icon_sha256": "03a0afee300a01d6b8e519d3d629be0edb7efb26869fd7770855ed41844bd510",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/CantTouchThis_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_CelestialBody",
+      "candidate_ids_for_source_icon": [
+        "ARAM_CelestialBody"
+      ],
+      "difference_hash": "0014295541010200",
+      "file": "icons/eec0300c8c30cd3068756216c2e52a431a98014a0999ca4cf904d0c4e3f52b91.png",
+      "height": 64,
+      "icon_sha256": "eec0300c8c30cd3068756216c2e52a431a98014a0999ca4cf904d0c4e3f52b91",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/CelestialBody_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_CircleofDeath",
+      "candidate_ids_for_source_icon": [
+        "ARAM_CircleofDeath"
+      ],
+      "difference_hash": "0026281454050100",
+      "file": "icons/06ab9c8bd4811284790f6902fa86f7bc747da8cc5c4d70dc4932958bc88a2852.png",
+      "height": 64,
+      "icon_sha256": "06ab9c8bd4811284790f6902fa86f7bc747da8cc5c4d70dc4932958bc88a2852",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/CircleOfDeath_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_ClownCollege",
+      "candidate_ids_for_source_icon": [
+        "ARAM_ClownCollege"
+      ],
+      "difference_hash": "000a0e4145041500",
+      "file": "icons/969fa2ccfb157a52ef772f561d0fb47b94d07087d99e55063dc161ed2974b033.png",
+      "height": 64,
+      "icon_sha256": "969fa2ccfb157a52ef772f561d0fb47b94d07087d99e55063dc161ed2974b033",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/ClownCollege_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_CourageoftheColossus",
+      "candidate_ids_for_source_icon": [
+        "ARAM_CourageoftheColossus"
+      ],
+      "difference_hash": "0002494d49690408",
+      "file": "icons/e08ab7a2538a88f6e690220015b639beb1be93965bfaf56eb3851ba6868897ef.png",
+      "height": 64,
+      "icon_sha256": "e08ab7a2538a88f6e690220015b639beb1be93965bfaf56eb3851ba6868897ef",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/CourageOfTheColossus_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_CriticalHealing",
+      "candidate_ids_for_source_icon": [
+        "ARAM_CriticalHealing"
+      ],
+      "difference_hash": "0012021355020000",
+      "file": "icons/ba94ac0adcb30980ce2751dddf2123efb993f68a3495ed9856d310a7e62c2ebe.png",
+      "height": 64,
+      "icon_sha256": "ba94ac0adcb30980ce2751dddf2123efb993f68a3495ed9856d310a7e62c2ebe",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/CriticalHealing_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Cruelty",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Cruelty"
+      ],
+      "difference_hash": "002a020200311400",
+      "file": "icons/dcf5a7a5e76fb4caaeea8e5bb76fe7ade5a77e7e632b3092f1132e29910fcffb.png",
+      "height": 64,
+      "icon_sha256": "dcf5a7a5e76fb4caaeea8e5bb76fe7ade5a77e7e632b3092f1132e29910fcffb",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Cruelty_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Dashing",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Dashing",
+        "ARAM_EndlessHunt"
+      ],
+      "difference_hash": "0014124945220400",
+      "file": "icons/3586d5b3e3377b809804ee462f890f531d5b8be37cb715fec3d9feadbbbb3f02.png",
+      "height": 64,
+      "icon_sha256": "3586d5b3e3377b809804ee462f890f531d5b8be37cb715fec3d9feadbbbb3f02",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Dashing_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_DawnbringersResolve",
+      "candidate_ids_for_source_icon": [
+        "ARAM_DawnbringersResolve"
+      ],
+      "difference_hash": "0006095541040600",
+      "file": "icons/8d99605d4930658c8eb48f76f3085aca63b36a1deb2dc59bf1d0d88d16cd6e66.png",
+      "height": 64,
+      "icon_sha256": "8d99605d4930658c8eb48f76f3085aca63b36a1deb2dc59bf1d0d88d16cd6e66",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/DawnbringersResolve_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Deft",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Deft"
+      ],
+      "difference_hash": "0026281414090100",
+      "file": "icons/6642b0fd56f6a76c2440ac8bd9fd10ca9e285e1393e3f75dd46e3397d6dc6575.png",
+      "height": 64,
+      "icon_sha256": "6642b0fd56f6a76c2440ac8bd9fd10ca9e285e1393e3f75dd46e3397d6dc6575",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Deft_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_DiveBomber",
+      "candidate_ids_for_source_icon": [
+        "ARAM_DiveBomber"
+      ],
+      "difference_hash": "0014294501110200",
+      "file": "icons/8989868e7929788cd75439269d0624df5217eefd0c2fd4f6d05f3171ee698277.png",
+      "height": 64,
+      "icon_sha256": "8989868e7929788cd75439269d0624df5217eefd0c2fd4f6d05f3171ee698277",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/DiveBomber_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_DivineDomain",
+      "candidate_ids_for_source_icon": [
+        "ARAM_DivineDomain",
+        "GlassCannon"
+      ],
+      "difference_hash": "002c291515061200",
+      "file": "icons/81715f42e82d1e0e54198a20e922de43c5d23c8b8d00441396e540fc04c014d6.png",
+      "height": 64,
+      "icon_sha256": "81715f42e82d1e0e54198a20e922de43c5d23c8b8d00441396e540fc04c014d6",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GlassCannon_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_DivineIntervention",
+      "candidate_ids_for_source_icon": [
+        "ARAM_DivineIntervention"
+      ],
+      "difference_hash": "0002454545450408",
+      "file": "icons/34d4da7fc6625d7ee67ba709f43e89ea4fb4fd7614f614a60db1761f12110350.png",
+      "height": 64,
+      "icon_sha256": "34d4da7fc6625d7ee67ba709f43e89ea4fb4fd7614f614a60db1761f12110350",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/SlowActingPainkillers_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_DontBlink",
+      "candidate_ids_for_source_icon": [
+        "ARAM_DontBlink"
+      ],
+      "difference_hash": "0004091414240800",
+      "file": "icons/129f9555cac79e0d7401599048d41e7fd21844fb6f2a80e6c94525c40fe64117.png",
+      "height": 64,
+      "icon_sha256": "129f9555cac79e0d7401599048d41e7fd21844fb6f2a80e6c94525c40fe64117",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/DontBlink_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_DoubleTap",
+      "candidate_ids_for_source_icon": [
+        "ARAM_DoubleTap"
+      ],
+      "difference_hash": "002c291515061200",
+      "file": "icons/8ade44c941f916f6a8d041789645c0409593612fc8811bf5b4029509a70d1e99.png",
+      "height": 64,
+      "icon_sha256": "8ade44c941f916f6a8d041789645c0409593612fc8811bf5b4029509a70d1e99",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/DoubleTap_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_DrawYourSword",
+      "candidate_ids_for_source_icon": [
+        "ARAM_DrawYourSword"
+      ],
+      "difference_hash": "0014291515090200",
+      "file": "icons/6e3f73a5a44db96ec7c841d870047727a261d1786c42565f2a1265fe61023084.png",
+      "height": 64,
+      "icon_sha256": "6e3f73a5a44db96ec7c841d870047727a261d1786c42565f2a1265fe61023084",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/DrawYourSword_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_DropBear",
+      "candidate_ids_for_source_icon": [
+        "ARAM_DropBear"
+      ],
+      "difference_hash": "0026280402150100",
+      "file": "icons/ec3fd068956543c4969bdfd20fc8380f28c0d54e4f27a445653ff94fa84bfec3.png",
+      "height": 64,
+      "icon_sha256": "ec3fd068956543c4969bdfd20fc8380f28c0d54e4f27a445653ff94fa84bfec3",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Drop_Bear_Small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Dropkick",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Dropkick"
+      ],
+      "difference_hash": "0026281440050100",
+      "file": "icons/aabd3443fa1245205d87c6db2e7dea33725317c6ebfd4b6061c757864da679b9.png",
+      "height": 64,
+      "icon_sha256": "aabd3443fa1245205d87c6db2e7dea33725317c6ebfd4b6061c757864da679b9",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Dropkick_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_DualWield",
+      "candidate_ids_for_source_icon": [
+        "ARAM_DualWield"
+      ],
+      "difference_hash": "0014234549110200",
+      "file": "icons/d18ba27c83e8a06eeae7052dc478a797003978c5a651bb8e1dbe0750292232dc.png",
+      "height": 64,
+      "icon_sha256": "d18ba27c83e8a06eeae7052dc478a797003978c5a651bb8e1dbe0750292232dc",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/DualWield_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Earthwake",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Earthwake"
+      ],
+      "difference_hash": "0026100846050100",
+      "file": "icons/9efe10e10eea41c5d82fdf6830941b1dcdcab34ddd08b5f5b9964941bdfcf031.png",
+      "height": 64,
+      "icon_sha256": "9efe10e10eea41c5d82fdf6830941b1dcdcab34ddd08b5f5b9964941bdfcf031",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Earthwake_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_EmpoweredByTheFaithful",
+      "candidate_ids_for_source_icon": [
+        "ARAM_EmpoweredByTheFaithful"
+      ],
+      "difference_hash": "0006014511100600",
+      "file": "icons/0301211b31f4706b711bc53f48ad36f68a82ae0f68382b68aeff4f74d242480d.png",
+      "height": 64,
+      "icon_sha256": "0301211b31f4706b711bc53f48ad36f68a82ae0f68382b68aeff4f74d242480d",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/EmpoweredByTheFaithful_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_EndlessHunt",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Dashing",
+        "ARAM_EndlessHunt"
+      ],
+      "difference_hash": "0014124945220400",
+      "file": "icons/3586d5b3e3377b809804ee462f890f531d5b8be37cb715fec3d9feadbbbb3f02.png",
+      "height": 64,
+      "icon_sha256": "3586d5b3e3377b809804ee462f890f531d5b8be37cb715fec3d9feadbbbb3f02",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Dashing_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Erosion",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Erosion"
+      ],
+      "difference_hash": "002c21150d061200",
+      "file": "icons/dd8478a3eb73352464f31c1b526939b8b41af8957c279a8ac9e042c2a6cb5673.png",
+      "height": 64,
+      "icon_sha256": "dd8478a3eb73352464f31c1b526939b8b41af8957c279a8ac9e042c2a6cb5673",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Erosion_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_EtherealWeapon",
+      "candidate_ids_for_source_icon": [
+        "ARAM_EtherealWeapon"
+      ],
+      "difference_hash": "001442550d091200",
+      "file": "icons/f8beb50fa2e62ec1af4a47578afe89c7c9952c9c3e25b3ab8c1dd42ecf5a3116.png",
+      "height": 64,
+      "icon_sha256": "f8beb50fa2e62ec1af4a47578afe89c7c9952c9c3e25b3ab8c1dd42ecf5a3116",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/EtherealWeapon_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Eureka",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Archmage",
+        "ARAM_Eureka"
+      ],
+      "difference_hash": "0026040c48050100",
+      "file": "icons/cdf7f1e5de925525857a43f3edec27ce700aba92986dbf5d98d56dc70419fa3c.png",
+      "height": 64,
+      "icon_sha256": "cdf7f1e5de925525857a43f3edec27ce700aba92986dbf5d98d56dc70419fa3c",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Eureka_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_FanTheHammer",
+      "candidate_ids_for_source_icon": [
+        "ARAM_FanTheHammer"
+      ],
+      "difference_hash": "0026220448110100",
+      "file": "icons/9b0fffe3852c5c0b49bf055495244b167cf06bf90982f82a2898fce2d271c05f.png",
+      "height": 64,
+      "icon_sha256": "9b0fffe3852c5c0b49bf055495244b167cf06bf90982f82a2898fce2d271c05f",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/FanTheHammer_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_FeyMagic",
+      "candidate_ids_for_source_icon": [
+        "ARAM_FeyMagic"
+      ],
+      "difference_hash": "002a2a4808211400",
+      "file": "icons/b2e2721a4ace974908a15d4b254d4adb57aca4730a86668aad2d4af47a29771d.png",
+      "height": 64,
+      "icon_sha256": "b2e2721a4ace974908a15d4b254d4adb57aca4730a86668aad2d4af47a29771d",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/FeyMagic_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Firebrand",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Firebrand"
+      ],
+      "difference_hash": "002c250545161200",
+      "file": "icons/628babeea575b6ae1f6f19c22e879db3a8d3f526020fbca870abb4ff22b8916f.png",
+      "height": 64,
+      "icon_sha256": "628babeea575b6ae1f6f19c22e879db3a8d3f526020fbca870abb4ff22b8916f",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Firebrand_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Firefox",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Firefox"
+      ],
+      "difference_hash": "0004040423031400",
+      "file": "icons/e3308fd2929e94222307574f373166c0d0793fca3a8e53c24558b2bedb0daa87.png",
+      "height": 64,
+      "icon_sha256": "e3308fd2929e94222307574f373166c0d0793fca3a8e53c24558b2bedb0daa87",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Firfox_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_FirstAidKit",
+      "candidate_ids_for_source_icon": [
+        "ARAM_FirstAidKit"
+      ],
+      "difference_hash": "0022495555031400",
+      "file": "icons/d208fa0b7ce5b7ccd57176dc6a4a92a8bba5e83f992d83e765c393285ee13844.png",
+      "height": 64,
+      "icon_sha256": "d208fa0b7ce5b7ccd57176dc6a4a92a8bba5e83f992d83e765c393285ee13844",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/FirstAidKit_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Flashbang",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Flashbang"
+      ],
+      "difference_hash": "0026100846050100",
+      "file": "icons/9efe10e10eea41c5d82fdf6830941b1dcdcab34ddd08b5f5b9964941bdfcf031.png",
+      "height": 64,
+      "icon_sha256": "9efe10e10eea41c5d82fdf6830941b1dcdcab34ddd08b5f5b9964941bdfcf031",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Flashbang_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Flashy",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Flashy"
+      ],
+      "difference_hash": "0014124945220400",
+      "file": "icons/3586d5b3e3377b809804ee462f890f531d5b8be37cb715fec3d9feadbbbb3f02.png",
+      "height": 64,
+      "icon_sha256": "3586d5b3e3377b809804ee462f890f531d5b8be37cb715fec3d9feadbbbb3f02",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Flashy_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_FromBeginningToEnd",
+      "candidate_ids_for_source_icon": [
+        "ARAM_FromBeginningToEnd"
+      ],
+      "difference_hash": "0014291514494000",
+      "file": "icons/884e36e6ee6e617de195284a91b76ff822af4c742d4afff5d9b07eadd7b55779.png",
+      "height": 64,
+      "icon_sha256": "884e36e6ee6e617de195284a91b76ff822af4c742d4afff5d9b07eadd7b55779",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/FromBeginningToEnd_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_GetExcited",
+      "candidate_ids_for_source_icon": [
+        "ARAM_GetExcited"
+      ],
+      "difference_hash": "0026220448110100",
+      "file": "icons/19c778cd65b0b7b2a059a069db5f3be03f81780b243e1e757ee53e04af92a9c6.png",
+      "height": 64,
+      "icon_sha256": "19c778cd65b0b7b2a059a069db5f3be03f81780b243e1e757ee53e04af92a9c6",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GetExcited_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_GiantSlayer",
+      "candidate_ids_for_source_icon": [
+        "ARAM_GiantSlayer"
+      ],
+      "difference_hash": "0026060864050100",
+      "file": "icons/0b4699f291d79e4712249001293898c53c8283771f0ceb1355f475593147771d.png",
+      "height": 64,
+      "icon_sha256": "0b4699f291d79e4712249001293898c53c8283771f0ceb1355f475593147771d",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/GiantSlayer_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Goliath",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Goliath"
+      ],
+      "difference_hash": "0002491515690408",
+      "file": "icons/efd464310463cddf7622af0d69718ac0b2a30e68a3ac3daddfcc6ec13629e3c8.png",
+      "height": 64,
+      "icon_sha256": "efd464310463cddf7622af0d69718ac0b2a30e68a3ac3daddfcc6ec13629e3c8",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Goliath_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Goredrink",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Goredrink"
+      ],
+      "difference_hash": "0026280462110100",
+      "file": "icons/d10d572ef87b5034bc18dd89831b8a91fd5549d2cb45785e9c007918d153f0d8.png",
+      "height": 64,
+      "icon_sha256": "d10d572ef87b5034bc18dd89831b8a91fd5549d2cb45785e9c007918d153f0d8",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/GoreDrink_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_HeavyHitter",
+      "candidate_ids_for_source_icon": [
+        "ARAM_HeavyHitter"
+      ],
+      "difference_hash": "0026220448110100",
+      "file": "icons/9b0fffe3852c5c0b49bf055495244b167cf06bf90982f82a2898fce2d271c05f.png",
+      "height": 64,
+      "icon_sha256": "9b0fffe3852c5c0b49bf055495244b167cf06bf90982f82a2898fce2d271c05f",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/HeavyHitter_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Hellbent",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Hellbent"
+      ],
+      "difference_hash": "000a0a5541041500",
+      "file": "icons/166e863ba151342bfcbcf9c1d0e1ce108d5802e26f93a947ecfcc9e43b8e38df.png",
+      "height": 64,
+      "icon_sha256": "166e863ba151342bfcbcf9c1d0e1ce108d5802e26f93a947ecfcc9e43b8e38df",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Hellbent_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_HighRoller",
+      "candidate_ids_for_source_icon": [
+        "ARAM_HighRoller"
+      ],
+      "difference_hash": "0014010140514000",
+      "file": "icons/965fbc2114dd95ab31ec7a8cd85cdc70c4274c1e3d4012ea233296e3de4dfb81.png",
+      "height": 64,
+      "icon_sha256": "965fbc2114dd95ab31ec7a8cd85cdc70c4274c1e3d4012ea233296e3de4dfb81",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/HighRoller_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Homeguard",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Homeguard"
+      ],
+      "difference_hash": "0004054804040800",
+      "file": "icons/8bd202bc2c80cc54d46f4e58599f458e881c24cd4af40b56ade903e0741773db.png",
+      "height": 64,
+      "icon_sha256": "8bd202bc2c80cc54d46f4e58599f458e881c24cd4af40b56ade903e0741773db",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Homeguard_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_IceCold",
+      "candidate_ids_for_source_icon": [
+        "ARAM_IceCold"
+      ],
+      "difference_hash": "002a2a4c08291400",
+      "file": "icons/109d023ee996a86af1ea30ada861bcc322be60e3d267528168c761a5a10b30ce.png",
+      "height": 64,
+      "icon_sha256": "109d023ee996a86af1ea30ada861bcc322be60e3d267528168c761a5a10b30ce",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/IceCold_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_ImTheJuggernaut",
+      "candidate_ids_for_source_icon": [
+        "ARAM_ImTheJuggernaut"
+      ],
+      "difference_hash": "002c291541061200",
+      "file": "icons/01921c8332f0ec6d01564b26a443dfa743e6abc0949a62a36d6891222cf4fc1a.png",
+      "height": 64,
+      "icon_sha256": "01921c8332f0ec6d01564b26a443dfa743e6abc0949a62a36d6891222cf4fc1a",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/IAmTheJuggernaut_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Impassable",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Impassable"
+      ],
+      "difference_hash": "0002494d49690408",
+      "file": "icons/4d08d0a84c4c5191d75084024d456de86c6f943b5e664e0ae98308df5170822b.png",
+      "height": 64,
+      "icon_sha256": "4d08d0a84c4c5191d75084024d456de86c6f943b5e664e0ae98308df5170822b",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Impassable_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_InfernalConduit",
+      "candidate_ids_for_source_icon": [
+        "ARAM_InfernalConduit"
+      ],
+      "difference_hash": "0014224545120400",
+      "file": "icons/86bacb581608d1ea1cabd8f888e59e80f18e3d75484b7b38fc650623f826cf20.png",
+      "height": 64,
+      "icon_sha256": "86bacb581608d1ea1cabd8f888e59e80f18e3d75484b7b38fc650623f826cf20",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/InfernalConduit_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_InfernalSoul",
+      "candidate_ids_for_source_icon": [
+        "ARAM_InfernalSoul",
+        "HextechSoul"
+      ],
+      "difference_hash": "002c21150d061200",
+      "file": "icons/dd8478a3eb73352464f31c1b526939b8b41af8957c279a8ac9e042c2a6cb5673.png",
+      "height": 64,
+      "icon_sha256": "dd8478a3eb73352464f31c1b526939b8b41af8957c279a8ac9e042c2a6cb5673",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/InfernalSoul_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_InfernoTriggered",
+      "candidate_ids_for_source_icon": [
+        "ARAM_InfernoTriggered",
+        "ARAM_MadScientist"
+      ],
+      "difference_hash": "0008081514290400",
+      "file": "icons/34d35a3646166a056e0d1e3d6074b3fd9e6bc767f886704ac7d11869e54d7881.png",
+      "height": 64,
+      "icon_sha256": "34d35a3646166a056e0d1e3d6074b3fd9e6bc767f886704ac7d11869e54d7881",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/MadScientist_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_ItsCritical",
+      "candidate_ids_for_source_icon": [
+        "ARAM_ItsCritical"
+      ],
+      "difference_hash": "0012020b65220000",
+      "file": "icons/e5e7edae7e104986f459b6117e2717e19f3e0fc8aed3269064e6d0cfdbb9e28f.png",
+      "height": 64,
+      "icon_sha256": "e5e7edae7e104986f459b6117e2717e19f3e0fc8aed3269064e6d0cfdbb9e28f",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/ItsCritical_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_ItsKillingTime",
+      "candidate_ids_for_source_icon": [
+        "ARAM_ItsKillingTime"
+      ],
+      "difference_hash": "0026280848010100",
+      "file": "icons/986f5ec41dfbcb06ceeb516bd95f2bc1bb06ba397837f3329eb96e46d92e4fae.png",
+      "height": 64,
+      "icon_sha256": "986f5ec41dfbcb06ceeb516bd95f2bc1bb06ba397837f3329eb96e46d92e4fae",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/ItsKillingTime_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_JeweledGauntlet",
+      "candidate_ids_for_source_icon": [
+        "ARAM_JeweledGauntlet"
+      ],
+      "difference_hash": "001212130d0a0000",
+      "file": "icons/2757b5ab36278ca4a8e6f60dcc02e1a4f33ee0e1b865f316cda9df4c6a495ef9.png",
+      "height": 64,
+      "icon_sha256": "2757b5ab36278ca4a8e6f60dcc02e1a4f33ee0e1b865f316cda9df4c6a495ef9",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/JeweledGauntlet_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Juiced",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Juiced"
+      ],
+      "difference_hash": "001442550d091200",
+      "file": "icons/7f70db3e175873407ccb35633eb5eae16301e75d8994f283e87e344888209ab3.png",
+      "height": 64,
+      "icon_sha256": "7f70db3e175873407ccb35633eb5eae16301e75d8994f283e87e344888209ab3",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Juiced_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_LegDay",
+      "candidate_ids_for_source_icon": [
+        "ARAM_LegDay"
+      ],
+      "difference_hash": "0004140803331400",
+      "file": "icons/cba62ed8896a27713e106c40ece3a20968699cc4619df2a9d157308ab9099a05.png",
+      "height": 64,
+      "icon_sha256": "cba62ed8896a27713e106c40ece3a20968699cc4619df2a9d157308ab9099a05",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/LegDay_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_LightemUp",
+      "candidate_ids_for_source_icon": [
+        "ARAM_LightemUp"
+      ],
+      "difference_hash": "0026220448110100",
+      "file": "icons/9b0fffe3852c5c0b49bf055495244b167cf06bf90982f82a2898fce2d271c05f.png",
+      "height": 64,
+      "icon_sha256": "9b0fffe3852c5c0b49bf055495244b167cf06bf90982f82a2898fce2d271c05f",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/LightEmUp_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_LittleDevil",
+      "candidate_ids_for_source_icon": [
+        "ARAM_LittleDevil"
+      ],
+      "difference_hash": "0006094145241600",
+      "file": "icons/b01375b9eb6ea6a18136c774f0e6b86c729cc2212502b426d6def9d09fbeb92f.png",
+      "height": 64,
+      "icon_sha256": "b01375b9eb6ea6a18136c774f0e6b86c729cc2212502b426d6def9d09fbeb92f",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/LittleDevil_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_MadScientist",
+      "candidate_ids_for_source_icon": [
+        "ARAM_InfernoTriggered",
+        "ARAM_MadScientist"
+      ],
+      "difference_hash": "0008081514290400",
+      "file": "icons/34d35a3646166a056e0d1e3d6074b3fd9e6bc767f886704ac7d11869e54d7881.png",
+      "height": 64,
+      "icon_sha256": "34d35a3646166a056e0d1e3d6074b3fd9e6bc767f886704ac7d11869e54d7881",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/MadScientist_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_MagicMissile",
+      "candidate_ids_for_source_icon": [
+        "ARAM_MagicMissile"
+      ],
+      "difference_hash": "002622140c090100",
+      "file": "icons/3b099cca83a51a62ec464f08447f28262e7519596bd55f742b74eb4a19ce5033.png",
+      "height": 64,
+      "icon_sha256": "3b099cca83a51a62ec464f08447f28262e7519596bd55f742b74eb4a19ce5033",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/Maps/Particles/Kiwi/MagicMissile_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Marksmage",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Marksmage",
+        "SpecializedEmpowerment"
+      ],
+      "difference_hash": "0026220448110100",
+      "file": "icons/9b0fffe3852c5c0b49bf055495244b167cf06bf90982f82a2898fce2d271c05f.png",
+      "height": 64,
+      "icon_sha256": "9b0fffe3852c5c0b49bf055495244b167cf06bf90982f82a2898fce2d271c05f",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Marksmage_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_MasterofDuality",
+      "candidate_ids_for_source_icon": [
+        "ARAM_MasterofDuality"
+      ],
+      "difference_hash": "00144a4551111200",
+      "file": "icons/39d0276d3aa1bf8bcdd2dd3865c582c9071d8746089b55e1c9a9c0a295a7fdad.png",
+      "height": 64,
+      "icon_sha256": "39d0276d3aa1bf8bcdd2dd3865c582c9071d8746089b55e1c9a9c0a295a7fdad",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/MasterOfDuality_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_MindtoMatter",
+      "candidate_ids_for_source_icon": [
+        "ARAM_MindtoMatter"
+      ],
+      "difference_hash": "0002495541450408",
+      "file": "icons/93e89ffa7f109b8799bcfeeb32ef48e59d6536f431ca7cdf54738c85abda4ca2.png",
+      "height": 64,
+      "icon_sha256": "93e89ffa7f109b8799bcfeeb32ef48e59d6536f431ca7cdf54738c85abda4ca2",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/MindToMatter_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Minionmancer",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Minionmancer"
+      ],
+      "difference_hash": "0026280844150100",
+      "file": "icons/3ead5c1fc180db53b23a5c0fd031914118b1fa62d187502384f1e8a6e9f9a506.png",
+      "height": 64,
+      "icon_sha256": "3ead5c1fc180db53b23a5c0fd031914118b1fa62d187502384f1e8a6e9f9a506",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Minionmancer_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_MissingPingAugment",
+      "candidate_ids_for_source_icon": [
+        "ARAM_MissingPingAugment"
+      ],
+      "difference_hash": "00020d0222441000",
+      "file": "icons/3fdeca489a0024cc0a2315ba1384f8d4f1036772424930efabb6c847ecac3d41.png",
+      "height": 64,
+      "icon_sha256": "3fdeca489a0024cc0a2315ba1384f8d4f1036772424930efabb6c847ecac3d41",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/MissingPing_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_MountainSoul",
+      "candidate_ids_for_source_icon": [
+        "ARAM_MountainSoul"
+      ],
+      "difference_hash": "0002495541450408",
+      "file": "icons/93e89ffa7f109b8799bcfeeb32ef48e59d6536f431ca7cdf54738c85abda4ca2.png",
+      "height": 64,
+      "icon_sha256": "93e89ffa7f109b8799bcfeeb32ef48e59d6536f431ca7cdf54738c85abda4ca2",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/MountainSoul_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Multishot",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Multishot",
+        "Ability_SelfAOE_DoubleCast",
+        "Missile_Split",
+        "Overloaded",
+        "SpellVolley"
+      ],
+      "difference_hash": "0000021434080000",
+      "file": "icons/44bd8e4927a79f695341d269ef278b783269bf6c01e63192ade053e5cf1b180d.png",
+      "height": 64,
+      "icon_sha256": "44bd8e4927a79f695341d269ef278b783269bf6c01e63192ade053e5cf1b180d",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Prismatic.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_MysticPunch",
+      "candidate_ids_for_source_icon": [
+        "ARAM_MysticPunch"
+      ],
+      "difference_hash": "0014224549120400",
+      "file": "icons/8f0bcddbc0f8c26c8e500caa6caa16f8d779fc104f27b27b73eb2520a19cd227.png",
+      "height": 64,
+      "icon_sha256": "8f0bcddbc0f8c26c8e500caa6caa16f8d779fc104f27b27b73eb2520a19cd227",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/MysticPunch_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_OceanSoul",
+      "candidate_ids_for_source_icon": [
+        "ARAM_OceanSoul"
+      ],
+      "difference_hash": "0002494561530408",
+      "file": "icons/8cb5e707e3056fa9535b2aa2abda29f753a68dfedac3a02b88bd0103b58b2517.png",
+      "height": 64,
+      "icon_sha256": "8cb5e707e3056fa9535b2aa2abda29f753a68dfedac3a02b88bd0103b58b2517",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/OceanSoul_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_OkBoomerang",
+      "candidate_ids_for_source_icon": [
+        "ARAM_OkBoomerang"
+      ],
+      "difference_hash": "0026040444050100",
+      "file": "icons/17b07d9e8f93c2598362bdec9e68d385761410cce1f5d2251a2d53efc83dac0f.png",
+      "height": 64,
+      "icon_sha256": "17b07d9e8f93c2598362bdec9e68d385761410cce1f5d2251a2d53efc83dac0f",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/OKBoomerang_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_OmniSoul",
+      "candidate_ids_for_source_icon": [
+        "ARAM_OmniSoul"
+      ],
+      "difference_hash": "002614366a050100",
+      "file": "icons/0bdb64aed7c855441bc3267b73a0299ba2a45c96ee55abb684831c1cdaf8a4fe.png",
+      "height": 64,
+      "icon_sha256": "0bdb64aed7c855441bc3267b73a0299ba2a45c96ee55abb684831c1cdaf8a4fe",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/OmniSoul_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_OutlawsGrit",
+      "candidate_ids_for_source_icon": [
+        "ARAM_OutlawsGrit"
+      ],
+      "difference_hash": "0014114946454000",
+      "file": "icons/20ed7d953c7644771ef6bdba6730f9a25c7becbd23231be4bd54f9d4a5dc4758.png",
+      "height": 64,
+      "icon_sha256": "20ed7d953c7644771ef6bdba6730f9a25c7becbd23231be4bd54f9d4a5dc4758",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/OutlawsGrit_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Overflow",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Overflow"
+      ],
+      "difference_hash": "001442550d091200",
+      "file": "icons/f8beb50fa2e62ec1af4a47578afe89c7c9952c9c3e25b3ab8c1dd42ecf5a3116.png",
+      "height": 64,
+      "icon_sha256": "f8beb50fa2e62ec1af4a47578afe89c7c9952c9c3e25b3ab8c1dd42ecf5a3116",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Overflow_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_PandorasBox",
+      "candidate_ids_for_source_icon": [
+        "ARAM_PandorasBox"
+      ],
+      "difference_hash": "0008084904110400",
+      "file": "icons/d5942570a8625d36b96338b3dd058e59935fd81cbc88ce347ff5e271c744a8dc.png",
+      "height": 64,
+      "icon_sha256": "d5942570a8625d36b96338b3dd058e59935fd81cbc88ce347ff5e271c744a8dc",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Pandoras_Box_Small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Perseverance",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Perseverance"
+      ],
+      "difference_hash": "0006095541040600",
+      "file": "icons/8d99605d4930658c8eb48f76f3085aca63b36a1deb2dc59bf1d0d88d16cd6e66.png",
+      "height": 64,
+      "icon_sha256": "8d99605d4930658c8eb48f76f3085aca63b36a1deb2dc59bf1d0d88d16cd6e66",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Perseverance_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_PhenomenalEvil",
+      "candidate_ids_for_source_icon": [
+        "ARAM_PhenomenalEvil"
+      ],
+      "difference_hash": "00260a0450110100",
+      "file": "icons/7aa0d22747eac7f195436d1f8ee4ff2a176107a07f44a125a4ede4f115733e95.png",
+      "height": 64,
+      "icon_sha256": "7aa0d22747eac7f195436d1f8ee4ff2a176107a07f44a125a4ede4f115733e95",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/ARAM_PhenomenalEvil_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_PoroKing",
+      "candidate_ids_for_source_icon": [
+        "ARAM_PoroKing"
+      ],
+      "difference_hash": "002c151511061200",
+      "file": "icons/8651ac7f2df287442a9faef9f46174eedab3481cf6d72e307153a9efaa3fbb73.png",
+      "height": 64,
+      "icon_sha256": "8651ac7f2df287442a9faef9f46174eedab3481cf6d72e307153a9efaa3fbb73",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/PoroKing_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Poro_Blast",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Poro_Blast"
+      ],
+      "difference_hash": "002a220202091400",
+      "file": "icons/48188e5f443618f7d81b90cfc0bd86bb99ae946e307343525b2857fff57f61fe.png",
+      "height": 64,
+      "icon_sha256": "48188e5f443618f7d81b90cfc0bd86bb99ae946e307343525b2857fff57f61fe",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/PoroBlast_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_ProteinShake",
+      "candidate_ids_for_source_icon": [
+        "ARAM_ProteinShake"
+      ],
+      "difference_hash": "0002495555450408",
+      "file": "icons/72cef78b159ae6ee0b22da9d4bb5c85ec11981d283ad8d89fe81fec4cd2096a4.png",
+      "height": 64,
+      "icon_sha256": "72cef78b159ae6ee0b22da9d4bb5c85ec11981d283ad8d89fe81fec4cd2096a4",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/ProteinShake_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Purist_Caster",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Purist_Caster"
+      ],
+      "difference_hash": "001263550d491200",
+      "file": "icons/050e0cf11ae0194c618b4fcac48a238c674259eeb32bc9de3dd386490e0edb79.png",
+      "height": 64,
+      "icon_sha256": "050e0cf11ae0194c618b4fcac48a238c674259eeb32bc9de3dd386490e0edb79",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/PuristCaster_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_QuantumComputing",
+      "candidate_ids_for_source_icon": [
+        "ARAM_QuantumComputing"
+      ],
+      "difference_hash": "0026040444050100",
+      "file": "icons/17b07d9e8f93c2598362bdec9e68d385761410cce1f5d2251a2d53efc83dac0f.png",
+      "height": 64,
+      "icon_sha256": "17b07d9e8f93c2598362bdec9e68d385761410cce1f5d2251a2d53efc83dac0f",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/QuantumComputing_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Quest_SteelYourHeart",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Quest_SteelYourHeart"
+      ],
+      "difference_hash": "0002450341510408",
+      "file": "icons/41b9b7941d4b381cf9a33531c40ec85cabe2a77cfdec31f76898b1ac917627fa.png",
+      "height": 64,
+      "icon_sha256": "41b9b7941d4b381cf9a33531c40ec85cabe2a77cfdec31f76898b1ac917627fa",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Quest_SteelYourHeart_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Quest_UrfsChampion",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Quest_UrfsChampion"
+      ],
+      "difference_hash": "0002450341510408",
+      "file": "icons/41b9b7941d4b381cf9a33531c40ec85cabe2a77cfdec31f76898b1ac917627fa.png",
+      "height": 64,
+      "icon_sha256": "41b9b7941d4b381cf9a33531c40ec85cabe2a77cfdec31f76898b1ac917627fa",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Quest_UrfsChampion_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Quest_VoidImmolation",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Quest_VoidImmolation"
+      ],
+      "difference_hash": "0041454545100200",
+      "file": "icons/f2f80099f7e36f7af9bec7f688ecec996186de75e16b1ea4a4583ec146fb334e.png",
+      "height": 64,
+      "icon_sha256": "f2f80099f7e36f7af9bec7f688ecec996186de75e16b1ea4a4583ec146fb334e",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Quest_VoidImmolation_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Quest_WoogletsWitchcap",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Quest_WoogletsWitchcap"
+      ],
+      "difference_hash": "0002450341510408",
+      "file": "icons/41b9b7941d4b381cf9a33531c40ec85cabe2a77cfdec31f76898b1ac917627fa.png",
+      "height": 64,
+      "icon_sha256": "41b9b7941d4b381cf9a33531c40ec85cabe2a77cfdec31f76898b1ac917627fa",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Quest_WoogletsWitchcap_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Quickstep",
+      "candidate_ids_for_source_icon": [
+        "ARAM_BreadAndButter",
+        "ARAM_BreadAndCheese",
+        "ARAM_BreadAndJam",
+        "ARAM_Quickstep",
+        "ARAM_SpecializedRecursion",
+        "ChainReaction",
+        "LittleExtraHelp",
+        "MercysStrike",
+        "SnapBack",
+        "VoidDash"
+      ],
+      "difference_hash": "000002140c080000",
+      "file": "icons/c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1.png",
+      "height": 64,
+      "icon_sha256": "c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Gold.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_RabbleRousing",
+      "candidate_ids_for_source_icon": [
+        "ARAM_RabbleRousing"
+      ],
+      "difference_hash": "000601550d080600",
+      "file": "icons/40efdd0cb10fe53cdea1042f45b8c44163ecc3744b6c6383844da216e1b96ba9.png",
+      "height": 64,
+      "icon_sha256": "40efdd0cb10fe53cdea1042f45b8c44163ecc3744b6c6383844da216e1b96ba9",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/RabbleRousing_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Recursion",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Recursion"
+      ],
+      "difference_hash": "0014024d49020400",
+      "file": "icons/3ce90a01d6e7be459c6df424ec892e47ee09699851090f858141bfa5036bc9e9.png",
+      "height": 64,
+      "icon_sha256": "3ce90a01d6e7be459c6df424ec892e47ee09699851090f858141bfa5036bc9e9",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Recursion_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_ScopedWeapons",
+      "candidate_ids_for_source_icon": [
+        "ARAM_ScopedWeapons"
+      ],
+      "difference_hash": "002c111545161200",
+      "file": "icons/44e0cc764854ad097164227ea052187046d0ffbe2c04d068f973ae0ef7c52233.png",
+      "height": 64,
+      "icon_sha256": "44e0cc764854ad097164227ea052187046d0ffbe2c04d068f973ae0ef7c52233",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/ScopedWeapons_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_ScopierWeapons",
+      "candidate_ids_for_source_icon": [
+        "ARAM_ScopierWeapons"
+      ],
+      "difference_hash": "002c111545161200",
+      "file": "icons/44e0cc764854ad097164227ea052187046d0ffbe2c04d068f973ae0ef7c52233.png",
+      "height": 64,
+      "icon_sha256": "44e0cc764854ad097164227ea052187046d0ffbe2c04d068f973ae0ef7c52233",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/ScopierWeapons_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_ScopiestWeapons",
+      "candidate_ids_for_source_icon": [
+        "ARAM_ScopiestWeapons"
+      ],
+      "difference_hash": "002c111545161200",
+      "file": "icons/44e0cc764854ad097164227ea052187046d0ffbe2c04d068f973ae0ef7c52233.png",
+      "height": 64,
+      "icon_sha256": "44e0cc764854ad097164227ea052187046d0ffbe2c04d068f973ae0ef7c52233",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/ScopiestWeapons_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_SearingDawn",
+      "candidate_ids_for_source_icon": [
+        "ARAM_SearingDawn"
+      ],
+      "difference_hash": "0014424549111200",
+      "file": "icons/43786fbac87186d4b6874082b1c5d57b3f3fc4ce730db442ab15abc9901b2ea8.png",
+      "height": 64,
+      "icon_sha256": "43786fbac87186d4b6874082b1c5d57b3f3fc4ce730db442ab15abc9901b2ea8",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/SearingDawn_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_ShadowRunner",
+      "candidate_ids_for_source_icon": [
+        "ARAM_ShadowRunner"
+      ],
+      "difference_hash": "0004114806340800",
+      "file": "icons/8e96e3f82501c8968c07345f26d163981952de82b8f7558450bb9b29f221cf89.png",
+      "height": 64,
+      "icon_sha256": "8e96e3f82501c8968c07345f26d163981952de82b8f7558450bb9b29f221cf89",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/ShadowRunner_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_ShrinkRay",
+      "candidate_ids_for_source_icon": [
+        "ARAM_ShrinkRay"
+      ],
+      "difference_hash": "002c291541061200",
+      "file": "icons/44b7e9af3bcec108994243979cc93e54a91ce7e694e99edeee16ada567bb9f0f.png",
+      "height": 64,
+      "icon_sha256": "44b7e9af3bcec108994243979cc93e54a91ce7e694e99edeee16ada567bb9f0f",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/ShrinkRay_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_SkilledSniper",
+      "candidate_ids_for_source_icon": [
+        "ARAM_SkilledSniper"
+      ],
+      "difference_hash": "0014125545120400",
+      "file": "icons/f50252f0637002c83e975232524bcd335b1442952f4bcd8a2bb7a364da342e3a.png",
+      "height": 64,
+      "icon_sha256": "f50252f0637002c83e975232524bcd335b1442952f4bcd8a2bb7a364da342e3a",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/SkilledSniper_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_SlapAround",
+      "candidate_ids_for_source_icon": [
+        "ARAM_SlapAround"
+      ],
+      "difference_hash": "0014294d48494000",
+      "file": "icons/798ab77559328d3b854f3545acbd276bacb9280470528b78b66aa0c83df9edb8.png",
+      "height": 64,
+      "icon_sha256": "798ab77559328d3b854f3545acbd276bacb9280470528b78b66aa0c83df9edb8",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/SlapAround_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Snowday",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Snowday"
+      ],
+      "difference_hash": "0026280844150100",
+      "file": "icons/8f5310191ce5b318dfcb8675a93af6c43c0a2cc16aedf82ce657b11df736c812.png",
+      "height": 64,
+      "icon_sha256": "8f5310191ce5b318dfcb8675a93af6c43c0a2cc16aedf82ce657b11df736c812",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Snowday_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_SonicBoom",
+      "candidate_ids_for_source_icon": [
+        "ARAM_SonicBoom"
+      ],
+      "difference_hash": "0026281454050100",
+      "file": "icons/06ab9c8bd4811284790f6902fa86f7bc747da8cc5c4d70dc4932958bc88a2852.png",
+      "height": 64,
+      "icon_sha256": "06ab9c8bd4811284790f6902fa86f7bc747da8cc5c4d70dc4932958bc88a2852",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/SonicBoom_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_SoulSiphon",
+      "candidate_ids_for_source_icon": [
+        "ARAM_SoulSiphon"
+      ],
+      "difference_hash": "0012020361120000",
+      "file": "icons/2c2540bc29ba3ef38fe0ba6d9083fbb0f3e824e62d00b43949ed0c36b09b8075.png",
+      "height": 64,
+      "icon_sha256": "2c2540bc29ba3ef38fe0ba6d9083fbb0f3e824e62d00b43949ed0c36b09b8075",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/SoulSiphon_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_SpecializedRecursion",
+      "candidate_ids_for_source_icon": [
+        "ARAM_BreadAndButter",
+        "ARAM_BreadAndCheese",
+        "ARAM_BreadAndJam",
+        "ARAM_Quickstep",
+        "ARAM_SpecializedRecursion",
+        "ChainReaction",
+        "LittleExtraHelp",
+        "MercysStrike",
+        "SnapBack",
+        "VoidDash"
+      ],
+      "difference_hash": "000002140c080000",
+      "file": "icons/c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1.png",
+      "height": 64,
+      "icon_sha256": "c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Gold.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_SpinToWin",
+      "candidate_ids_for_source_icon": [
+        "ARAM_SpinToWin"
+      ],
+      "difference_hash": "0026281414090100",
+      "file": "icons/6642b0fd56f6a76c2440ac8bd9fd10ca9e285e1393e3f75dd46e3397d6dc6575.png",
+      "height": 64,
+      "icon_sha256": "6642b0fd56f6a76c2440ac8bd9fd10ca9e285e1393e3f75dd46e3397d6dc6575",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/SpinToWin_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_SpiritBomb",
+      "candidate_ids_for_source_icon": [
+        "ARAM_SpiritBomb"
+      ],
+      "difference_hash": "0006094561120600",
+      "file": "icons/04d0b318fc3ad139d53f1d09d0d106008ae7ac99a01199f86ef42548d959e9f6.png",
+      "height": 64,
+      "icon_sha256": "04d0b318fc3ad139d53f1d09d0d106008ae7ac99a01199f86ef42548d959e9f6",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/SpiritBomb_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_SpiritualPurification",
+      "candidate_ids_for_source_icon": [
+        "ARAM_SpiritualPurification",
+        "SpiritOfTheJungleMain"
+      ],
+      "difference_hash": "000a0a1515081500",
+      "file": "icons/82ad79316b031d28f44b7195929f77132b392af05dbfadccb5e1bb187c855f8d.png",
+      "height": 64,
+      "icon_sha256": "82ad79316b031d28f44b7195929f77132b392af05dbfadccb5e1bb187c855f8d",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/SpiritualPurification_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_StackosaurusRex",
+      "candidate_ids_for_source_icon": [
+        "ARAM_StackosaurusRex"
+      ],
+      "difference_hash": "0014094550514000",
+      "file": "icons/b6a1c3103d4d65223138dfa1823dacc822b69d610002ac1c172ad53847f99607.png",
+      "height": 64,
+      "icon_sha256": "b6a1c3103d4d65223138dfa1823dacc822b69d610002ac1c172ad53847f99607",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/StackosaurusRex_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Stats",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Stats"
+      ],
+      "difference_hash": "0012557569451200",
+      "file": "icons/027088a02d60e14d9c3078131ead4f0233211a330c93f61c220aebc3c6715f60.png",
+      "height": 64,
+      "icon_sha256": "027088a02d60e14d9c3078131ead4f0233211a330c93f61c220aebc3c6715f60",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Stats_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_StatsOnStats",
+      "candidate_ids_for_source_icon": [
+        "ARAM_StatsOnStats"
+      ],
+      "difference_hash": "0012557569451200",
+      "file": "icons/027088a02d60e14d9c3078131ead4f0233211a330c93f61c220aebc3c6715f60.png",
+      "height": 64,
+      "icon_sha256": "027088a02d60e14d9c3078131ead4f0233211a330c93f61c220aebc3c6715f60",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/StatsOnStats_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_StatsOnStatsOnStats",
+      "candidate_ids_for_source_icon": [
+        "ARAM_StatsOnStatsOnStats"
+      ],
+      "difference_hash": "0012557569451200",
+      "file": "icons/027088a02d60e14d9c3078131ead4f0233211a330c93f61c220aebc3c6715f60.png",
+      "height": 64,
+      "icon_sha256": "027088a02d60e14d9c3078131ead4f0233211a330c93f61c220aebc3c6715f60",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/StatsOnStatsOnStats_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_StuckInHereWithMe",
+      "candidate_ids_for_source_icon": [
+        "ARAM_StuckInHereWithMe"
+      ],
+      "difference_hash": "002a224410111400",
+      "file": "icons/659c952004442fce6ba588a521fbbe6684e05490d2bf4694738918b97ea1f1e6.png",
+      "height": 64,
+      "icon_sha256": "659c952004442fce6ba588a521fbbe6684e05490d2bf4694738918b97ea1f1e6",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/StuckInHereWithMe_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_SustainingStrike",
+      "candidate_ids_for_source_icon": [
+        "ARAM_SustainingStrike",
+        "DoubleDefense",
+        "ItsGoTime",
+        "TitansPulse",
+        "TrustyWeapon",
+        "WardingWeapon"
+      ],
+      "difference_hash": "000002142c080000",
+      "file": "icons/6ee4074f6966d3f7f71e4dadc1c77f62912620d232d8ee205e0c2263961df89c.png",
+      "height": 64,
+      "icon_sha256": "6ee4074f6966d3f7f71e4dadc1c77f62912620d232d8ee205e0c2263961df89c",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Silver.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_SymphonyofWar",
+      "candidate_ids_for_source_icon": [
+        "ARAM_SymphonyofWar",
+        "Overkill"
+      ],
+      "difference_hash": "0014214548514000",
+      "file": "icons/cb7be70573f3964a2f7620f5cbe7f3558ab168068850d89e764e232978a1a97d.png",
+      "height": 64,
+      "icon_sha256": "cb7be70573f3964a2f7620f5cbe7f3558ab168068850d89e764e232978a1a97d",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/SymphonyOfWar_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_TankEngine",
+      "candidate_ids_for_source_icon": [
+        "ARAM_TankEngine"
+      ],
+      "difference_hash": "0014295540454000",
+      "file": "icons/715590581e55c3040d258c99b8c50b41e4315b6ca37a5af767866e543af8555a.png",
+      "height": 64,
+      "icon_sha256": "715590581e55c3040d258c99b8c50b41e4315b6ca37a5af767866e543af8555a",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Tank_Engine_Small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_TankItOrLeaveIt",
+      "candidate_ids_for_source_icon": [
+        "ARAM_TankItOrLeaveIt"
+      ],
+      "difference_hash": "0012021341020000",
+      "file": "icons/82e6f4bab2311e5cd1257d10dc7b7784230a7aa94728218dee50c672374cb821.png",
+      "height": 64,
+      "icon_sha256": "82e6f4bab2311e5cd1257d10dc7b7784230a7aa94728218dee50c672374cb821",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/TankItOrLeaveIt_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_TapDancer",
+      "candidate_ids_for_source_icon": [
+        "ARAM_TapDancer"
+      ],
+      "difference_hash": "0004094410140800",
+      "file": "icons/ad69f9626a6294b41a821604a348f712fd19b027f3083cd61ded5726443a6c9c.png",
+      "height": 64,
+      "icon_sha256": "ad69f9626a6294b41a821604a348f712fd19b027f3083cd61ded5726443a6c9c",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/TapDancer_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Terror",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Terror"
+      ],
+      "difference_hash": "002a220404611400",
+      "file": "icons/830c6310df1ad274c0f15f7ab02e838f83dafcea5cb2c841c1360b93b854ddd9.png",
+      "height": 256,
+      "icon_sha256": "830c6310df1ad274c0f15f7ab02e838f83dafcea5cb2c841c1360b93b854ddd9",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Desecrator_large.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 256
+    },
+    {
+      "augment_id": "ARAM_ThreadtheNeedle",
+      "candidate_ids_for_source_icon": [
+        "ARAM_ThreadtheNeedle"
+      ],
+      "difference_hash": "0026281414090100",
+      "file": "icons/6642b0fd56f6a76c2440ac8bd9fd10ca9e285e1393e3f75dd46e3397d6dc6575.png",
+      "height": 64,
+      "icon_sha256": "6642b0fd56f6a76c2440ac8bd9fd10ca9e285e1393e3f75dd46e3397d6dc6575",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/ThreadTheNeedle_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_TransmuteChaos",
+      "candidate_ids_for_source_icon": [
+        "ARAM_TransmuteChaos"
+      ],
+      "difference_hash": "000814752a010400",
+      "file": "icons/75511e66f71c39b51e915854a379e698771ac98fdfb023a7e590bfad94640451.png",
+      "height": 64,
+      "icon_sha256": "75511e66f71c39b51e915854a379e698771ac98fdfb023a7e590bfad94640451",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/TransmuteChaos_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_TransmuteGold",
+      "candidate_ids_for_source_icon": [
+        "ARAM_TransmuteGold"
+      ],
+      "difference_hash": "000814752a010400",
+      "file": "icons/75511e66f71c39b51e915854a379e698771ac98fdfb023a7e590bfad94640451.png",
+      "height": 64,
+      "icon_sha256": "75511e66f71c39b51e915854a379e698771ac98fdfb023a7e590bfad94640451",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/TransmuteGold_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_TransmutePrismatic",
+      "candidate_ids_for_source_icon": [
+        "ARAM_TransmutePrismatic"
+      ],
+      "difference_hash": "000814752a010400",
+      "file": "icons/75511e66f71c39b51e915854a379e698771ac98fdfb023a7e590bfad94640451.png",
+      "height": 64,
+      "icon_sha256": "75511e66f71c39b51e915854a379e698771ac98fdfb023a7e590bfad94640451",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/TransmutePrismatic_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Typhoon",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Typhoon"
+      ],
+      "difference_hash": "002c212549161200",
+      "file": "icons/7e905b33c4c4d832987f6697e176739aa58abb23fecc74d90f165212afa0fc48.png",
+      "height": 64,
+      "icon_sha256": "7e905b33c4c4d832987f6697e176739aa58abb23fecc74d90f165212afa0fc48",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Typhoon_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_UltimateRevolution",
+      "candidate_ids_for_source_icon": [
+        "ARAM_UltimateRevolution"
+      ],
+      "difference_hash": "00142a4949220400",
+      "file": "icons/99cb5c5f99d5111cd6d4f4645554ff4d5bfe0f3d739f78adacaf0681a56cdd44.png",
+      "height": 64,
+      "icon_sha256": "99cb5c5f99d5111cd6d4f4645554ff4d5bfe0f3d739f78adacaf0681a56cdd44",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/UltimateRevolution_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_UltimateUnstoppable",
+      "candidate_ids_for_source_icon": [
+        "ARAM_UltimateUnstoppable"
+      ],
+      "difference_hash": "0012694949611200",
+      "file": "icons/6008ac576c8ee29bfbdb299b1f1072250a24745712609dc3847683f6a39a9d2c.png",
+      "height": 64,
+      "icon_sha256": "6008ac576c8ee29bfbdb299b1f1072250a24745712609dc3847683f6a39a9d2c",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/UltimateUnstoppable_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Upgrade_Collector",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Upgrade_Collector"
+      ],
+      "difference_hash": "0026060240110100",
+      "file": "icons/2c2373b6d82c8e0e053fd95466961920ab4404dc6109b311e0ef202489f3cce2.png",
+      "height": 64,
+      "icon_sha256": "2c2373b6d82c8e0e053fd95466961920ab4404dc6109b311e0ef202489f3cce2",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/UpgradeCollector_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Upgrade_IE",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Upgrade_IE",
+        "Upgrade_SunderedSky"
+      ],
+      "difference_hash": "0012020341320000",
+      "file": "icons/c80ecd03c58a65abcbc2392d711086fbe65073a2a5088bfc5170d0cba6f49ca3.png",
+      "height": 64,
+      "icon_sha256": "c80ecd03c58a65abcbc2392d711086fbe65073a2a5088bfc5170d0cba6f49ca3",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/UpgradeIE_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Upgrade_Immolate",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Upgrade_Immolate"
+      ],
+      "difference_hash": "0032020141500200",
+      "file": "icons/7e54b3910ab5a1e37076f9c8088ee16bbdf76db20f450650aeeee81d92b9ca78.png",
+      "height": 64,
+      "icon_sha256": "7e54b3910ab5a1e37076f9c8088ee16bbdf76db20f450650aeeee81d92b9ca78",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/UpgradeImmolate_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Upgrade_Sheen",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Upgrade_Sheen",
+        "Upgrade_Ravenous"
+      ],
+      "difference_hash": "0006014549100600",
+      "file": "icons/982ac635fef918e03110788621f0e9c39a2ed9d2a3adbf5779ec3bf40f5c2e84.png",
+      "height": 64,
+      "icon_sha256": "982ac635fef918e03110788621f0e9c39a2ed9d2a3adbf5779ec3bf40f5c2e84",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/UpgradeSheen_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Upgrade_ZH",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Upgrade_ZH"
+      ],
+      "difference_hash": "0004060223131400",
+      "file": "icons/ef9b50134d83a8a8919dc16c3af8b89b726909d3ab9ec5d729f09d7bfe69e157.png",
+      "height": 64,
+      "icon_sha256": "ef9b50134d83a8a8919dc16c3af8b89b726909d3ab9ec5d729f09d7bfe69e157",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/UpgradeZH_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Vulnerability",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Vulnerability"
+      ],
+      "difference_hash": "0012020341320000",
+      "file": "icons/0760b349c7ca9aed513eae4787ae82d0a0da78d3667495bd0b1dff7ae31d4829.png",
+      "height": 64,
+      "icon_sha256": "0760b349c7ca9aed513eae4787ae82d0a0da78d3667495bd0b1dff7ae31d4829",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Vulnerability_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_WeeWooWeeWoo",
+      "candidate_ids_for_source_icon": [
+        "ARAM_WeeWooWeeWoo"
+      ],
+      "difference_hash": "00040c0423131400",
+      "file": "icons/14b7c415eaa75150819e01b325a58096ae12fcab05dc18cc504b2e188f5c0c57.png",
+      "height": 64,
+      "icon_sha256": "14b7c415eaa75150819e01b325a58096ae12fcab05dc18cc504b2e188f5c0c57",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/WeeWooWeeWoo_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_WindspeakersBlessing",
+      "candidate_ids_for_source_icon": [
+        "ARAM_WindspeakersBlessing"
+      ],
+      "difference_hash": "0002495555450408",
+      "file": "icons/72cef78b159ae6ee0b22da9d4bb5c85ec11981d283ad8d89fe81fec4cd2096a4.png",
+      "height": 64,
+      "icon_sha256": "72cef78b159ae6ee0b22da9d4bb5c85ec11981d283ad8d89fe81fec4cd2096a4",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/WindspeakersBlessing_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_WitchfulThinking",
+      "candidate_ids_for_source_icon": [
+        "ARAM_WitchfulThinking"
+      ],
+      "difference_hash": "0012691515691200",
+      "file": "icons/da06d2f30953c865c454428853d1d27d4247da39f42339a1b24adb268490c709.png",
+      "height": 64,
+      "icon_sha256": "da06d2f30953c865c454428853d1d27d4247da39f42339a1b24adb268490c709",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/WitchfulThinking_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_WithHaste",
+      "candidate_ids_for_source_icon": [
+        "ARAM_WithHaste"
+      ],
+      "difference_hash": "0014024965020400",
+      "file": "icons/8ed5fd461a2e9c18e7487a863358b32153a56baf8b9949067dba6f6eb7f55885.png",
+      "height": 64,
+      "icon_sha256": "8ed5fd461a2e9c18e7487a863358b32153a56baf8b9949067dba6f6eb7f55885",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/WithHaste_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_YowchMyCoins",
+      "candidate_ids_for_source_icon": [
+        "ARAM_YowchMyCoins"
+      ],
+      "difference_hash": "0008060100310400",
+      "file": "icons/4914ae6469807ac36d0abe2d5f5435cf3817a7318d0cc5b870a94f3086742d40.png",
+      "height": 64,
+      "icon_sha256": "4914ae6469807ac36d0abe2d5f5435cf3817a7318d0cc5b870a94f3086742d40",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/YouchMyCoins_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_Zealot",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Zealot"
+      ],
+      "difference_hash": "00140a0965211200",
+      "file": "icons/539733efcefb95498356b3a86969de765d20f60631e9eed0b6d43abbc7c69fff.png",
+      "height": 64,
+      "icon_sha256": "539733efcefb95498356b3a86969de765d20f60631e9eed0b6d43abbc7c69fff",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Zealot_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ARAM_escAPADe",
+      "candidate_ids_for_source_icon": [
+        "ARAM_escAPADe"
+      ],
+      "difference_hash": "0026060240110100",
+      "file": "icons/e3f6be61bceb9ebdfb35f93caced9be22171b26a1ba65b297a16f47e03b72ff2.png",
+      "height": 64,
+      "icon_sha256": "e3f6be61bceb9ebdfb35f93caced9be22171b26a1ba65b297a16f47e03b72ff2",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Escapade_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Ability_SelfAOE_DoubleCast",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Multishot",
+        "Ability_SelfAOE_DoubleCast",
+        "Missile_Split",
+        "Overloaded",
+        "SpellVolley"
+      ],
+      "difference_hash": "0000021434080000",
+      "file": "icons/44bd8e4927a79f695341d269ef278b783269bf6c01e63192ade053e5cf1b180d.png",
+      "height": 64,
+      "icon_sha256": "44bd8e4927a79f695341d269ef278b783269bf6c01e63192ade053e5cf1b180d",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Prismatic.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Adamant",
+      "candidate_ids_for_source_icon": [
+        "Adamant",
+        "DoubleStrike"
+      ],
+      "difference_hash": "0002494d49690408",
+      "file": "icons/6273e29243d2b24b9b909029bb2bf2f0cab8e21a82cf96f68aff327349f711a8.png",
+      "height": 64,
+      "icon_sha256": "6273e29243d2b24b9b909029bb2bf2f0cab8e21a82cf96f68aff327349f711a8",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Adamant_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "BabyKitty",
+      "candidate_ids_for_source_icon": [
+        "BabyKitty"
+      ],
+      "difference_hash": "0022414511131400",
+      "file": "icons/5d6a12d8ddb26e564b3bf3fef8887378144d576cb07a361d626d65241e1ba3c7.png",
+      "height": 64,
+      "icon_sha256": "5d6a12d8ddb26e564b3bf3fef8887378144d576cb07a361d626d65241e1ba3c7",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/BabyKitty_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "BiggestSnowballEver",
+      "candidate_ids_for_source_icon": [
+        "BiggestSnowballEver"
+      ],
+      "difference_hash": "00142a4945120400",
+      "file": "icons/4dffb019075bb662b0c3eebbd4237d33a5651149806645e86a46a0afab68a604.png",
+      "height": 64,
+      "icon_sha256": "4dffb019075bb662b0c3eebbd4237d33a5651149806645e86a46a0afab68a604",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/BiggestSnowballEver_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "BloodMoneyBurn",
+      "candidate_ids_for_source_icon": [
+        "BloodMoneyBurn"
+      ],
+      "difference_hash": "0041454545100200",
+      "file": "icons/5f53956f36e8921fa8016db9c79bdc28a7bc6d1aae99f83a9335a6d8134a7abe.png",
+      "height": 64,
+      "icon_sha256": "5f53956f36e8921fa8016db9c79bdc28a7bc6d1aae99f83a9335a6d8134a7abe",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/BloodMoney2_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Bonk",
+      "candidate_ids_for_source_icon": [
+        "Bonk"
+      ],
+      "difference_hash": "00340a2965201200",
+      "file": "icons/093b18347a8b45cc091b6b194c5275eeddf5cd1129d7b2e741933d5eb2861947.png",
+      "height": 256,
+      "icon_sha256": "093b18347a8b45cc091b6b194c5275eeddf5cd1129d7b2e741933d5eb2861947",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Bonk_large.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 256
+    },
+    {
+      "augment_id": "BrushPower",
+      "candidate_ids_for_source_icon": [
+        "BrushPower"
+      ],
+      "difference_hash": "0012634549111200",
+      "file": "icons/cc32200164d2bb52692b873b80ef81eb5d17a9c41c1e233d1c1b8d5dc8d920b1.png",
+      "height": 64,
+      "icon_sha256": "cc32200164d2bb52692b873b80ef81eb5d17a9c41c1e233d1c1b8d5dc8d920b1",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/BrushPower_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "BurstingTeeth",
+      "candidate_ids_for_source_icon": [
+        "BurstingTeeth"
+      ],
+      "difference_hash": "0014291514494000",
+      "file": "icons/ae50782e7a43c25100401094429a9efd1cf36fd4ce6930887d12c2a1c84e4a84.png",
+      "height": 64,
+      "icon_sha256": "ae50782e7a43c25100401094429a9efd1cf36fd4ce6930887d12c2a1c84e4a84",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/QuestBurstingTeeth_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ChainReaction",
+      "candidate_ids_for_source_icon": [
+        "ARAM_BreadAndButter",
+        "ARAM_BreadAndCheese",
+        "ARAM_BreadAndJam",
+        "ARAM_Quickstep",
+        "ARAM_SpecializedRecursion",
+        "ChainReaction",
+        "LittleExtraHelp",
+        "MercysStrike",
+        "SnapBack",
+        "VoidDash"
+      ],
+      "difference_hash": "000002140c080000",
+      "file": "icons/c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1.png",
+      "height": 64,
+      "icon_sha256": "c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Gold.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "CritNCast",
+      "candidate_ids_for_source_icon": [
+        "CritNCast"
+      ],
+      "difference_hash": "00144a4945151200",
+      "file": "icons/eca7d80fcdb2a2cfeabf9805eea5e3146b02317de606fcdbdf005506c77c1113.png",
+      "height": 64,
+      "icon_sha256": "eca7d80fcdb2a2cfeabf9805eea5e3146b02317de606fcdbdf005506c77c1113",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/CritnCast_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "CriticalMissile",
+      "candidate_ids_for_source_icon": [
+        "CriticalMissile"
+      ],
+      "difference_hash": "0026080864010100",
+      "file": "icons/0f43beabe222208fd44ebf107b20c6bfdff53cfebce5034a78e17ef79e74689f.png",
+      "height": 64,
+      "icon_sha256": "0f43beabe222208fd44ebf107b20c6bfdff53cfebce5034a78e17ef79e74689f",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/CriticalMissile_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "CriticalRhythm",
+      "candidate_ids_for_source_icon": [
+        "CriticalRhythm"
+      ],
+      "difference_hash": "0026220448110100",
+      "file": "icons/19c778cd65b0b7b2a059a069db5f3be03f81780b243e1e757ee53e04af92a9c6.png",
+      "height": 64,
+      "icon_sha256": "19c778cd65b0b7b2a059a069db5f3be03f81780b243e1e757ee53e04af92a9c6",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/CriticalRhythm_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "DarkWind",
+      "candidate_ids_for_source_icon": [
+        "DarkWind"
+      ],
+      "difference_hash": "00040c14132b1400",
+      "file": "icons/309d9b98baf91aeb9ad6aa2be9b69779ba5b790b6cf6e75f4ff32443fab528bd.png",
+      "height": 64,
+      "icon_sha256": "309d9b98baf91aeb9ad6aa2be9b69779ba5b790b6cf6e75f4ff32443fab528bd",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/UpgradeHubris_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "DimensionShift_Active",
+      "candidate_ids_for_source_icon": [
+        "DimensionShift_Active"
+      ],
+      "difference_hash": "0014294d49090200",
+      "file": "icons/8c3f520984ca28b4b95c1986e795c01e94ace97a40b44b9e6435158355902feb.png",
+      "height": 64,
+      "icon_sha256": "8c3f520984ca28b4b95c1986e795c01e94ace97a40b44b9e6435158355902feb",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/WhenTheDarknessComes_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "DipDiveDodge",
+      "candidate_ids_for_source_icon": [
+        "DipDiveDodge",
+        "StabbyStabby",
+        "SummonersSafari"
+      ],
+      "difference_hash": "0012453717451200",
+      "file": "icons/cee11b554422620b5652ef7cae3716ab09864c9c074029387f1d1b4ac0f79e3a.png",
+      "height": 64,
+      "icon_sha256": "cee11b554422620b5652ef7cae3716ab09864c9c074029387f1d1b4ac0f79e3a",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Stabby_Stabby_Small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "DoOrDie",
+      "candidate_ids_for_source_icon": [
+        "DoOrDie",
+        "TrueEternity"
+      ],
+      "difference_hash": "0014057556454000",
+      "file": "icons/ef0ea7a7db3adf60ce17f555c5b618df97e2838f2144320acebbddbc5fd92ee4.png",
+      "height": 64,
+      "icon_sha256": "ef0ea7a7db3adf60ce17f555c5b618df97e2838f2144320acebbddbc5fd92ee4",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Do_or_Die_Small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Donation",
+      "candidate_ids_for_source_icon": [
+        "Donation"
+      ],
+      "difference_hash": "0041450341100200",
+      "file": "icons/e4bbde49ad0a8d05609cc59606beeb6e8abebffd9a9ace749a2fd4d8c54947b1.png",
+      "height": 64,
+      "icon_sha256": "e4bbde49ad0a8d05609cc59606beeb6e8abebffd9a9ace749a2fd4d8c54947b1",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Donation_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "DontChangeTheChannel",
+      "candidate_ids_for_source_icon": [
+        "DontChangeTheChannel"
+      ],
+      "difference_hash": "001442550d091200",
+      "file": "icons/b388be7836b0499b17547b55e95b3e084ce85cfffd4478a1a3f7da33e1b7d1f5.png",
+      "height": 64,
+      "icon_sha256": "b388be7836b0499b17547b55e95b3e084ce85cfffd4478a1a3f7da33e1b7d1f5",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/DontChangeTheChannel_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "DontStopCleavin",
+      "candidate_ids_for_source_icon": [
+        "DontStopCleavin",
+        "HexCore"
+      ],
+      "difference_hash": "0014057556454000",
+      "file": "icons/ef0ea7a7db3adf60ce17f555c5b618df97e2838f2144320acebbddbc5fd92ee4.png",
+      "height": 64,
+      "icon_sha256": "ef0ea7a7db3adf60ce17f555c5b618df97e2838f2144320acebbddbc5fd92ee4",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Dont_Stop_Cleaving_Small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "DoransBiggestFan",
+      "candidate_ids_for_source_icon": [
+        "DoransBiggestFan"
+      ],
+      "difference_hash": "0041457715040200",
+      "file": "icons/1b7ebbcee3ea07a040fdd4e67e682e4fc7e7ea8baf40e4b724a301beb11d501f.png",
+      "height": 64,
+      "icon_sha256": "1b7ebbcee3ea07a040fdd4e67e682e4fc7e7ea8baf40e4b724a301beb11d501f",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Dorans_Fan_Small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "DoubleDefense",
+      "candidate_ids_for_source_icon": [
+        "ARAM_SustainingStrike",
+        "DoubleDefense",
+        "ItsGoTime",
+        "TitansPulse",
+        "TrustyWeapon",
+        "WardingWeapon"
+      ],
+      "difference_hash": "000002142c080000",
+      "file": "icons/6ee4074f6966d3f7f71e4dadc1c77f62912620d232d8ee205e0c2263961df89c.png",
+      "height": 64,
+      "icon_sha256": "6ee4074f6966d3f7f71e4dadc1c77f62912620d232d8ee205e0c2263961df89c",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Silver.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "DoubleStrike",
+      "candidate_ids_for_source_icon": [
+        "Adamant",
+        "DoubleStrike"
+      ],
+      "difference_hash": "0002494d49690408",
+      "file": "icons/6273e29243d2b24b9b909029bb2bf2f0cab8e21a82cf96f68aff327349f711a8.png",
+      "height": 64,
+      "icon_sha256": "6273e29243d2b24b9b909029bb2bf2f0cab8e21a82cf96f68aff327349f711a8",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Adamant_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "DrinkUp",
+      "candidate_ids_for_source_icon": [
+        "DrinkUp"
+      ],
+      "difference_hash": "0041457715040200",
+      "file": "icons/1b7ebbcee3ea07a040fdd4e67e682e4fc7e7ea8baf40e4b724a301beb11d501f.png",
+      "height": 64,
+      "icon_sha256": "1b7ebbcee3ea07a040fdd4e67e682e4fc7e7ea8baf40e4b724a301beb11d501f",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Drink_Up_Small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Dropybara_Active",
+      "candidate_ids_for_source_icon": [
+        "Dropybara_Active"
+      ],
+      "difference_hash": "0026281414090100",
+      "file": "icons/6642b0fd56f6a76c2440ac8bd9fd10ca9e285e1393e3f75dd46e3397d6dc6575.png",
+      "height": 64,
+      "icon_sha256": "6642b0fd56f6a76c2440ac8bd9fd10ca9e285e1393e3f75dd46e3397d6dc6575",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/OrbitalLaser_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "EmpyreanPromise",
+      "candidate_ids_for_source_icon": [
+        "EmpyreanPromise"
+      ],
+      "difference_hash": "0022494945131400",
+      "file": "icons/4a1695cefa0417f2a96a0541d842466b887281784c7ede39a3eb6c45cd70b897.png",
+      "height": 64,
+      "icon_sha256": "4a1695cefa0417f2a96a0541d842466b887281784c7ede39a3eb6c45cd70b897",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/EmpyreamPromise_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "EndlessDecimation",
+      "candidate_ids_for_source_icon": [
+        "EndlessDecimation"
+      ],
+      "difference_hash": "0026040444050100",
+      "file": "icons/17b07d9e8f93c2598362bdec9e68d385761410cce1f5d2251a2d53efc83dac0f.png",
+      "height": 64,
+      "icon_sha256": "17b07d9e8f93c2598362bdec9e68d385761410cce1f5d2251a2d53efc83dac0f",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/EndlessDecimate_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Equilibrium",
+      "candidate_ids_for_source_icon": [
+        "Equilibrium"
+      ],
+      "difference_hash": "0002494561530408",
+      "file": "icons/2e46f6d496815443d5797dd7496f02321515c0c872142d20a4d64c947e5807e2.png",
+      "height": 64,
+      "icon_sha256": "2e46f6d496815443d5797dd7496f02321515c0c872142d20a4d64c947e5807e2",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Equillibrium_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "EscapePlan",
+      "candidate_ids_for_source_icon": [
+        "EscapePlan"
+      ],
+      "difference_hash": "0012514945651200",
+      "file": "icons/d58a15523ba5f09f3f912de91d4adce8dc3cf040d8dfaa776b53970e59f51c2e.png",
+      "height": 64,
+      "icon_sha256": "d58a15523ba5f09f3f912de91d4adce8dc3cf040d8dfaa776b53970e59f51c2e",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/EscapePlan_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "FinalForm",
+      "candidate_ids_for_source_icon": [
+        "FinalForm"
+      ],
+      "difference_hash": "0026280848010100",
+      "file": "icons/ae9268735eb0b3905e5163c13c675c6ebe4795e6f7a03e9ea505a8a84a2b4975.png",
+      "height": 64,
+      "icon_sha256": "ae9268735eb0b3905e5163c13c675c6ebe4795e6f7a03e9ea505a8a84a2b4975",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/FinalForm_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "FishBait",
+      "candidate_ids_for_source_icon": [
+        "FishBait"
+      ],
+      "difference_hash": "0026280402150100",
+      "file": "icons/f430f4ff37056eb3e0e37043f5c679681e7a3cf67aad5a7556d03351a86f7085.png",
+      "height": 64,
+      "icon_sha256": "f430f4ff37056eb3e0e37043f5c679681e7a3cf67aad5a7556d03351a86f7085",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/FishBait_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Flash2",
+      "candidate_ids_for_source_icon": [
+        "Flash2"
+      ],
+      "difference_hash": "0012694945551200",
+      "file": "icons/478f4cf34457c949cf0a6426669cec62216199412db9a883d540db6e90e03e96.png",
+      "height": 64,
+      "icon_sha256": "478f4cf34457c949cf0a6426669cec62216199412db9a883d540db6e90e03e96",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Flash2_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ForgedByTheMaster",
+      "candidate_ids_for_source_icon": [
+        "ForgedByTheMaster"
+      ],
+      "difference_hash": "0041450341100200",
+      "file": "icons/1e0b75f606891eb8302c96ef86a5be4876811aee09a8ad830b0c1890e4781d8b.png",
+      "height": 64,
+      "icon_sha256": "1e0b75f606891eb8302c96ef86a5be4876811aee09a8ad830b0c1890e4781d8b",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/ForgedByTheMaster_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "FutureSightHeartsteel",
+      "candidate_ids_for_source_icon": [
+        "FutureSightHeartsteel"
+      ],
+      "difference_hash": "0014057556454000",
+      "file": "icons/ef0ea7a7db3adf60ce17f555c5b618df97e2838f2144320acebbddbc5fd92ee4.png",
+      "height": 64,
+      "icon_sha256": "ef0ea7a7db3adf60ce17f555c5b618df97e2838f2144320acebbddbc5fd92ee4",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/FS_Heart_Steal_Small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "GlassCannon",
+      "candidate_ids_for_source_icon": [
+        "ARAM_DivineDomain",
+        "GlassCannon"
+      ],
+      "difference_hash": "002c291515061200",
+      "file": "icons/81715f42e82d1e0e54198a20e922de43c5d23c8b8d00441396e540fc04c014d6.png",
+      "height": 64,
+      "icon_sha256": "81715f42e82d1e0e54198a20e922de43c5d23c8b8d00441396e540fc04c014d6",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GlassCannon_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "GoldenSnowball",
+      "candidate_ids_for_source_icon": [
+        "GoldenSnowball"
+      ],
+      "difference_hash": "002a2a4804111400",
+      "file": "icons/c742df46c5c7ff6ed08cef48e345c96f10c383a6f9abe7ab0fb4d3ffdf93b596.png",
+      "height": 64,
+      "icon_sha256": "c742df46c5c7ff6ed08cef48e345c96f10c383a6f9abe7ab0fb4d3ffdf93b596",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GoldenSnowball_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Goldrend",
+      "candidate_ids_for_source_icon": [
+        "Goldrend"
+      ],
+      "difference_hash": "00040c14132b1400",
+      "file": "icons/309d9b98baf91aeb9ad6aa2be9b69779ba5b790b6cf6e75f4ff32443fab528bd.png",
+      "height": 64,
+      "icon_sha256": "309d9b98baf91aeb9ad6aa2be9b69779ba5b790b6cf6e75f4ff32443fab528bd",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Goldrend_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "GrandmasChiliOil",
+      "candidate_ids_for_source_icon": [
+        "GrandmasChiliOil"
+      ],
+      "difference_hash": "0006014545100600",
+      "file": "icons/d582592b8f6ced05bbfbe483594ad60fc30d5dee9dff9cc0fe3f770a6849e173.png",
+      "height": 64,
+      "icon_sha256": "d582592b8f6ced05bbfbe483594ad60fc30d5dee9dff9cc0fe3f770a6849e173",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GrandmasChiliOil_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "GrowthSpurt",
+      "candidate_ids_for_source_icon": [
+        "GrowthSpurt"
+      ],
+      "difference_hash": "0012634511511200",
+      "file": "icons/9653e62ac47082545f11fd128d181683d0cc5969fb42d18e4397b7b850bfd044.png",
+      "height": 64,
+      "icon_sha256": "9653e62ac47082545f11fd128d181683d0cc5969fb42d18e4397b7b850bfd044",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GrowthSpurt_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "HandOfBaron",
+      "candidate_ids_for_source_icon": [
+        "HandOfBaron"
+      ],
+      "difference_hash": "0026220410110100",
+      "file": "icons/8a325c2610eece281ec17811e9ae9694a89d0bec91b69ab584be679aabbfe28b.png",
+      "height": 64,
+      "icon_sha256": "8a325c2610eece281ec17811e9ae9694a89d0bec91b69ab584be679aabbfe28b",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/HandofBaron_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "HasteMakesWaste",
+      "candidate_ids_for_source_icon": [
+        "HasteMakesWaste"
+      ],
+      "difference_hash": "0012453717451200",
+      "file": "icons/cee11b554422620b5652ef7cae3716ab09864c9c074029387f1d1b4ac0f79e3a.png",
+      "height": 64,
+      "icon_sha256": "cee11b554422620b5652ef7cae3716ab09864c9c074029387f1d1b4ac0f79e3a",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Haste_Makes_Waste_Small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "HexCore",
+      "candidate_ids_for_source_icon": [
+        "DontStopCleavin",
+        "HexCore"
+      ],
+      "difference_hash": "0014057556454000",
+      "file": "icons/ef0ea7a7db3adf60ce17f555c5b618df97e2838f2144320acebbddbc5fd92ee4.png",
+      "height": 64,
+      "icon_sha256": "ef0ea7a7db3adf60ce17f555c5b618df97e2838f2144320acebbddbc5fd92ee4",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Dont_Stop_Cleaving_Small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "HextechSoul",
+      "candidate_ids_for_source_icon": [
+        "ARAM_InfernalSoul",
+        "HextechSoul"
+      ],
+      "difference_hash": "002c21150d061200",
+      "file": "icons/dd8478a3eb73352464f31c1b526939b8b41af8957c279a8ac9e042c2a6cb5673.png",
+      "height": 64,
+      "icon_sha256": "dd8478a3eb73352464f31c1b526939b8b41af8957c279a8ac9e042c2a6cb5673",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/InfernalSoul_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "InfiniteRecursion",
+      "candidate_ids_for_source_icon": [
+        "InfiniteRecursion"
+      ],
+      "difference_hash": "0014054d48454000",
+      "file": "icons/63190cfa5a944047987e563966014334e646844f27a99b317026d94d447f14e3.png",
+      "height": 64,
+      "icon_sha256": "63190cfa5a944047987e563966014334e646844f27a99b317026d94d447f14e3",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/InfiniteRecursion_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ItsGoTime",
+      "candidate_ids_for_source_icon": [
+        "ARAM_SustainingStrike",
+        "DoubleDefense",
+        "ItsGoTime",
+        "TitansPulse",
+        "TrustyWeapon",
+        "WardingWeapon"
+      ],
+      "difference_hash": "000002142c080000",
+      "file": "icons/6ee4074f6966d3f7f71e4dadc1c77f62912620d232d8ee205e0c2263961df89c.png",
+      "height": 64,
+      "icon_sha256": "6ee4074f6966d3f7f71e4dadc1c77f62912620d232d8ee205e0c2263961df89c",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Silver.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "KeepGoing",
+      "candidate_ids_for_source_icon": [
+        "KeepGoing",
+        "Terraind"
+      ],
+      "difference_hash": "0026281414090100",
+      "file": "icons/6642b0fd56f6a76c2440ac8bd9fd10ca9e285e1393e3f75dd46e3397d6dc6575.png",
+      "height": 64,
+      "icon_sha256": "6642b0fd56f6a76c2440ac8bd9fd10ca9e285e1393e3f75dd46e3397d6dc6575",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/LightningStrikes_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "KillSecured",
+      "candidate_ids_for_source_icon": [
+        "KillSecured"
+      ],
+      "difference_hash": "0004140803331400",
+      "file": "icons/5bd8475412e4e20282893f854c89d946e6ae614e8b922145cd7d3ae2e9a730fd.png",
+      "height": 64,
+      "icon_sha256": "5bd8475412e4e20282893f854c89d946e6ae614e8b922145cd7d3ae2e9a730fd",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/KillSecure_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "KingMe",
+      "candidate_ids_for_source_icon": [
+        "KingMe"
+      ],
+      "difference_hash": "0022494551131400",
+      "file": "icons/7be34676b3cfa725154189cf900b5ad0774950e2911172fd677dad3f390718eb.png",
+      "height": 64,
+      "icon_sha256": "7be34676b3cfa725154189cf900b5ad0774950e2911172fd677dad3f390718eb",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/KingMe_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "LaserHeal",
+      "candidate_ids_for_source_icon": [
+        "LaserHeal"
+      ],
+      "difference_hash": "0026280462110100",
+      "file": "icons/cca9e42beeafbf877c14035cdf5e0d847e3560213ecb7e8a11862fa2d9df9d54.png",
+      "height": 64,
+      "icon_sha256": "cca9e42beeafbf877c14035cdf5e0d847e3560213ecb7e8a11862fa2d9df9d54",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/LaseHeal_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "LittleExtraHelp",
+      "candidate_ids_for_source_icon": [
+        "ARAM_BreadAndButter",
+        "ARAM_BreadAndCheese",
+        "ARAM_BreadAndJam",
+        "ARAM_Quickstep",
+        "ARAM_SpecializedRecursion",
+        "ChainReaction",
+        "LittleExtraHelp",
+        "MercysStrike",
+        "SnapBack",
+        "VoidDash"
+      ],
+      "difference_hash": "000002140c080000",
+      "file": "icons/c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1.png",
+      "height": 64,
+      "icon_sha256": "c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Gold.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "MercysStrike",
+      "candidate_ids_for_source_icon": [
+        "ARAM_BreadAndButter",
+        "ARAM_BreadAndCheese",
+        "ARAM_BreadAndJam",
+        "ARAM_Quickstep",
+        "ARAM_SpecializedRecursion",
+        "ChainReaction",
+        "LittleExtraHelp",
+        "MercysStrike",
+        "SnapBack",
+        "VoidDash"
+      ],
+      "difference_hash": "000002140c080000",
+      "file": "icons/c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1.png",
+      "height": 64,
+      "icon_sha256": "c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Gold.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "MightyShield",
+      "candidate_ids_for_source_icon": [
+        "MightyShield"
+      ],
+      "difference_hash": "00224915150b1400",
+      "file": "icons/659ccad6ab6f0a0587dcf9bf21de3febe3acffc9f038bc5a815361f78f342437.png",
+      "height": 64,
+      "icon_sha256": "659ccad6ab6f0a0587dcf9bf21de3febe3acffc9f038bc5a815361f78f342437",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/MightyShield_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Missile_Split",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Multishot",
+        "Ability_SelfAOE_DoubleCast",
+        "Missile_Split",
+        "Overloaded",
+        "SpellVolley"
+      ],
+      "difference_hash": "0000021434080000",
+      "file": "icons/44bd8e4927a79f695341d269ef278b783269bf6c01e63192ade053e5cf1b180d.png",
+      "height": 64,
+      "icon_sha256": "44bd8e4927a79f695341d269ef278b783269bf6c01e63192ade053e5cf1b180d",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Prismatic.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "NatureIsHealing",
+      "candidate_ids_for_source_icon": [
+        "NatureIsHealing"
+      ],
+      "difference_hash": "0012694561531200",
+      "file": "icons/96a433f8395911c09cd56ca58e356b22b48eb42926af8680a8e88dfec460fb74.png",
+      "height": 64,
+      "icon_sha256": "96a433f8395911c09cd56ca58e356b22b48eb42926af8680a8e88dfec460fb74",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/NatureIsHealing_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Nightstalking",
+      "candidate_ids_for_source_icon": [
+        "Nightstalking",
+        "TrainOfTheDead"
+      ],
+      "difference_hash": "002c291515061200",
+      "file": "icons/81715f42e82d1e0e54198a20e922de43c5d23c8b8d00441396e540fc04c014d6.png",
+      "height": 64,
+      "icon_sha256": "81715f42e82d1e0e54198a20e922de43c5d23c8b8d00441396e540fc04c014d6",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Nightstalking_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "OminousPact",
+      "candidate_ids_for_source_icon": [
+        "OminousPact"
+      ],
+      "difference_hash": "00124b4551111200",
+      "file": "icons/ee7ae989f15f25b770751b327e570210ae718ef796fefc9800e7f362e965b255.png",
+      "height": 64,
+      "icon_sha256": "ee7ae989f15f25b770751b327e570210ae718ef796fefc9800e7f362e965b255",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/WisdomOfAges_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Overextender",
+      "candidate_ids_for_source_icon": [
+        "Overextender"
+      ],
+      "difference_hash": "0008084904110400",
+      "file": "icons/60b3320bb95098639e8d6009079401dd59c5b94a5706bc8afbcd1dd340776122.png",
+      "height": 64,
+      "icon_sha256": "60b3320bb95098639e8d6009079401dd59c5b94a5706bc8afbcd1dd340776122",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Overextender_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Overkill",
+      "candidate_ids_for_source_icon": [
+        "ARAM_SymphonyofWar",
+        "Overkill"
+      ],
+      "difference_hash": "0014214548514000",
+      "file": "icons/cb7be70573f3964a2f7620f5cbe7f3558ab168068850d89e764e232978a1a97d.png",
+      "height": 64,
+      "icon_sha256": "cb7be70573f3964a2f7620f5cbe7f3558ab168068850d89e764e232978a1a97d",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/SymphonyOfWar_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Overloaded",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Multishot",
+        "Ability_SelfAOE_DoubleCast",
+        "Missile_Split",
+        "Overloaded",
+        "SpellVolley"
+      ],
+      "difference_hash": "0000021434080000",
+      "file": "icons/44bd8e4927a79f695341d269ef278b783269bf6c01e63192ade053e5cf1b180d.png",
+      "height": 64,
+      "icon_sha256": "44bd8e4927a79f695341d269ef278b783269bf6c01e63192ade053e5cf1b180d",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Prismatic.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "PatOnTheBack",
+      "candidate_ids_for_source_icon": [
+        "PatOnTheBack"
+      ],
+      "difference_hash": "0026060864050100",
+      "file": "icons/715930c53f9d0d39f2729896877c6a1acf4fa5d59cf7451e2f1512ddc24d0cd5.png",
+      "height": 64,
+      "icon_sha256": "715930c53f9d0d39f2729896877c6a1acf4fa5d59cf7451e2f1512ddc24d0cd5",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/PatOnTheBack_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "PinCushion",
+      "candidate_ids_for_source_icon": [
+        "PinCushion"
+      ],
+      "difference_hash": "0026281440050100",
+      "file": "icons/aabd3443fa1245205d87c6db2e7dea33725317c6ebfd4b6061c757864da679b9.png",
+      "height": 64,
+      "icon_sha256": "aabd3443fa1245205d87c6db2e7dea33725317c6ebfd4b6061c757864da679b9",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/PinCushion_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "PinballSnowball",
+      "candidate_ids_for_source_icon": [
+        "PinballSnowball"
+      ],
+      "difference_hash": "00142a4945120400",
+      "file": "icons/4dffb019075bb662b0c3eebbd4237d33a5651149806645e86a46a0afab68a604.png",
+      "height": 64,
+      "icon_sha256": "4dffb019075bb662b0c3eebbd4237d33a5651149806645e86a46a0afab68a604",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/PinballSnowball_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Poltergeist",
+      "candidate_ids_for_source_icon": [
+        "Poltergeist",
+        "VeilOfWarding"
+      ],
+      "difference_hash": "00040c1423031400",
+      "file": "icons/0743d2f98fca076b457036fb5daabbf8b0faa0c0a18a91a28650cb7de8eb7f25.png",
+      "height": 64,
+      "icon_sha256": "0743d2f98fca076b457036fb5daabbf8b0faa0c0a18a91a28650cb7de8eb7f25",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Poltergeist_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "PoroCharge_Active",
+      "candidate_ids_for_source_icon": [
+        "PoroCharge_Active"
+      ],
+      "difference_hash": "0014291514494000",
+      "file": "icons/ae50782e7a43c25100401094429a9efd1cf36fd4ce6930887d12c2a1c84e4a84.png",
+      "height": 64,
+      "icon_sha256": "ae50782e7a43c25100401094429a9efd1cf36fd4ce6930887d12c2a1c84e4a84",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/QuestPoroCharge_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "PressureCooker",
+      "candidate_ids_for_source_icon": [
+        "PressureCooker"
+      ],
+      "difference_hash": "0014254544514000",
+      "file": "icons/9a81abd9c626ee5fac29c38b6152a5d6869209fc9aec8cb03e5124be3a3b7bca.png",
+      "height": 64,
+      "icon_sha256": "9a81abd9c626ee5fac29c38b6152a5d6869209fc9aec8cb03e5124be3a3b7bca",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/QuestPressureCooker_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "PromQueen",
+      "candidate_ids_for_source_icon": [
+        "PromQueen"
+      ],
+      "difference_hash": "0002294d49690200",
+      "file": "icons/73327d7a95ac159cd9e97b0e8c8b0e0eb4d298d0eec05388114d930f7e27b2ae.png",
+      "height": 64,
+      "icon_sha256": "73327d7a95ac159cd9e97b0e8c8b0e0eb4d298d0eec05388114d930f7e27b2ae",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/PromQueen_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Quest_Sneakerhead",
+      "candidate_ids_for_source_icon": [
+        "Quest_Sneakerhead"
+      ],
+      "difference_hash": "0012514945651200",
+      "file": "icons/0eb7f7200c28d1429975eac27fe341234fefe9ae9c664d43e6201163fd46c735.png",
+      "height": 64,
+      "icon_sha256": "0eb7f7200c28d1429975eac27fe341234fefe9ae9c664d43e6201163fd46c735",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Sneakerhead_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "SharkTempest",
+      "candidate_ids_for_source_icon": [
+        "SharkTempest"
+      ],
+      "difference_hash": "0012691515691200",
+      "file": "icons/37f619d2639fa1cae861e0912ed6f39ae1f963aa000c33570fbfef524dca907f.png",
+      "height": 64,
+      "icon_sha256": "37f619d2639fa1cae861e0912ed6f39ae1f963aa000c33570fbfef524dca907f",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/SharkTempest_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "ShrinkEngine",
+      "candidate_ids_for_source_icon": [
+        "ShrinkEngine"
+      ],
+      "difference_hash": "0004114806340800",
+      "file": "icons/ccb19f67eb9d2163c550eb3b57ca7d470de60b9be167d3d6f46abf4e42044829.png",
+      "height": 64,
+      "icon_sha256": "ccb19f67eb9d2163c550eb3b57ca7d470de60b9be167d3d6f46abf4e42044829",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/ShrinkEngine_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "SkipTheBasics",
+      "candidate_ids_for_source_icon": [
+        "SkipTheBasics"
+      ],
+      "difference_hash": "00142a4949220400",
+      "file": "icons/c9981506fe65c29e259557ff41ea206784456e9cace22782a5f9c0902bd00fc6.png",
+      "height": 64,
+      "icon_sha256": "c9981506fe65c29e259557ff41ea206784456e9cace22782a5f9c0902bd00fc6",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/SkipTheBasic_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "SnapBack",
+      "candidate_ids_for_source_icon": [
+        "ARAM_BreadAndButter",
+        "ARAM_BreadAndCheese",
+        "ARAM_BreadAndJam",
+        "ARAM_Quickstep",
+        "ARAM_SpecializedRecursion",
+        "ChainReaction",
+        "LittleExtraHelp",
+        "MercysStrike",
+        "SnapBack",
+        "VoidDash"
+      ],
+      "difference_hash": "000002140c080000",
+      "file": "icons/c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1.png",
+      "height": 64,
+      "icon_sha256": "c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Gold.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "SnowballRoulette",
+      "candidate_ids_for_source_icon": [
+        "SnowballRoulette",
+        "SnowballUpgrade"
+      ],
+      "difference_hash": "0026280844150100",
+      "file": "icons/8f5310191ce5b318dfcb8675a93af6c43c0a2cc16aedf82ce657b11df736c812.png",
+      "height": 64,
+      "icon_sha256": "8f5310191ce5b318dfcb8675a93af6c43c0a2cc16aedf82ce657b11df736c812",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/SnowballUpgrade_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "SnowballUpgrade",
+      "candidate_ids_for_source_icon": [
+        "SnowballRoulette",
+        "SnowballUpgrade"
+      ],
+      "difference_hash": "0026280844150100",
+      "file": "icons/8f5310191ce5b318dfcb8675a93af6c43c0a2cc16aedf82ce657b11df736c812.png",
+      "height": 64,
+      "icon_sha256": "8f5310191ce5b318dfcb8675a93af6c43c0a2cc16aedf82ce657b11df736c812",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/SnowballUpgrade_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Snowbomb",
+      "candidate_ids_for_source_icon": [
+        "Snowbomb"
+      ],
+      "difference_hash": "0026280844150100",
+      "file": "icons/8f5310191ce5b318dfcb8675a93af6c43c0a2cc16aedf82ce657b11df736c812.png",
+      "height": 64,
+      "icon_sha256": "8f5310191ce5b318dfcb8675a93af6c43c0a2cc16aedf82ce657b11df736c812",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Snowbomb_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Sonata",
+      "candidate_ids_for_source_icon": [
+        "Sonata"
+      ],
+      "difference_hash": "0022414511131400",
+      "file": "icons/a29df50edea03b80db3a8269acee75fa0d73452fd49c928e0a8c9c3d9920177c.png",
+      "height": 64,
+      "icon_sha256": "a29df50edea03b80db3a8269acee75fa0d73452fd49c928e0a8c9c3d9920177c",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Sonata_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "SoulEater",
+      "candidate_ids_for_source_icon": [
+        "SoulEater"
+      ],
+      "difference_hash": "0014295540454000",
+      "file": "icons/d0217d93a8733b9cb010a4b166c5099c74717dff3b89abf39b099e641185b770.png",
+      "height": 64,
+      "icon_sha256": "d0217d93a8733b9cb010a4b166c5099c74717dff3b89abf39b099e641185b770",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/SoulEater_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "SpecializedEmpowerment",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Marksmage",
+        "SpecializedEmpowerment"
+      ],
+      "difference_hash": "0026220448110100",
+      "file": "icons/9b0fffe3852c5c0b49bf055495244b167cf06bf90982f82a2898fce2d271c05f.png",
+      "height": 64,
+      "icon_sha256": "9b0fffe3852c5c0b49bf055495244b167cf06bf90982f82a2898fce2d271c05f",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/Marksmage_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "SpellVolley",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Multishot",
+        "Ability_SelfAOE_DoubleCast",
+        "Missile_Split",
+        "Overloaded",
+        "SpellVolley"
+      ],
+      "difference_hash": "0000021434080000",
+      "file": "icons/44bd8e4927a79f695341d269ef278b783269bf6c01e63192ade053e5cf1b180d.png",
+      "height": 64,
+      "icon_sha256": "44bd8e4927a79f695341d269ef278b783269bf6c01e63192ade053e5cf1b180d",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Prismatic.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "SpiritOfTheJungleMain",
+      "candidate_ids_for_source_icon": [
+        "ARAM_SpiritualPurification",
+        "SpiritOfTheJungleMain"
+      ],
+      "difference_hash": "000a0a1515081500",
+      "file": "icons/82ad79316b031d28f44b7195929f77132b392af05dbfadccb5e1bb187c855f8d.png",
+      "height": 64,
+      "icon_sha256": "82ad79316b031d28f44b7195929f77132b392af05dbfadccb5e1bb187c855f8d",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/SpiritualPurification_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "SquishySlappyGrab",
+      "candidate_ids_for_source_icon": [
+        "SquishySlappyGrab"
+      ],
+      "difference_hash": "0026280c48090100",
+      "file": "icons/13f8ca9496886b4ee13e14a3f29f68da0ff2dd9d7fba79ee7384e6ee3fec080d.png",
+      "height": 64,
+      "icon_sha256": "13f8ca9496886b4ee13e14a3f29f68da0ff2dd9d7fba79ee7384e6ee3fec080d",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/SquishySlappyGrab_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "StabbyStabby",
+      "candidate_ids_for_source_icon": [
+        "DipDiveDodge",
+        "StabbyStabby",
+        "SummonersSafari"
+      ],
+      "difference_hash": "0012453717451200",
+      "file": "icons/cee11b554422620b5652ef7cae3716ab09864c9c074029387f1d1b4ac0f79e3a.png",
+      "height": 64,
+      "icon_sha256": "cee11b554422620b5652ef7cae3716ab09864c9c074029387f1d1b4ac0f79e3a",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Stabby_Stabby_Small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "SummonersSafari",
+      "candidate_ids_for_source_icon": [
+        "DipDiveDodge",
+        "StabbyStabby",
+        "SummonersSafari"
+      ],
+      "difference_hash": "0012453717451200",
+      "file": "icons/cee11b554422620b5652ef7cae3716ab09864c9c074029387f1d1b4ac0f79e3a.png",
+      "height": 64,
+      "icon_sha256": "cee11b554422620b5652ef7cae3716ab09864c9c074029387f1d1b4ac0f79e3a",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Stabby_Stabby_Small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "SupportMain",
+      "candidate_ids_for_source_icon": [
+        "SupportMain"
+      ],
+      "difference_hash": "0022494561131400",
+      "file": "icons/ac659593be627f37928803cbca597cee29fab78ab278a44375625d076db0301e.png",
+      "height": 64,
+      "icon_sha256": "ac659593be627f37928803cbca597cee29fab78ab278a44375625d076db0301e",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/QuestSupportMain_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "SurgeField",
+      "candidate_ids_for_source_icon": [
+        "SurgeField"
+      ],
+      "difference_hash": "0026280848010100",
+      "file": "icons/ae9268735eb0b3905e5163c13c675c6ebe4795e6f7a03e9ea505a8a84a2b4975.png",
+      "height": 64,
+      "icon_sha256": "ae9268735eb0b3905e5163c13c675c6ebe4795e6f7a03e9ea505a8a84a2b4975",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/SurgeField_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "SwiftAndSafe",
+      "candidate_ids_for_source_icon": [
+        "SwiftAndSafe"
+      ],
+      "difference_hash": "00040c1413031400",
+      "file": "icons/5c5b8fd2b168aeae6cf23afc98d91e8af551450589524b94e16830f3d2012c72.png",
+      "height": 64,
+      "icon_sha256": "5c5b8fd2b168aeae6cf23afc98d91e8af551450589524b94e16830f3d2012c72",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/SwiftandSafe_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Terraind",
+      "candidate_ids_for_source_icon": [
+        "KeepGoing",
+        "Terraind"
+      ],
+      "difference_hash": "0026281414090100",
+      "file": "icons/6642b0fd56f6a76c2440ac8bd9fd10ca9e285e1393e3f75dd46e3397d6dc6575.png",
+      "height": 64,
+      "icon_sha256": "6642b0fd56f6a76c2440ac8bd9fd10ca9e285e1393e3f75dd46e3397d6dc6575",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Cherry/Augments/Icons/LightningStrikes_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "TitansPulse",
+      "candidate_ids_for_source_icon": [
+        "ARAM_SustainingStrike",
+        "DoubleDefense",
+        "ItsGoTime",
+        "TitansPulse",
+        "TrustyWeapon",
+        "WardingWeapon"
+      ],
+      "difference_hash": "000002142c080000",
+      "file": "icons/6ee4074f6966d3f7f71e4dadc1c77f62912620d232d8ee205e0c2263961df89c.png",
+      "height": 64,
+      "icon_sha256": "6ee4074f6966d3f7f71e4dadc1c77f62912620d232d8ee205e0c2263961df89c",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Silver.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "TrainOfTheDead",
+      "candidate_ids_for_source_icon": [
+        "Nightstalking",
+        "TrainOfTheDead"
+      ],
+      "difference_hash": "002c291515061200",
+      "file": "icons/81715f42e82d1e0e54198a20e922de43c5d23c8b8d00441396e540fc04c014d6.png",
+      "height": 64,
+      "icon_sha256": "81715f42e82d1e0e54198a20e922de43c5d23c8b8d00441396e540fc04c014d6",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Nightstalking_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "TrueEternity",
+      "candidate_ids_for_source_icon": [
+        "DoOrDie",
+        "TrueEternity"
+      ],
+      "difference_hash": "0014057556454000",
+      "file": "icons/ef0ea7a7db3adf60ce17f555c5b618df97e2838f2144320acebbddbc5fd92ee4.png",
+      "height": 64,
+      "icon_sha256": "ef0ea7a7db3adf60ce17f555c5b618df97e2838f2144320acebbddbc5fd92ee4",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Do_or_Die_Small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "TrustyWeapon",
+      "candidate_ids_for_source_icon": [
+        "ARAM_SustainingStrike",
+        "DoubleDefense",
+        "ItsGoTime",
+        "TitansPulse",
+        "TrustyWeapon",
+        "WardingWeapon"
+      ],
+      "difference_hash": "000002142c080000",
+      "file": "icons/6ee4074f6966d3f7f71e4dadc1c77f62912620d232d8ee205e0c2263961df89c.png",
+      "height": 64,
+      "icon_sha256": "6ee4074f6966d3f7f71e4dadc1c77f62912620d232d8ee205e0c2263961df89c",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Silver.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Twinfire",
+      "candidate_ids_for_source_icon": [
+        "Twinfire"
+      ],
+      "difference_hash": "00140a0965211200",
+      "file": "icons/539733efcefb95498356b3a86969de765d20f60631e9eed0b6d43abbc7c69fff.png",
+      "height": 64,
+      "icon_sha256": "539733efcefb95498356b3a86969de765d20f60631e9eed0b6d43abbc7c69fff",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/TwinFire_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "UltimateAwakening",
+      "candidate_ids_for_source_icon": [
+        "UltimateAwakening"
+      ],
+      "difference_hash": "00144a4949211200",
+      "file": "icons/c186c0de60b1764a36d116528407428cf5c9379d6bd8ac07a07fac850343fdef.png",
+      "height": 64,
+      "icon_sha256": "c186c0de60b1764a36d116528407428cf5c9379d6bd8ac07a07fac850343fdef",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/ZeroHour_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Upgrade_DeathFireGrasp",
+      "candidate_ids_for_source_icon": [
+        "Upgrade_DeathFireGrasp"
+      ],
+      "difference_hash": "0026043616050100",
+      "file": "icons/b1d49a6fc7fdc8876f14bb1b4197c40e5bf56d6a45466a92d6876d644ddebf2f.png",
+      "height": 64,
+      "icon_sha256": "b1d49a6fc7fdc8876f14bb1b4197c40e5bf56d6a45466a92d6876d644ddebf2f",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Upgrade_Deathfire_Small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Upgrade_InnervatingLocket",
+      "candidate_ids_for_source_icon": [
+        "Upgrade_InnervatingLocket"
+      ],
+      "difference_hash": "0002053616441000",
+      "file": "icons/2641414c76987ff36860fc17a74321b632ca6a0b12cee8d4bf324c57398f3b33.png",
+      "height": 64,
+      "icon_sha256": "2641414c76987ff36860fc17a74321b632ca6a0b12cee8d4bf324c57398f3b33",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Upgrade_Innervating_Small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Upgrade_Ravenous",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Upgrade_Sheen",
+        "Upgrade_Ravenous"
+      ],
+      "difference_hash": "0006014549100600",
+      "file": "icons/982ac635fef918e03110788621f0e9c39a2ed9d2a3adbf5779ec3bf40f5c2e84.png",
+      "height": 64,
+      "icon_sha256": "982ac635fef918e03110788621f0e9c39a2ed9d2a3adbf5779ec3bf40f5c2e84",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/UpgradeSheen_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Upgrade_SunderedSky",
+      "candidate_ids_for_source_icon": [
+        "ARAM_Upgrade_IE",
+        "Upgrade_SunderedSky"
+      ],
+      "difference_hash": "0012020341320000",
+      "file": "icons/c80ecd03c58a65abcbc2392d711086fbe65073a2a5088bfc5170d0cba6f49ca3.png",
+      "height": 64,
+      "icon_sha256": "c80ecd03c58a65abcbc2392d711086fbe65073a2a5088bfc5170d0cba6f49ca3",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/UpgradeIE_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Upgrade_SwordOfBlossom",
+      "candidate_ids_for_source_icon": [
+        "Upgrade_SwordOfBlossom"
+      ],
+      "difference_hash": "0012694561531200",
+      "file": "icons/96a433f8395911c09cd56ca58e356b22b48eb42926af8680a8e88dfec460fb74.png",
+      "height": 64,
+      "icon_sha256": "96a433f8395911c09cd56ca58e356b22b48eb42926af8680a8e88dfec460fb74",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/UpgradeMikaelsBlessing_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Upgrade_ZzRotPortal",
+      "candidate_ids_for_source_icon": [
+        "Upgrade_ZzRotPortal"
+      ],
+      "difference_hash": "0041457715040200",
+      "file": "icons/1b7ebbcee3ea07a040fdd4e67e682e4fc7e7ea8baf40e4b724a301beb11d501f.png",
+      "height": 64,
+      "icon_sha256": "1b7ebbcee3ea07a040fdd4e67e682e4fc7e7ea8baf40e4b724a301beb11d501f",
+      "modes": [
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Upgrade_ZzrotPortal_Small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "Vampirism",
+      "candidate_ids_for_source_icon": [
+        "Vampirism"
+      ],
+      "difference_hash": "0006014549100600",
+      "file": "icons/982ac635fef918e03110788621f0e9c39a2ed9d2a3adbf5779ec3bf40f5c2e84.png",
+      "height": 64,
+      "icon_sha256": "982ac635fef918e03110788621f0e9c39a2ed9d2a3adbf5779ec3bf40f5c2e84",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Vampired_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "VeilOfWarding",
+      "candidate_ids_for_source_icon": [
+        "Poltergeist",
+        "VeilOfWarding"
+      ],
+      "difference_hash": "00040c1423031400",
+      "file": "icons/0743d2f98fca076b457036fb5daabbf8b0faa0c0a18a91a28650cb7de8eb7f25.png",
+      "height": 64,
+      "icon_sha256": "0743d2f98fca076b457036fb5daabbf8b0faa0c0a18a91a28650cb7de8eb7f25",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/Poltergeist_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "VoidDash",
+      "candidate_ids_for_source_icon": [
+        "ARAM_BreadAndButter",
+        "ARAM_BreadAndCheese",
+        "ARAM_BreadAndJam",
+        "ARAM_Quickstep",
+        "ARAM_SpecializedRecursion",
+        "ChainReaction",
+        "LittleExtraHelp",
+        "MercysStrike",
+        "SnapBack",
+        "VoidDash"
+      ],
+      "difference_hash": "000002140c080000",
+      "file": "icons/c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1.png",
+      "height": 64,
+      "icon_sha256": "c603ddeecab769107aff5126e55c572b73c758705ad2bc6a9c97ddae37758bf1",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Gold.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "WardingWeapon",
+      "candidate_ids_for_source_icon": [
+        "ARAM_SustainingStrike",
+        "DoubleDefense",
+        "ItsGoTime",
+        "TitansPulse",
+        "TrustyWeapon",
+        "WardingWeapon"
+      ],
+      "difference_hash": "000002142c080000",
+      "file": "icons/6ee4074f6966d3f7f71e4dadc1c77f62912620d232d8ee205e0c2263961df89c.png",
+      "height": 64,
+      "icon_sha256": "6ee4074f6966d3f7f71e4dadc1c77f62912620d232d8ee205e0c2263961df89c",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/GenericAbilityAugmentIcon_Silver.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "WarlockJuicebox",
+      "candidate_ids_for_source_icon": [
+        "WarlockJuicebox"
+      ],
+      "difference_hash": "0026280462110100",
+      "file": "icons/cca9e42beeafbf877c14035cdf5e0d847e3560213ecb7e8a11862fa2d9df9d54.png",
+      "height": 64,
+      "icon_sha256": "cca9e42beeafbf877c14035cdf5e0d847e3560213ecb7e8a11862fa2d9df9d54",
+      "modes": [
+        "KIWI",
+        "KIWI_JADE"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/WarlockJuicebox_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    },
+    {
+      "augment_id": "YouSpinMeRightRound",
+      "candidate_ids_for_source_icon": [
+        "YouSpinMeRightRound"
+      ],
+      "difference_hash": "0026100846050100",
+      "file": "icons/3c8077913df6e438325790574a8e28de1c97d1d70d214f06d457791ae4e6e764.png",
+      "height": 64,
+      "icon_sha256": "3c8077913df6e438325790574a8e28de1c97d1d70d214f06d457791ae4e6e764",
+      "modes": [
+        "KIWI"
+      ],
+      "source_icon_path": "/lol-game-data/assets/ASSETS/UX/Kiwi/Augments/Icons/YouSpinMeRightRound_small.png",
+      "sources": [
+        "wad:F:/Program Files (x86)/英雄联盟(26)/LeagueClient/Plugins/rcp-be-lol-game-data/default-assets2.wad"
+      ],
+      "width": 64
+    }
+  ]
+}

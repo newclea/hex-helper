@@ -1,0 +1,3129 @@
+{
+  "schema_version": 1,
+  "catalog_version": "kiwi-hexcores-2026-09-12",
+  "locale": "zh-CN",
+  "augments": [
+    {
+      "id": "ARAM_ADAPt",
+      "numeric_id": 1205,
+      "display_name": "物理转魔法",
+      "default_name": "ADAPt",
+      "icon": "assets/ux/cherry/augments/icons/adapt_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "将额外攻击力转化为法术强度。获得15%法术强度。",
+      "effect_detail": "将额外攻击力转化为法术强度，并获得+15%法术强度法术强度。\n\n当前转化：?\n\n每点攻击力转化为1.67法术强度。"
+    },
+    {
+      "id": "ARAM_AllForYou",
+      "numeric_id": 1141,
+      "display_name": "全心为你",
+      "default_name": "All For You",
+      "icon": "assets/ux/cherry/augments/icons/allforyou_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的治疗和护盾在用在一个友军身上时会变强。",
+      "effect_detail": "你的治疗和护盾在用在一个友军身上时会变强30%。"
+    },
+    {
+      "id": "ARAM_ApexInventor",
+      "numeric_id": 1002,
+      "display_name": "尖端发明家",
+      "default_name": "Apex Inventor",
+      "icon": "assets/ux/cherry/augments/icons/apexinventor_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得100装备急速(相当于50%装备冷却缩减)。\n\n装备急速可缩减所有装备技能的冷却时间。",
+      "effect_detail": "获得100装备急速(相当于50%装备冷却缩减)。\n\n装备急速可缩减所有装备技能的冷却时间。"
+    },
+    {
+      "id": "ARAM_Archmage",
+      "numeric_id": 2087,
+      "display_name": "大法师",
+      "default_name": "Archmage",
+      "icon": "assets/ux/cherry/augments/icons/eureka_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "施放一个技能会返还另一个随机技能的花费，数额相当于30%原技能冷却时间。",
+      "effect_detail": "施放一个技能会返还另一个随机技能的花费，数额相当于30%原技能冷却时间。"
+    },
+    {
+      "id": "ARAM_BacktoBasics",
+      "numeric_id": 1004,
+      "display_name": "回归基本功",
+      "default_name": "Back To Basics",
+      "icon": "assets/ux/cherry/augments/icons/backtobasics_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得提升过的技能伤害、治疗效果、护盾和技能急速，但你不能使用你的终极技能。",
+      "effect_detail": "你的终极技能已被封印。获得35%技能伤害、治疗效果、护盾和70技能急速。"
+    },
+    {
+      "id": "ARAM_BangBang",
+      "numeric_id": 2103,
+      "display_name": "狙神飞星",
+      "default_name": "From Downtown",
+      "icon": "assets/ux/kiwi/augments/icons/questbangbang_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "任务：用技能狙击15个敌方英雄\n\n奖励：一颗流星会飞向被狙击的敌方英雄，在其周围的一个区域内造成魔法伤害",
+      "effect_detail": "{{Augment_BangBang_Tooltip?}}\n\n砰！砰！噢，这枪打得好啊！"
+    },
+    {
+      "id": "ARAM_BigBrain",
+      "numeric_id": 1180,
+      "display_name": "超强大脑",
+      "default_name": "Big Brain",
+      "icon": "assets/ux/cherry/augments/icons/bigbrain_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "每拥有1法术强度就会获得3护盾值。阵亡时或耗尽后70秒重置。",
+      "effect_detail": "获得+3法术强度护盾值。阵亡时或耗尽后70秒重置。"
+    },
+    {
+      "id": "ARAM_BladeWaltz",
+      "numeric_id": 1006,
+      "display_name": "利刃华尔兹",
+      "default_name": "Blade Waltz",
+      "icon": "assets/ux/cherry/augments/icons/bladewaltz_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得利刃华尔兹作为一个召唤师技能。",
+      "effect_detail": "让你进入不可被选取状态，在此期间对敌人进行突进并造成30-150（随等级）（+10%额外攻击力）（+6%法术强度）伤害8次(造成50%附带伤害)。"
+    },
+    {
+      "id": "ARAM_BluntForce",
+      "numeric_id": 1007,
+      "display_name": "大力",
+      "default_name": "Blunt Force",
+      "icon": "assets/ux/cherry/augments/icons/bluntforce_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得20%攻击力。",
+      "effect_detail": "获得20% (?) 攻击力。"
+    },
+    {
+      "id": "ARAM_BreadAndButter",
+      "numeric_id": 1103,
+      "display_name": "面包和黄油",
+      "default_name": "Bread And Butter",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_gold.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的【{{技能名}}】技能获得100技能急速。",
+      "effect_detail": "你的【{{技能名}}】技能获得100技能急速。"
+    },
+    {
+      "id": "ARAM_BreadAndCheese",
+      "numeric_id": 1151,
+      "display_name": "面包和奶酪",
+      "default_name": "Bread and Cheese",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_gold.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的【{{技能名}}】技能获得100技能急速。",
+      "effect_detail": "你的【{{技能名}}】技能获得100技能急速。"
+    },
+    {
+      "id": "ARAM_BreadAndJam",
+      "numeric_id": 1150,
+      "display_name": "面包和果酱",
+      "default_name": "Bread And Jam",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_gold.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的【{{技能名}}】技能获得100技能急速。",
+      "effect_detail": "你的【{{技能名}}】技能获得100技能急速。"
+    },
+    {
+      "id": "ARAM_CantTouchThis",
+      "numeric_id": 1011,
+      "display_name": "你摸不到",
+      "default_name": "Can't Touch This",
+      "icon": "assets/ux/cherry/augments/icons/canttouchthis_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "施放你的终极技能会使你进入短时间的免疫伤害状态。",
+      "effect_detail": "施放你的终极技能会使你进入持续2秒的的免疫伤害状态(8秒冷却时间)。"
+    },
+    {
+      "id": "ARAM_CelestialBody",
+      "numeric_id": 1013,
+      "display_name": "星界躯体",
+      "default_name": "Celestial Body",
+      "icon": "assets/ux/cherry/augments/icons/celestialbody_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得1500生命值，但你造成的伤害降低10%。",
+      "effect_detail": "获得1500生命值，但你造成的伤害降低10%。"
+    },
+    {
+      "id": "ARAM_CircleofDeath",
+      "numeric_id": 1015,
+      "display_name": "死亡之环",
+      "default_name": "Circle of Death",
+      "icon": "assets/ux/cherry/augments/icons/circleofdeath_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "治疗效果和生命回复效果还会对相距最近的那个敌方英雄造成魔法伤害。",
+      "effect_detail": "你的治疗效果和生命回复效果会对相距最近的那个敌方英雄造成70%该数额的魔法伤害。\n\n已造成的伤害：?"
+    },
+    {
+      "id": "ARAM_ClownCollege",
+      "numeric_id": 1310,
+      "display_name": "小丑学院",
+      "default_name": "Clown College",
+      "icon": "assets/ux/cherry/augments/icons/clowncollege_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得召唤师技能欺诈魔术。\n获得背刺被动。\n在你阵亡时，生成一个爆炸盒子来对附近的敌人们造成大量真实伤害和恐惧。",
+      "effect_detail": "背刺：你从背后袭击敌人时，会造成20-35（随等级）（+50%额外攻击力）（+35%法术强度）额外物理伤害。\n\n欺诈魔术：你传送并变为隐形，持续3秒。你在隐形状态下的第一次攻击将造成额外的100（+150%额外攻击力）（+55%法术强度）物理伤害。如果从背后进行打击，那么这个攻击会暴击，造成155%（+额外暴击伤害）伤害。\n\n幻像：阵亡：在阵亡时，在你周围造成25%最大生命值的魔法伤害以及1秒恐惧。"
+    },
+    {
+      "id": "ARAM_CourageoftheColossus",
+      "numeric_id": 1018,
+      "display_name": "巨像的勇气",
+      "default_name": "Courage of the Colossus",
+      "icon": "assets/ux/cherry/augments/icons/courageofthecolossus_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "定身或缚地一个敌方英雄后获得150-450（随等级）（+4%生命值）护盾值。",
+      "effect_detail": "定身或缚地一个敌方英雄后获得150-450（随等级）（+4%生命值）护盾值。\n\n已生成的护盾值：?"
+    },
+    {
+      "id": "ARAM_CriticalHealing",
+      "numeric_id": 1118,
+      "display_name": "会心治疗",
+      "default_name": "Critical Healing",
+      "icon": "assets/ux/cherry/augments/icons/criticalhealing_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的治疗和护盾可以暴击，造成40%额外数额的效果。获得 25%暴击几率。",
+      "effect_detail": "你的治疗和护盾可以暴击，造成40%额外数额的效果。获得 25%暴击几率。"
+    },
+    {
+      "id": "ARAM_Cruelty",
+      "numeric_id": 1323,
+      "display_name": "残忍",
+      "default_name": "Cruelty",
+      "icon": "assets/ux/kiwi/augments/icons/cruelty_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "定身或缚地一个英雄时，召唤一颗会在短暂延迟后着陆的彗星，对附近的敌人们造成魔法伤害。",
+      "effect_detail": "定身或缚地一个敌方英雄时，召唤一颗彗星至敌人上方。彗星会在1秒后着陆，对附近的敌人们造成50-150（随等级）（+40%法术强度）（+4%生命值）魔法伤害。\n这个效果对每次技能施放和每个目标都有6秒冷却时间。\n\n已造成伤害：?"
+    },
+    {
+      "id": "ARAM_Dashing",
+      "numeric_id": 1019,
+      "display_name": "全凭身法",
+      "default_name": "Dashing",
+      "icon": "assets/ux/cherry/augments/icons/dashing_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的冲刺、跳跃、闪烁或传送类技能获得175技能急速。",
+      "effect_detail": "你的冲刺、跳跃、闪烁或传送类技能获得175技能急速。"
+    },
+    {
+      "id": "ARAM_DawnbringersResolve",
+      "numeric_id": 1020,
+      "display_name": "黎明使者的坚决",
+      "default_name": "Dawnbringer's Resolve",
+      "icon": "assets/ux/cherry/augments/icons/dawnbringersresolve_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在跌到50%生命值以下时，在3秒里持续回复共30%最大生命值。\n阵亡时或每45秒重置。",
+      "effect_detail": "在跌到50%生命值以下时，在3秒里持续回复共30%最大生命值。\n阵亡时或每45秒重置。"
+    },
+    {
+      "id": "ARAM_Deft",
+      "numeric_id": 1022,
+      "display_name": "灵巧",
+      "default_name": "Deft",
+      "icon": "assets/ux/cherry/augments/icons/deft_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得 60%攻击速度。",
+      "effect_detail": "获得 60%攻击速度。"
+    },
+    {
+      "id": "ARAM_DiveBomber",
+      "numeric_id": 1025,
+      "display_name": "俯冲轰炸",
+      "default_name": "Dive Bomber",
+      "icon": "assets/ux/cherry/augments/icons/divebomber_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在你阵亡时爆炸，造成巨量真实伤害。",
+      "effect_detail": "在你阵亡时爆炸，对附近的敌人们造成目标20%最大生命值的真实伤害。\n\n已造成的伤害：?"
+    },
+    {
+      "id": "ARAM_DivineDomain",
+      "numeric_id": 2099,
+      "display_name": "飞升仪式",
+      "default_name": "Rite of Ascension",
+      "icon": "assets/ux/kiwi/augments/icons/glasscannon_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "参与击杀敌方英雄后会留下其精华。攻击该精华会提供移动速度并重置基础技能冷却时间。",
+      "effect_detail": "参与击杀你在过去3秒内造成过伤害的敌方英雄，会使其留下其精华，持续8秒。攻击一个精华会消耗它。\n\n消耗一个精华会使你闪烁至它的位置、让你变为不可被选取和不可阻挡、提供在2秒里持续衰减的?移动速度、治疗你?到?生命值(基于已损失生命值)、并重置你的基础技能冷却时间。\n\n治疗：?\n已返还的冷却时间：?\n今天，你们将一睹飞升之威能！——沙漠皇帝 阿兹尔"
+    },
+    {
+      "id": "ARAM_DivineIntervention",
+      "numeric_id": 1301,
+      "display_name": "神圣干预",
+      "default_name": "Divine Intervention",
+      "icon": "assets/ux/cherry/augments/icons/slowactingpainkillers_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "每35秒，自动施放一颗护体星星。在它着陆时，你和附近的友军们进入持续若干秒的免疫伤害状态。",
+      "effect_detail": "每35秒，自动施放一颗护体星星缓慢降临在你身上。在它着陆时，你和附近的友军们进入持续2.5秒的免疫伤害状态。"
+    },
+    {
+      "id": "ARAM_DontBlink",
+      "numeric_id": 1026,
+      "display_name": "唯快不破",
+      "default_name": "Don't Blink",
+      "icon": "assets/ux/cherry/augments/icons/dontblink_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你每比目标多10移动速度，则对其多造成1%额外伤害。",
+      "effect_detail": "你每比目标多10移动速度，就会获得1%额外伤害。\n\n额外伤害：?"
+    },
+    {
+      "id": "ARAM_DoubleTap",
+      "numeric_id": 2010,
+      "display_name": "双发快射",
+      "default_name": "Double Tap",
+      "icon": "assets/ux/cherry/augments/icons/dualwield_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的暴击施加一次额外的攻击特效。\n\n获得 ?暴击几率。",
+      "effect_detail": "你的暴击施加一次额外的攻击特效。\n\n获得 ?暴击几率。"
+    },
+    {
+      "id": "ARAM_DrawYourSword",
+      "numeric_id": 1134,
+      "display_name": "亮出你的剑",
+      "default_name": "Draw Your Sword",
+      "icon": "assets/ux/cherry/augments/icons/drawyoursword_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "变为近战状态，并且获得攻击力、生命值、攻击速度、生命偷取和移动速度 (每个属性都基于舍弃的攻击距离而进一步提升)。",
+      "effect_detail": "你现在是近战状态。获得24%攻击力、24%生命值、20%攻击速度、20%生命偷取和20%移动速度 (每个属性都已基于攻击距离的损失而进一步提升)。"
+    },
+    {
+      "id": "ARAM_DropBear",
+      "numeric_id": 2031,
+      "display_name": "空投熊",
+      "default_name": "DropBear",
+      "icon": "assets/ux/cherry/augments/icons/drop_bear.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "阵亡时，一个具有你所有强化符文的巨大提伯斯从天而降并伤害附近的敌人们。",
+      "effect_detail": "阵亡时，召唤提伯斯，从而对你周围的敌人们造成250-750（随等级）（+100%法术强度）（+200%属性）（+5属性）魔法伤害和0.5秒晕眩。提伯斯随后会追击你的击杀者。\n\n提伯斯还会拥有你的所有强化符文。"
+    },
+    {
+      "id": "ARAM_Dropkick",
+      "numeric_id": 2006,
+      "display_name": "飞身踢",
+      "default_name": "Dropkick",
+      "icon": "assets/ux/kiwi/augments/icons/dropkick_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的攻击和技能会处决低生命值的敌方英雄，从而击退并引发一次爆炸，同时治疗你自身。",
+      "effect_detail": "你的攻击和技能会处决低于?最大生命值的敌方英雄, 回复你?生命值并击退该目标。\n\n在与一个敌人或地形产生碰撞、或达到其终点时，这个被击退的敌人将爆炸，对附近的敌人们造成?魔法伤害。\n\n这些爆炸可以连锁。\n\n被飞身踢的敌人数量：?\n获得治疗的总和：?\n已造成的伤害：?"
+    },
+    {
+      "id": "ARAM_DualWield",
+      "numeric_id": 1225,
+      "display_name": "双刀流",
+      "default_name": "Dual Wield",
+      "icon": "assets/ux/cherry/augments/icons/dualwield_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在攻击时，发射一个箭矢，它施加效能削减的攻击特效。获得10%总攻击速度。",
+      "effect_detail": "在你攻击时，发射一个弩箭，它造成40%伤害并以40%效能施加你的攻击特效。\n\n获得10% 总攻击速度。"
+    },
+    {
+      "id": "ARAM_Earthwake",
+      "numeric_id": 1027,
+      "display_name": "大地苏醒",
+      "default_name": "Earthwake",
+      "icon": "assets/ux/cherry/augments/icons/earthwake_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的冲刺、闪烁或传送类技能会留下一条在0.75秒后爆炸的轨迹。",
+      "effect_detail": "你的冲刺、跳跃、闪烁或传送类技能会留下一条在1秒后爆炸的轨迹，造成90-250（随等级）（+60%法术强度）（+125%额外攻击力）物理伤害。\n\n已造成伤害的总和：?"
+    },
+    {
+      "id": "ARAM_EmpoweredByTheFaithful",
+      "numeric_id": 2004,
+      "display_name": "信念者的强化",
+      "default_name": "Empowered By The Faithful",
+      "icon": "assets/ux/kiwi/augments/icons/empoweredbythefaithful_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "为友军提供治疗或护盾会赐福他们，使其伤害填充你的虔诚。\n\n当你拥有足够的虔诚时，释放一道冲击波来造成魔法伤害并处决低生命值的敌人们。",
+      "effect_detail": "为友军提供治疗或护盾会赐福他们8秒。当被赐福的友军对敌方英雄造成伤害时，你获得虔诚层数。在50虔诚时，释放一道冲击波来造成?魔法伤害并处决低于?生命值的敌人们。\n\n已造成的伤害：?\n已击杀的敌人数：?"
+    },
+    {
+      "id": "ARAM_EndlessHunt",
+      "numeric_id": 2098,
+      "display_name": "吃过路兵",
+      "default_name": "En Passant",
+      "icon": "assets/ux/cherry/augments/icons/dashing_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "周期性地识别出敌方英雄身上的破绽。 用攻击或技能命中它们时，会造成最大生命值真实伤害、回复生命值并提供移动速度。这些效果可以叠加。",
+      "effect_detail": "周期性地识别出敌方英雄身上的破绽。 用攻击或技能命中破绽时，会造成额外的6% + 每层1.5%最大生命值真实伤害、回复50-200（随等级） + 5%已损失生命值，并提供在2秒里持续衰减的50%+每层5%额外移动速度。\n\n接连命中的最大破绽数：?"
+    },
+    {
+      "id": "ARAM_Erosion",
+      "numeric_id": 1028,
+      "display_name": "侵蚀",
+      "default_name": "Erosion",
+      "icon": "assets/ux/cherry/augments/icons/erosion_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "对敌人造成伤害时会施加一层持续4秒且可叠加的护甲和魔法抗性击碎效果。",
+      "effect_detail": "对敌人造成伤害时会施加一层持续4秒的1.5%护甲和魔法抗性击碎效果，至多在20层时击碎30%。"
+    },
+    {
+      "id": "ARAM_EtherealWeapon",
+      "numeric_id": 1029,
+      "display_name": "虚幻武器",
+      "default_name": "Ethereal Weapon",
+      "icon": "assets/ux/cherry/augments/icons/etherealweapon_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的技能可施加攻击特效。每个目标有1秒冷却时间。",
+      "effect_detail": "你的技能可施加攻击特效。每个目标有1秒冷却时间。\n\n已触发的次数：?"
+    },
+    {
+      "id": "ARAM_Eureka",
+      "numeric_id": 1030,
+      "display_name": "尤里卡",
+      "default_name": "Eureka",
+      "icon": "assets/ux/cherry/augments/icons/eureka_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得相当于30%法术强度的技能急速。",
+      "effect_detail": "获得+30%法术强度技能急速。"
+    },
+    {
+      "id": "ARAM_FanTheHammer",
+      "numeric_id": 1220,
+      "display_name": "连拨击锤",
+      "default_name": "Fan The Hammer",
+      "icon": "assets/ux/cherry/augments/icons/fanthehammer_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "对敌方英雄的攻击会发射5个额外飞弹，造成随距离提升的额外伤害。每个方向的冷却时间独立计算。",
+      "effect_detail": "在你攻击敌方英雄时，发射5个额外飞弹，每个造成8-50.5（随等级）（+14%额外攻击力）物理伤害，基于移动的距离至多提升至50%。每个方向都有单独的8秒冷却时间。\n\n每个弹体都能暴击并且施加20%效能的附带攻击特效。\n\n已造成的伤害：?"
+    },
+    {
+      "id": "ARAM_FeyMagic",
+      "numeric_id": 1194,
+      "display_name": "精怪魔法",
+      "default_name": "Fey Magic",
+      "icon": "assets/ux/cherry/augments/icons/feymagic_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的终极技能的伤害会对敌人造成持续若干秒的变形效果。",
+      "effect_detail": "你的终极技能的伤害会对敌人造成2秒变形效果(15秒冷却时间)。"
+    },
+    {
+      "id": "ARAM_Firebrand",
+      "numeric_id": 1036,
+      "display_name": "火上浇油",
+      "default_name": "Firebrand",
+      "icon": "assets/ux/cherry/augments/icons/firebrand_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的攻击会施加一个可无限叠加的灼烧攻击特效，持续造成伤害。",
+      "effect_detail": "你的攻击还会灼烧敌人，在5秒的持续时间里每秒持续造成0.4%最大生命值的魔法伤害。这个灼烧可无限叠加。\n\n已造成的伤害：?"
+    },
+    {
+      "id": "ARAM_Firefox",
+      "numeric_id": 1308,
+      "display_name": "火狐",
+      "default_name": "FireFox",
+      "icon": "assets/ux/cherry/augments/icons/firfox_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "自动施放\n获得移动速度并召唤3道烈焰环绕于你，瞄准距离内相距最近的那个可见英雄并造成魔法伤害。",
+      "effect_detail": "自动施放：每11秒，获得25%移动速度并召唤3道烈焰环绕于你，瞄准距离内相距最近的那个可见英雄并造成45-200（随等级）（+40%法术强度）（+25%额外攻击力）自适应伤害。后续命中造成30%伤害。\n\n已造成伤害的总和：?"
+    },
+    {
+      "id": "ARAM_FirstAidKit",
+      "numeric_id": 1037,
+      "display_name": "急救用具",
+      "default_name": "First-Aid Kit",
+      "icon": "assets/ux/cherry/augments/icons/firstaidkit_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得20%治疗和护盾强度。",
+      "effect_detail": "获得20%治疗和护盾强度。"
+    },
+    {
+      "id": "ARAM_Flashbang",
+      "numeric_id": 1187,
+      "display_name": "闪光弹",
+      "default_name": "Flashbang",
+      "icon": "assets/ux/cherry/augments/icons/flashbang_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的【闪现】会引发一次爆炸，造成伤害和减速（阵亡时重置）。",
+      "effect_detail": "你的【闪现】会引发一次爆炸，造成+60%法术强度（+70%攻击力）（70-240（随等级））伤害和减速（阵亡时重置）。\n\n已造成的伤害：?"
+    },
+    {
+      "id": "ARAM_Flashy",
+      "numeric_id": 1116,
+      "display_name": "闪现向前",
+      "default_name": "Flashy",
+      "icon": "assets/ux/cherry/augments/icons/flashy_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的闪现有3层充能。在120秒后，再次获得所有充能。",
+      "effect_detail": "你的闪现有3层充能。在120秒后，再次获得所有充能。"
+    },
+    {
+      "id": "ARAM_FromBeginningToEnd",
+      "numeric_id": 1038,
+      "display_name": "有始有终",
+      "default_name": "From Beginning To End",
+      "icon": "assets/ux/cherry/augments/icons/frombeginningtoend_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得先攻和黑暗收割基石符文。",
+      "effect_detail": "获得先攻和黑暗收割基石符文。\n先攻：当你率先进入英雄战斗后，在3秒内可以造成10%额外伤害，并且基于造成的伤害获得金币。\n黑暗收割：伤害一名低生命值的英雄时会造成自适应伤害并从该猎物身上收割灵魂。\n\n已造成伤害的总和：?\n已获得金币的总和：?"
+    },
+    {
+      "id": "ARAM_GetExcited",
+      "numeric_id": 1322,
+      "display_name": "罪恶快感",
+      "default_name": "Get Excited!",
+      "icon": "assets/ux/kiwi/augments/icons/getexcited_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "参与击杀后，在4秒内提升移动速度和攻击速度。",
+      "effect_detail": "参与击杀后，获得持续4秒的100%移动速度和15%攻击速度。"
+    },
+    {
+      "id": "ARAM_GiantSlayer",
+      "numeric_id": 1195,
+      "display_name": "巨人杀手",
+      "default_name": "Giant Slayer",
+      "icon": "assets/ux/cherry/augments/icons/giantslayer_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "体型变小，获得移动速度，并基于敌方英雄体型大于你的程度获得额外伤害。",
+      "effect_detail": "体型变小，获得20%移动速度，并基于敌方英雄体型大于你的程度造成10%到30%额外伤害。\n\n已造成的伤害：?"
+    },
+    {
+      "id": "ARAM_Goliath",
+      "numeric_id": 1041,
+      "display_name": "歌利亚巨人",
+      "default_name": "Goliath",
+      "icon": "assets/ux/cherry/augments/icons/goliath_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "体型变大，获得35%生命值和15%适应之力。",
+      "effect_detail": "体型变大，获得35%生命值和15%适应之力。"
+    },
+    {
+      "id": "ARAM_Goredrink",
+      "numeric_id": 1138,
+      "display_name": "渴血",
+      "default_name": "Goredrink",
+      "icon": "assets/ux/cherry/augments/icons/goredrink_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得15%全能吸血。",
+      "effect_detail": "获得15%全能吸血。"
+    },
+    {
+      "id": "ARAM_HeavyHitter",
+      "numeric_id": 1181,
+      "display_name": "重量级打击手",
+      "default_name": "Heavy Hitter",
+      "icon": "assets/ux/cherry/augments/icons/heavyhitter_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的攻击造成相当于你3.5%最大生命值的额外物理伤害。",
+      "effect_detail": "你的攻击造成额外+3.5%生命值物理伤害。"
+    },
+    {
+      "id": "ARAM_Hellbent",
+      "numeric_id": 2107,
+      "display_name": "濒死悟道",
+      "default_name": "Hellbent",
+      "icon": "assets/ux/kiwi/augments/icons/hellbent_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "用攻击或技能伤害敌方英雄时会提供层数。在满层时，你在阵亡时会进行强化复活。",
+      "effect_detail": "用攻击或技能打击敌方英雄时会提供给你一层持续6秒的复活限度(最大层数：10)。在满层时变为濒死悟道。\n\n濒死悟道：在濒临死亡时，在4秒里复活至?最大生命值。在此之后，你获得?适应之力、朝着敌方英雄时的?移动速度、以及?全能吸血，持续15秒。\n\n这个效果有0秒冷却时间。"
+    },
+    {
+      "id": "ARAM_HighRoller",
+      "numeric_id": 2095,
+      "display_name": "掷骰狂人",
+      "default_name": "High Roller",
+      "icon": "assets/ux/kiwi/augments/icons/highroller_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "附近敌人在阵亡时有几率掉落【属性锻造器】。",
+      "effect_detail": "附近敌人在阵亡时有几率掉落【属性锻造器】。"
+    },
+    {
+      "id": "ARAM_Homeguard",
+      "numeric_id": 1105,
+      "display_name": "家园卫士",
+      "default_name": "Homeguard",
+      "icon": "assets/ux/cherry/augments/icons/homeguard_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得100%移动速度，在受到伤害后失效6秒。",
+      "effect_detail": "获得100%移动速度，在受到伤害后失效6秒。"
+    },
+    {
+      "id": "ARAM_IceCold",
+      "numeric_id": 1044,
+      "display_name": "冰寒",
+      "default_name": "Ice Cold",
+      "icon": "assets/ux/cherry/augments/icons/icecold_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的减速效果可使移动速度降低额外的75。",
+      "effect_detail": "你的减速效果可使移动速度降低额外的75。"
+    },
+    {
+      "id": "ARAM_ImTheJuggernaut",
+      "numeric_id": 1001,
+      "display_name": "泰坦的坚决",
+      "default_name": "Titan's Resolve",
+      "icon": "assets/ux/kiwi/augments/icons/iamthejuggernaut_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在承受或造成伤害时获得层数。每10层，获得适应之力、护甲、魔法抗性、体型和韧性。",
+      "effect_detail": "在造成或承受伤害时为你提供一层持续6秒的战神附体。每10层战神附体，你获得?适应之力、?护甲、?魔法抗性、?体型和?韧性。\n\n你拥有的层数越多，层数就衰减得越快。\n最大战神附体等级：?"
+    },
+    {
+      "id": "ARAM_Impassable",
+      "numeric_id": 1149,
+      "display_name": "不动如山",
+      "default_name": "Impassable",
+      "icon": "assets/ux/cherry/augments/icons/impassable_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得余震和冰川增幅基石符文。",
+      "effect_detail": "获得余震和冰川增幅基石符文。\n余震：在你定身一个敌方英雄后提供防御属性，稍后会在你的周围造成爆发性的魔法伤害。冰川增幅：定身一名敌方英雄时会生成3道冰川射线来减速附近的敌人们并降低他们对你的队友们的伤害。"
+    },
+    {
+      "id": "ARAM_InfernalConduit",
+      "numeric_id": 1045,
+      "display_name": "炼狱导管",
+      "default_name": "Infernal Conduit",
+      "icon": "assets/ux/cherry/augments/icons/infernalconduit_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的技能会施加一层可叠加的灼烧，持续造成魔法伤害。\n\n你的灼烧效果会降低你各基础技能的冷却时间。",
+      "effect_detail": "你的技能会施加一层可无限叠加的灼烧，在3秒的持续时间里每秒造成2-20（随等级）（+1.2%法术强度）（+2.8%额外攻击力）魔法伤害。\n\n你的所有灼烧效果会在对敌方英雄造成伤害时使你的各基础技能的冷却时间缩短0.08秒。\n\n已造成的伤害：?"
+    },
+    {
+      "id": "ARAM_InfernalSoul",
+      "numeric_id": 1046,
+      "display_name": "炼狱龙魂",
+      "default_name": "Infernal Soul",
+      "icon": "assets/ux/cherry/augments/icons/infernalsoul_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你获得炼狱龙魂，使用技能或攻击命中敌人时造成额外伤害。",
+      "effect_detail": "你获得炼狱龙魂，使用技能或攻击命中敌人时造成额外伤害。\n\n已造成的伤害：?"
+    },
+    {
+      "id": "ARAM_InfernoTriggered",
+      "numeric_id": 2005,
+      "display_name": "扳机炼狱",
+      "default_name": "Triggered Inferno",
+      "icon": "assets/ux/cherry/augments/icons/madscientist_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得悍勇本色。在你达到S评价等级时，自动使用炼狱扳机。",
+      "effect_detail": "使用与前一个不同的技能或攻击对敌人造成伤害时，会获得评价等级 (从F到S)。\n\n从每评价等级中获得?移动速度。\n\n在S评价等级时，消耗你的评价等级来倾泻出大量的子弹，在2秒里持续对周围的所有敌人进行10次射击。每颗子弹造成?物理伤害。低于?生命值的敌人们会被暴击，受到?物理伤害。这个效果有0秒冷却时间。\n\n子弹会施加生命偷取并对小兵造成25%伤害。\n\n已造成的伤害：?\n炼狱扳机 触发次数：?"
+    },
+    {
+      "id": "ARAM_ItsCritical",
+      "numeric_id": 1047,
+      "display_name": "关键暴击",
+      "default_name": "It's Critical",
+      "icon": "assets/ux/cherry/augments/icons/itscritical_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得50%暴击几率。",
+      "effect_detail": "获得50%暴击几率。"
+    },
+    {
+      "id": "ARAM_ItsKillingTime",
+      "numeric_id": 1211,
+      "display_name": "杀戮时间到了",
+      "default_name": "It's Killing Time",
+      "icon": "assets/ux/cherry/augments/icons/itskillingtime_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在施放你的终极技能后，标记所有敌人并存储你对他们造成的伤害。当它结束时，引爆该伤害。",
+      "effect_detail": "在施放你的终极技能后，标记所有敌人并存储你对他们的40%造成伤害。在5秒之后，引爆储量伤害(8秒冷却时间)。\n\n已造成的伤害：?"
+    },
+    {
+      "id": "ARAM_JeweledGauntlet",
+      "numeric_id": 1048,
+      "display_name": "珠光护手",
+      "default_name": "Jeweled Gauntlet",
+      "icon": "assets/ux/cherry/augments/icons/jeweledgauntlet_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的技能可以造成暴击。\n\n获得 25%（+0%法术强度）暴击几率。",
+      "effect_detail": "你的技能可以造成暴击，造成145%总伤害。\n\n获得 25%（+0%法术强度）暴击几率。\n\n额外伤害：?"
+    },
+    {
+      "id": "ARAM_Juiced",
+      "numeric_id": 2016,
+      "display_name": "注魔",
+      "default_name": "Juiced",
+      "icon": "assets/ux/kiwi/augments/icons/juiced_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "攻击特效消耗?法力值以造成?魔法伤害，这个伤害可以暴击。",
+      "effect_detail": "攻击特效消耗?法力值以造成?魔法伤害，这个伤害可以暴击。\n\n已造成的伤害：?\n已消耗的法力值：?"
+    },
+    {
+      "id": "ARAM_LegDay",
+      "numeric_id": 1305,
+      "display_name": "练腿日",
+      "default_name": "Leg Day",
+      "icon": "assets/ux/cherry/augments/icons/legday_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得50移动速度和40%减速抗性。",
+      "effect_detail": "获得50移动速度和40%减速抗性。"
+    },
+    {
+      "id": "ARAM_LightemUp",
+      "numeric_id": 1051,
+      "display_name": "点亮他们！",
+      "default_name": "Light 'Em Up!",
+      "icon": "assets/ux/cherry/augments/icons/lightemup_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "每第4次攻击发射4个飞弹以造成魔法伤害攻击特效。",
+      "effect_detail": "每第4次攻击发射4个飞弹以造成44-320（随等级）（+140%额外攻击力）（+76%法术强度）魔法伤害。\n\n已造成的伤害：?"
+    },
+    {
+      "id": "ARAM_LittleDevil",
+      "numeric_id": 2007,
+      "display_name": "你肩上的恶魔",
+      "default_name": "Devil on Your Shoulder",
+      "icon": "assets/ux/kiwi/augments/icons/littledevil_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": false,
+      "effect": "与【大魔王】本尊签订一个契约。\n\n他持续汲取你的生命力，但回报给你力量，让你对英雄造成额外真实伤害并且创造治疗残片供你获取。",
+      "effect_detail": "你已与【大魔王】本尊签订了一个契约。他每秒汲取你?当前生命值，如果附近有敌人则提升至?当前生命值。\n\n作为回报，他会增幅你的攻击和技能以造成额外的?真实伤害，并且它们还会使生命残片出现在附近5秒。\n\n吸收一个生命残片会治疗你?生命值并为你提供持续1秒的?移动速度。\n\n被汲取的生命值：?\n已造成的伤害：?\n已获取的残片：?\n已回复的生命值：?\n周期性伤害有1.5秒冷却时间"
+    },
+    {
+      "id": "ARAM_MadScientist",
+      "numeric_id": 1053,
+      "display_name": "科学狂人",
+      "default_name": "Mad Scientist",
+      "icon": "assets/ux/cherry/augments/icons/madscientist_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "每次重生时，你的体型要么变大(获得适应之力和生命值)，要么变小(获得技能急速和移动速度)。",
+      "effect_detail": "每次重生时，你的体型要么变大(获得30%适应之力和20%生命值)，要么变小(获得70技能急速和40%移动速度)。"
+    },
+    {
+      "id": "ARAM_MagicMissile",
+      "numeric_id": 1133,
+      "display_name": "魔法飞弹",
+      "default_name": "Magic Missile",
+      "icon": "assets/maps/particles/kiwi/magicmissile_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "造成技能伤害会对其发射3个飞弹，每个造成基于飞行距离的百分比最大生命值的真实伤害。",
+      "effect_detail": "造成技能伤害会对命中的每个敌人发射3个飞弹，每个造成基于飞行距离的1%最大生命值的真实伤害。\n\n已造成的伤害：?"
+    },
+    {
+      "id": "ARAM_Marksmage",
+      "numeric_id": 1129,
+      "display_name": "神射法师",
+      "default_name": "Marksmage",
+      "icon": "assets/ux/cherry/augments/icons/marksmage_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的攻击造成相当于你75%法术强度的额外物理伤害。",
+      "effect_detail": "你的攻击造成额外+75%法术强度物理伤害。\n\n已造成的伤害：?"
+    },
+    {
+      "id": "ARAM_MasterofDuality",
+      "numeric_id": 1054,
+      "display_name": "物法皆修",
+      "default_name": "Master of Duality",
+      "icon": "assets/ux/cherry/augments/icons/masterofduality_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的每次攻击为你提供可叠加的法术强度，并且你的每次技能在伤害敌人时为你提供可叠加的攻击力。",
+      "effect_detail": "你的每次攻击为你提供可叠加的6-18（随等级）法术强度，并且你的每次技能在伤害敌人时为你提供可叠加的3-9（随等级）攻击力，\n\n这个增益可无限叠加并刷新，但有5秒的持续时间。"
+    },
+    {
+      "id": "ARAM_MindtoMatter",
+      "numeric_id": 1056,
+      "display_name": "由心及物",
+      "default_name": "Mind to Matter",
+      "icon": "assets/ux/cherry/augments/icons/mindtomatter_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "使你的最大生命值提升，数额相当于你一半的法力值。",
+      "effect_detail": "获得+50%法力值生命值。"
+    },
+    {
+      "id": "ARAM_Minionmancer",
+      "numeric_id": 1104,
+      "display_name": "仆从大师",
+      "default_name": "Minionmancer",
+      "icon": "assets/ux/cherry/augments/icons/minionmancer_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的召唤物获得40%体型提升、生命值和伤害。",
+      "effect_detail": "你的召唤物获得40%体型提升、生命值和伤害。"
+    },
+    {
+      "id": "ARAM_MountainSoul",
+      "numeric_id": 1057,
+      "display_name": "山脉龙魂",
+      "default_name": "Mountain Soul",
+      "icon": "assets/ux/cherry/augments/icons/mountainsoul_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你获得山脉龙魂，在脱离战斗之后获得一个持续一小段时间的护盾。",
+      "effect_detail": "你获得【山脉龙魂】，在脱离战斗之后获得持续一小段时间的护盾值。\n\n已生成的护盾值总和：?"
+    },
+    {
+      "id": "ARAM_Multishot",
+      "numeric_id": 2055,
+      "display_name": "多重射击",
+      "default_name": "Multishot",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_prismatic.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "任务：用【{{技能名}}】技能命中敌方英雄50次。\n\n奖励：发射数量基于任务等级的额外飞弹。",
+      "effect_detail": "任务：用【{{技能名}}】技能命中敌方英雄50次。\n\n奖励：发射数量基于任务等级的额外飞弹。"
+    },
+    {
+      "id": "ARAM_MysticPunch",
+      "numeric_id": 1058,
+      "display_name": "秘术冲拳",
+      "default_name": "Mystic Punch",
+      "icon": "assets/ux/cherry/augments/icons/mysticpunch_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "攻击特效使你的各个技能的冷却时间缩减1.25秒。",
+      "effect_detail": "攻击特效使你的各个技能的冷却时间缩减1.25秒。"
+    },
+    {
+      "id": "ARAM_OceanSoul",
+      "numeric_id": 1060,
+      "display_name": "海洋龙魂",
+      "default_name": "Ocean Soul",
+      "icon": "assets/ux/cherry/augments/icons/oceansoul_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得【海洋龙魂】，在对敌方英雄造成伤害后提供高额的生命和法力回复。",
+      "effect_detail": "获得【海洋龙魂】，在对敌方英雄造成伤害后提供高额的生命和法力回复。\n\n已造成的治疗效果：?"
+    },
+    {
+      "id": "ARAM_OkBoomerang",
+      "numeric_id": 1061,
+      "display_name": "回力OK镖",
+      "default_name": "Ok Boomerang",
+      "icon": "assets/ux/cherry/augments/icons/okboomerang_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "每10秒朝着一个附近的敌人自动施放投掷一个回力镖。",
+      "effect_detail": "每7秒朝着一个附近的敌人自动施放投掷一个回力镖，对命中的敌人们造成200-700（随等级）（+80%额外攻击力）（+72%法术强度）自适应伤害。\n\n已造成的伤害：?"
+    },
+    {
+      "id": "ARAM_OmniSoul",
+      "numeric_id": 1062,
+      "display_name": "全能龙魂",
+      "default_name": "Omni Soul",
+      "icon": "assets/ux/cherry/augments/icons/omnisoul_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得3个随机龙魂。",
+      "effect_detail": "获得3个随机龙魂。"
+    },
+    {
+      "id": "ARAM_OutlawsGrit",
+      "numeric_id": 1063,
+      "display_name": "狂徒豪气",
+      "default_name": "Outlaw's Grit",
+      "icon": "assets/ux/cherry/augments/icons/outlawsgrit_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在使用一次冲刺、闪烁或传送之后，你获得12护甲和魔法抗性，这个效果至多可叠加至5层。",
+      "effect_detail": "在使用一次冲刺、闪烁或传送之后，你获得12护甲和魔法抗性，这个效果至多可在5层时叠加至60。\n每15秒重置。"
+    },
+    {
+      "id": "ARAM_Overflow",
+      "numeric_id": 1311,
+      "display_name": "溢流",
+      "default_name": "Overflow",
+      "icon": "assets/ux/cherry/augments/icons/overflow_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的法力消耗翻倍。\n\n你的技能的治疗效果、护盾效果和伤害获得提升，提升幅度基于你的最大法力值。",
+      "effect_detail": "你的法力值消耗翻倍。你的技能的治疗效果、护盾效果和伤害的效能提升1000%（+0.5%法力值）。"
+    },
+    {
+      "id": "ARAM_PandorasBox",
+      "numeric_id": 12317,
+      "display_name": "潘朵拉的盒子",
+      "default_name": "Pandora's Box",
+      "icon": "assets/ux/cherry/augments/icons/pandoras_box_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "将你的所有强化符文变为随机的棱彩阶强化符文。",
+      "effect_detail": "将你的所有强化符文变为随机的棱彩阶强化符文。"
+    },
+    {
+      "id": "ARAM_Perseverance",
+      "numeric_id": 1064,
+      "display_name": "坚韧",
+      "default_name": "Perseverance",
+      "icon": "assets/ux/cherry/augments/icons/perseverance_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": false,
+      "effect": "获得巨幅提升的生命回复，这个数额会在低生命值时进一步提升。",
+      "effect_detail": "获得1000%基础生命回复，在低于25%生命值时提升至2000%基础生命回复。\n\n已造成治疗效果的总和：?"
+    },
+    {
+      "id": "ARAM_PhenomenalEvil",
+      "numeric_id": 1390,
+      "display_name": "超凡邪恶",
+      "default_name": "Phenomenal Evil",
+      "icon": "assets/ux/kiwi/augments/icons/aram_phenomenalevil_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在你用技能对敌人造成伤害时永久获得1法术强度。\n\n如果是作为你的第二个强化符文，则自带40法术强度。",
+      "effect_detail": "在你用技能对敌人造成伤害时永久获得1法术强度。\n\n如果是作为你的第二个强化符文，则自带40法术强度。\n\n你已获得?法术强度。维迦会感到自豪的！"
+    },
+    {
+      "id": "ARAM_ProteinShake",
+      "numeric_id": 1324,
+      "display_name": "蛋白粉奶昔",
+      "default_name": "Protein Shake",
+      "icon": "assets/ux/kiwi/augments/icons/proteinshake_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得25（+35%额外护甲）（+35%额外移动速度）%治疗和护盾强度，基于额外护甲和魔抗。",
+      "effect_detail": "获得25（+35%额外护甲）（+35%额外移动速度）%治疗和护盾强度，基于额外护甲和魔抗。"
+    },
+    {
+      "id": "ARAM_Purist_Caster",
+      "numeric_id": 2018,
+      "display_name": "纯粹主义者 - 术师",
+      "default_name": "Purist - Caster",
+      "icon": "assets/ux/kiwi/augments/icons/puristcaster_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得百分比冷却缩减并将你的所有攻击速度转化为技能急速。",
+      "effect_detail": "获得?冷却缩减并将你的所有攻击速度转化为技能急速。(当前：?技能急速)。\n\n转化率：0.65技能急速每1%攻击速度"
+    },
+    {
+      "id": "ARAM_QuantumComputing",
+      "numeric_id": 1066,
+      "display_name": "量子计算",
+      "default_name": "Quantum Computing",
+      "icon": "assets/ux/cherry/augments/icons/quantumcomputing_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": false,
+      "effect": "周期性地自动施放一次巨型斩击。被击中的敌人会被减速，受到额外最大生命值伤害，并且治疗你。",
+      "effect_detail": "每30秒在你周围自动施放一次巨型斩击，造成200-350（随等级）（+85%额外攻击力）（+50%法术强度）物理伤害。被外沿命中的敌人会被施加在2秒里持续衰减的80%减速，并受到额外的10%（+0%额外攻击力）（+0%法术强度）（+0%额外生命值）最大生命值的物理伤害。你回复相当于80%已造成英雄伤害的生命值。\n\n已造成治疗效果的总和：?"
+    },
+    {
+      "id": "ARAM_Quest_SteelYourHeart",
+      "numeric_id": 1152,
+      "display_name": "钢化你心",
+      "default_name": "Steel Your Heart",
+      "icon": "assets/ux/cherry/augments/icons/quest_steelyourheart_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "任务：持有【心之钢】且层数在300层或以上。\n\n奖励：将你的【心之钢】层数乘以3。",
+      "effect_detail": "任务：持有【心之钢】且层数在300层或以上。\n\n奖励：将你的【心之钢】层数乘以3。"
+    },
+    {
+      "id": "ARAM_Quest_UrfsChampion",
+      "numeric_id": 1154,
+      "display_name": "海牛阿福的勇士",
+      "default_name": "Urf's Champion",
+      "icon": "assets/ux/kiwi/augments/icons/quest_urfschampion_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "任务：参与击杀18次。\n\n奖励：金铲铲",
+      "effect_detail": "任务：参与击杀18次。\n\n奖励：金铲铲\n\n参与击杀：?"
+    },
+    {
+      "id": "ARAM_Quest_VoidImmolation",
+      "numeric_id": 1361,
+      "display_name": "艾卡西亚的陷落",
+      "default_name": "Icathia's Fall",
+      "icon": "assets/ux/kiwi/augments/icons/quest_voidimmolation_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "即刻：获得1个【斑比的熔渣】。\n\n任务：持有日炎圣盾和璀璨回响。\n\n奖励：将这些装备合成为虚空献祭。",
+      "effect_detail": "即刻：获得1个【斑比的熔渣】。\n\n任务：持有日炎圣盾和 璀璨回响。\n\n奖励：将【日炎圣盾】 和【璀璨回响】 合成为【虚空献祭】 。"
+    },
+    {
+      "id": "ARAM_Quest_WoogletsWitchcap",
+      "numeric_id": 1156,
+      "display_name": "沃格勒特的巫师帽",
+      "default_name": "Wooglet's Witchcap",
+      "icon": "assets/ux/cherry/augments/icons/quest_woogletswitchcap_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "立刻获得一个无用大棒。\n\n任务：持有灭世者的死亡之帽和中娅沙漏。\n\n奖励：获得沃格勒特的巫师帽。",
+      "effect_detail": "立刻获得一个无用大棒。\n\n任务：持有灭世者的死亡之帽和中娅沙漏。\n\n奖励：获得沃格勒特的巫师帽。"
+    },
+    {
+      "id": "ARAM_Quickstep",
+      "numeric_id": 2064,
+      "display_name": "快步",
+      "default_name": "Quickstep",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_gold.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "当你使用【{{技能名}}】技能时，朝你的鼠标指针进行冲刺。",
+      "effect_detail": "当你使用【{{技能名}}】技能时，朝你的鼠标指针进行冲刺。"
+    },
+    {
+      "id": "ARAM_RabbleRousing",
+      "numeric_id": 1067,
+      "display_name": "活力焕发",
+      "default_name": "Rejuvenation",
+      "icon": "assets/ux/cherry/augments/icons/rabblerousing_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "使用【{{技能名}}】技能时回复生命值。",
+      "effect_detail": "使用【{{技能名}}】技能时回复?生命值\n\n已获得的总治疗量：?\n治疗量等同于30-100（随等级）（+5%额外生命值）（+15%法术强度）（+25%额外攻击力），对于冷却时间较长的技能，该数值还会提升至多至50%。"
+    },
+    {
+      "id": "ARAM_Recursion",
+      "numeric_id": 1068,
+      "display_name": "循环往复",
+      "default_name": "Recursion",
+      "icon": "assets/ux/cherry/augments/icons/recursion_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得60技能急速。",
+      "effect_detail": "获得60技能急速。"
+    },
+    {
+      "id": "ARAM_ScopedWeapons",
+      "numeric_id": 1170,
+      "display_name": "万用瞄准镜",
+      "default_name": "Scoped Weapons",
+      "icon": "assets/ux/cherry/augments/icons/scopedweapons_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得75（近战）/50（远程）攻击距离。",
+      "effect_detail": "获得75（近战）/50（远程）攻击距离。"
+    },
+    {
+      "id": "ARAM_ScopierWeapons",
+      "numeric_id": 1071,
+      "display_name": "更万用的瞄准镜",
+      "default_name": "Scopier Weapons",
+      "icon": "assets/ux/cherry/augments/icons/scopierweapons_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得150（近战）/100（远程）攻击距离。",
+      "effect_detail": "获得150（近战）/100（远程）攻击距离。"
+    },
+    {
+      "id": "ARAM_ScopiestWeapons",
+      "numeric_id": 1115,
+      "display_name": "最万用的瞄准镜",
+      "default_name": "Scopiest Weapons",
+      "icon": "assets/ux/cherry/augments/icons/scopiestweapons_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得250（近战）/150（远程）攻击距离。",
+      "effect_detail": "获得250（近战）/150（远程）攻击距离。"
+    },
+    {
+      "id": "ARAM_SearingDawn",
+      "numeric_id": 1072,
+      "display_name": "炽烈黎明",
+      "default_name": "Searing Dawn",
+      "icon": "assets/ux/cherry/augments/icons/searingdawn_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的技能会标记敌人，使其在被你的友军的下一个攻击或技能命中时会受到额外魔法伤害。",
+      "effect_detail": "你的技能会标记敌人，使其在被你的友军的下一个攻击或技能命中时会受到额外40-200（随等级）魔法伤害。\n\n已造成伤害的总和：?"
+    },
+    {
+      "id": "ARAM_ShadowRunner",
+      "numeric_id": 1073,
+      "display_name": "暗影疾奔",
+      "default_name": "Shadow Runner",
+      "icon": "assets/ux/cherry/augments/icons/shadowrunner_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在使用一个冲刺、闪烁或传送类技能或离开潜行状态之后，获得移动速度。",
+      "effect_detail": "在使用一个冲刺、闪烁或传送类技能或离开潜行状态之后，获得持续2秒的300移动速度。"
+    },
+    {
+      "id": "ARAM_ShrinkRay",
+      "numeric_id": 1074,
+      "display_name": "缩小射线",
+      "default_name": "Shrink Ray",
+      "icon": "assets/ux/cherry/augments/icons/shrinkray_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的攻击会将目标的伤害与体型削减15%攻击特效。",
+      "effect_detail": "你的攻击会对敌人造成持续3秒的15%伤害削减效果。\n\n已削减的伤害：?"
+    },
+    {
+      "id": "ARAM_SkilledSniper",
+      "numeric_id": 1113,
+      "display_name": "老练狙神",
+      "default_name": "Skilled Sniper",
+      "icon": "assets/ux/cherry/augments/icons/skilledsniper_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "用一个非终极技能狙击一个敌人时，返还该技能80%冷却时间(周期性技能返还65%)。",
+      "effect_detail": "用一个非终极技能狙击一个敌人时，返还该技能80%冷却时间(周期性技能返还65%)。\n\n狙击 - 从600码外对敌人造成伤害"
+    },
+    {
+      "id": "ARAM_SlapAround",
+      "numeric_id": 1136,
+      "display_name": "扇巴掌",
+      "default_name": "Slap Around",
+      "icon": "assets/ux/cherry/augments/icons/slaparound_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "每当你定身或缚地一个敌人时，获得10适应之力。阵亡时损失50%。",
+      "effect_detail": "每当你定身或缚地一个敌人时，获得一层可叠加的10适应之力。阵亡时损失50%层数。"
+    },
+    {
+      "id": "ARAM_Snowday",
+      "numeric_id": 2088,
+      "display_name": "下雪天",
+      "default_name": "Snowday",
+      "icon": "assets/ux/kiwi/augments/icons/snowday_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的【雪球】获得100技能急速。在命中一名敌人时造成额外魔法伤害。如果你没有【雪球】，则获得一个【雪球】。",
+      "effect_detail": "雪球获得100技能急速并且造成伤害提升100%。"
+    },
+    {
+      "id": "ARAM_SonicBoom",
+      "numeric_id": 1076,
+      "display_name": "天音爆",
+      "default_name": "Sonic Boom",
+      "icon": "assets/ux/cherry/augments/icons/sonicboom_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在为你的友军提供增益效果、治疗效果或护盾效果时，会对其附近的敌人们造成伤害和减速。",
+      "effect_detail": "在为你的友军提供增益效果、治疗效果或护盾效果时，会对其附近的敌人们造成30-150（随等级）真实伤害和持续2秒的30%减速。(2秒冷却时间)\n\n已造成的伤害：?"
+    },
+    {
+      "id": "ARAM_SoulSiphon",
+      "numeric_id": 1077,
+      "display_name": "灵魂虹吸",
+      "default_name": "Soul Siphon",
+      "icon": "assets/ux/cherry/augments/icons/soulsiphon_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "暴击造成伤害的12%会等额治疗你自身。\n\n获得 25%暴击几率。",
+      "effect_detail": "获得25%暴击几率和作用于暴击的12%生命偷取。\n\n已造成治疗效果的总和：?"
+    },
+    {
+      "id": "ARAM_SpecializedRecursion",
+      "numeric_id": 2100,
+      "display_name": "急速之追求",
+      "default_name": "Pursuit of Haste",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_gold.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "任务：用【{{技能名}}】技能命中敌方英雄10次\n\n奖励：【{{技能名}}】技能获得技能急速，基于任务等级，至多至2。",
+      "effect_detail": "{{Augment_ARAM_QQQuest_Tooltip?}}"
+    },
+    {
+      "id": "ARAM_SpinToWin",
+      "numeric_id": 1214,
+      "display_name": "旋转至胜",
+      "default_name": "Spin To Win",
+      "icon": "assets/ux/cherry/augments/icons/spintowin_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的旋转类技能获得30技能急速并且造成30%额外伤害，对于终极技能，该额外伤害提升至50%。",
+      "effect_detail": "你的旋转类技能获得30技能急速并且造成30%额外伤害，对于终极技能，该额外伤害提升至50%。\n\n已造成的伤害：?"
+    },
+    {
+      "id": "ARAM_SpiritBomb",
+      "numeric_id": 2104,
+      "display_name": "灵魄炸弹",
+      "default_name": "Spirit Bomb",
+      "icon": "assets/ux/kiwi/augments/icons/spiritbomb_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "为友方英雄提供治疗和护盾时会为你积攒一颗【灵魄炸弹】。在满层时，投掷该炸弹至生命值最低的那个友军，从而对其和附近友军们提供治疗和护盾。",
+      "effect_detail": "提供治疗和护盾时会为你积攒一颗灵魄炸弹。在满层时，投掷灵魄炸弹至你生命值最低的那个友军。在它抵达目标之后，它会治疗附近友军们各自的?已损失生命值并为他们提供持续2秒的?当前生命值的护盾值。\n\n已投掷的灵魄炸弹数量：?\n治疗：?\n护盾：?"
+    },
+    {
+      "id": "ARAM_SpiritualPurification",
+      "numeric_id": 1345,
+      "display_name": "心灵净化",
+      "default_name": "Spiritual Purification",
+      "icon": "assets/ux/kiwi/augments/icons/spiritualpurification_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "参与击杀时，产生一次爆炸，对附近其它敌人们造成60%减速，并且造成基于他们当前生命值的伤害。",
+      "effect_detail": "参与击杀时，产生一次爆炸，对附近敌人们造成相当于他们15%当前生命值的伤害并留下一个减速区域。区域内的敌人们会受到持续1.5秒的60%减速。"
+    },
+    {
+      "id": "ARAM_StackosaurusRex",
+      "numeric_id": 1204,
+      "display_name": "叠角龙",
+      "default_name": "Stackosaurus Rex",
+      "icon": "assets/ux/cherry/augments/icons/stackosaurusrex_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在你获得一个技能的永久层数时，多获得100%！",
+      "effect_detail": "在你获得一个技能的永久层数时，多获得100%！"
+    },
+    {
+      "id": "ARAM_Stats",
+      "numeric_id": 1404,
+      "display_name": "属性！",
+      "default_name": "Stats!",
+      "icon": "assets/ux/cherry/augments/icons/stats_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得2个【属性锻造器】！",
+      "effect_detail": "获得2个【属性锻造器】！"
+    },
+    {
+      "id": "ARAM_StatsOnStats",
+      "numeric_id": 1403,
+      "display_name": "属性叠属性！",
+      "default_name": "Stats on Stats!",
+      "icon": "assets/ux/cherry/augments/icons/statsonstats_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得3个【属性锻造器】，有更高几率出现黄金阶和棱彩阶锻造器！",
+      "effect_detail": "获得3个【属性锻造器】，有更高几率出现黄金阶和棱彩阶锻造器！"
+    },
+    {
+      "id": "ARAM_StatsOnStatsOnStats",
+      "numeric_id": 1402,
+      "display_name": "属性叠属性叠属性！",
+      "default_name": "Stats on Stats on Stats!",
+      "icon": "assets/ux/cherry/augments/icons/statsonstatsonstats_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得4个【属性锻造器】，有更高几率出现黄金阶和棱彩阶锻造器！\n\n在你的下一次强化符文选取时，每个栏位获得一次额外的刷新。",
+      "effect_detail": "获得4个【属性锻造器】，有更高几率出现黄金阶和棱彩阶锻造器！\n\n在你的下一次强化符文选取时，每个栏位获得一次额外的刷新。"
+    },
+    {
+      "id": "ARAM_StuckInHereWithMe",
+      "numeric_id": 1413,
+      "display_name": "和我一起困在这里",
+      "default_name": "Stuck In Here With Me",
+      "icon": "assets/ux/kiwi/augments/icons/stuckinherewithme_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "使用你的终极技能时会嘲讽附近的敌人们并提供给你伤害减免。\n\n获得30终极技能急速。",
+      "effect_detail": "在使用你的终极技能后，获得持续2秒的50%伤害减免，然后你嘲讽其中的敌人们2秒。\n\n获得30终极技能急速。"
+    },
+    {
+      "id": "ARAM_SustainingStrike",
+      "numeric_id": 2073,
+      "display_name": "虹吸",
+      "default_name": "Siphon",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_silver.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "用【{{技能名}}】技能伤害敌方英雄时会治疗你。",
+      "effect_detail": "治疗相当于用【{{技能名}}】技能对敌方英雄的30%造成伤害的生命值。"
+    },
+    {
+      "id": "ARAM_SymphonyofWar",
+      "numeric_id": 1079,
+      "display_name": "战争交响乐",
+      "default_name": "Symphony of War",
+      "icon": "assets/ux/cherry/augments/icons/symphonyofwar_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得致命节奏和征服者基石符文。",
+      "effect_detail": "获得致命节奏和征服者基石符文。\n致命节奏 - 攻击英雄提供攻击速度，至多叠加6层。在6层时，你的攻击发射造成额外伤害的一个弩箭。\n征服者：攻击敌方英雄时提供适应之力层数。在达到12层后，将你的一部分伤害转化为等额的治疗效果。"
+    },
+    {
+      "id": "ARAM_TankEngine",
+      "numeric_id": 1353,
+      "display_name": "坦克引擎",
+      "default_name": "Tank Engine",
+      "icon": "assets/ux/cherry/augments/icons/tank_engine_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "参与击杀时，获得一个层数，使你的体型增大并提升最大生命值。阵亡时损失层数。",
+      "effect_detail": "参与击杀时，获得一个层数，使你的体型增大5%并提升5%最大生命值。阵亡时损失65%层数。\n\n已获得生命值的总和：?"
+    },
+    {
+      "id": "ARAM_TankItOrLeaveIt",
+      "numeric_id": 1080,
+      "display_name": "会心防御",
+      "default_name": "Tank It Or Leave It",
+      "icon": "assets/ux/cherry/augments/icons/tankitorleaveit_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你可以使用你的暴击几率(最大50%几率)来进行会心防御，使你有一定几率来使所受伤害降低。\n\n获得25%暴击几率。",
+      "effect_detail": "你可以使用你的暴击几率(最大50%几率)来进行会心防御，使你有一定几率来使所受伤害降低20%。获得25%暴击几率。\n\n已降低的伤害：?"
+    },
+    {
+      "id": "ARAM_TapDancer",
+      "numeric_id": 1081,
+      "display_name": "踢踏舞",
+      "default_name": "Tap Dancer",
+      "icon": "assets/ux/cherry/augments/icons/tapdancer_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的攻击会为你提供移动速度。基于你的移动速度获得攻击速度。",
+      "effect_detail": "你的攻击会为你提供10移动速度。获得+0.1%移动速度攻击速度。\n\n这个增益可无限叠加并刷新，但有5秒的持续时间。"
+    },
+    {
+      "id": "ARAM_Terror",
+      "numeric_id": 2065,
+      "display_name": "惊惧",
+      "default_name": "Terror",
+      "icon": "assets/ux/cherry/augments/icons/desecrator_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "每当你施放【{{技能名}}】技能时，恐惧你周围的敌人们.",
+      "effect_detail": "每当你施放【{{技能名}}】技能时，恐惧你周围的敌人们1.75秒。"
+    },
+    {
+      "id": "ARAM_ThreadtheNeedle",
+      "numeric_id": 1084,
+      "display_name": "穿针引线",
+      "default_name": "Thread the Needle",
+      "icon": "assets/ux/cherry/augments/icons/threadtheneedle_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得18%护甲穿透和法术穿透。",
+      "effect_detail": "获得18%护甲穿透和法术穿透。"
+    },
+    {
+      "id": "ARAM_TransmuteChaos",
+      "numeric_id": 1243,
+      "display_name": "质变：混沌",
+      "default_name": "Transmute: Chaos",
+      "icon": "assets/ux/cherry/augments/icons/transmutechaos_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得2个随机强化符文。",
+      "effect_detail": "获得2个随机强化符文。"
+    },
+    {
+      "id": "ARAM_TransmuteGold",
+      "numeric_id": 1237,
+      "display_name": "质变：黄金阶",
+      "default_name": "Transmute: Gold",
+      "icon": "assets/ux/cherry/augments/icons/transmutegold_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得1个随机黄金阶强化符文。",
+      "effect_detail": "获得1个随机黄金阶强化符文。"
+    },
+    {
+      "id": "ARAM_TransmutePrismatic",
+      "numeric_id": 1238,
+      "display_name": "质变：棱彩阶",
+      "default_name": "Transmute: Prismatic",
+      "icon": "assets/ux/cherry/augments/icons/transmuteprismatic_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得1个随机棱彩阶强化符文。",
+      "effect_detail": "获得1个随机棱彩阶强化符文。"
+    },
+    {
+      "id": "ARAM_Typhoon",
+      "numeric_id": 1087,
+      "display_name": "台风",
+      "default_name": "Typhoon",
+      "icon": "assets/ux/cherry/augments/icons/typhoon_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的攻击会对一个额外目标发射一个飞弹，从而造成削减过的伤害并施加攻击特效。",
+      "effect_detail": "你的攻击会对一个额外目标发射一个飞弹，从而造成30%伤害并施加攻击特效。"
+    },
+    {
+      "id": "ARAM_UltimateRevolution",
+      "numeric_id": 1088,
+      "display_name": "终极刷新",
+      "default_name": "Ultimate Revolution",
+      "icon": "assets/ux/cherry/augments/icons/ultimaterevolution_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在施放终极技能后刷新你的终极技能(90秒冷却时间或阵亡时重置)。",
+      "effect_detail": "在施放终极技能后刷新你的终极技能(90秒冷却时间或阵亡时重置)。"
+    },
+    {
+      "id": "ARAM_UltimateUnstoppable",
+      "numeric_id": 1112,
+      "display_name": "终极不可阻挡",
+      "default_name": "Ultimate Unstoppable",
+      "icon": "assets/ux/cherry/augments/icons/ultimateunstoppable_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在你使用你的终极技能后，你获得持续3秒的控制免疫。 (8秒冷却时间)。",
+      "effect_detail": "在你使用你的终极技能后，你获得持续3秒的控制免疫。 (8秒冷却时间)。"
+    },
+    {
+      "id": "ARAM_Upgrade_Collector",
+      "numeric_id": 1320,
+      "display_name": "升级：收集者",
+      "default_name": "Upgrade Collector",
+      "icon": "assets/ux/kiwi/augments/icons/upgradecollector_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在每次使用【收集者】的被动处决敌人时，会提升处决阈值，并且提供额外金币。\n获得250金币。",
+      "effect_detail": "在每次使用【收集者】的被动处决敌人时，会使处决阈值提升0.5%，并且提供额外50金币。\n\n获得250金币。"
+    },
+    {
+      "id": "ARAM_Upgrade_IE",
+      "numeric_id": 1336,
+      "display_name": "升级：无尽之刃",
+      "default_name": "Upgrade Infinity Edge",
+      "icon": "assets/ux/kiwi/augments/icons/upgradeie_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得500金币。\n装备无尽之刃后，可使你的暴击几率在每次攻击都会提供随机的暴击伤害。",
+      "effect_detail": "获得500金币。\n装备【无尽之刃】后，可使你的暴击造成随机的额外暴击伤害，最高可至你暴击几率的50%。\n\n已造成的暴击伤害：?"
+    },
+    {
+      "id": "ARAM_Upgrade_Immolate",
+      "numeric_id": 1319,
+      "display_name": "升级：献祭",
+      "default_name": "Upgrade Immolate",
+      "icon": "assets/ux/kiwi/augments/icons/upgradeimmolate_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "【璀璨回响】和【日炎圣盾】每当有目标受到【献祭】效果影响时，提供12 金币 。获得250金币。",
+      "effect_detail": "【璀璨回响】和【日炎圣盾】每当有目标受到【献祭】效果影响时，提供12 金币 。获得250金币。\n\n已赚得金币：?"
+    },
+    {
+      "id": "ARAM_Upgrade_Sheen",
+      "numeric_id": 1996,
+      "display_name": "升级：耀光",
+      "default_name": "Upgrade Sheen",
+      "icon": "assets/ux/kiwi/augments/icons/upgradesheen_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的咒刃效果造成额外伤害并治疗你自身，治疗量相当于目标生命值的一定百分比。此外，获得250金币。",
+      "effect_detail": "你的咒刃效果造成相当于目标4%生命值的额外伤害，并治疗你自身，治疗效果相当于目标3.5%生命值。此外，获得250金币。\n\n已造成的伤害：?\n已造成的治疗总和：?"
+    },
+    {
+      "id": "ARAM_Upgrade_ZH",
+      "numeric_id": 1318,
+      "display_name": "升级：中娅",
+      "default_name": "Upgrade Zhonya's",
+      "icon": "assets/ux/kiwi/augments/icons/upgradezh_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "【中娅沙漏】的冷却时间降低至45秒。你现在可以在【中娅沙漏】、【探索者的护臂】或【沃格勒特的巫师帽】凝滞状态持续期间移动并获得移动速度。\n\n获得250金币。",
+      "effect_detail": "【中娅沙漏】的冷却时间降低至45秒。你现在可以在【中娅沙漏】、【探索者的护臂】或【沃格勒特的巫师帽】凝滞状态持续期间移动并获得50%移动速度。"
+    },
+    {
+      "id": "ARAM_Vulnerability",
+      "numeric_id": 1092,
+      "display_name": "易损",
+      "default_name": "Vulnerability",
+      "icon": "assets/ux/cherry/augments/icons/vulnerability_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的装备效果和持续伤害效果可以暴击。\n\n获得 25%暴击几率。",
+      "effect_detail": "你的装备效果和持续伤害效果可以暴击来造成145%额外伤害。\n\n获得25%暴击几率。\n\n已造成的伤害：?"
+    },
+    {
+      "id": "ARAM_WeeWooWeeWoo",
+      "numeric_id": 1005,
+      "display_name": "喂呜喂呜",
+      "default_name": "Wee Woo Wee Woo",
+      "icon": "assets/ux/kiwi/augments/icons/weewooweewoo_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在朝着低生命值的友军移动时，获得移动速度。你的治疗和护盾获得提升，基于你目标的低生命值程度。",
+      "effect_detail": "朝着附近友军移动时，获得至多?移动速度，基于其已损失生命值。你的治疗和护盾也会提升至多?，基于目标的已损失生命值。\n\n额外治疗：?\n额外护盾：?"
+    },
+    {
+      "id": "ARAM_WindspeakersBlessing",
+      "numeric_id": 1095,
+      "display_name": "风语者的祝福",
+      "default_name": "Windspeaker's Blessing",
+      "icon": "assets/ux/cherry/augments/icons/windspeakersblessing_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的治疗效果和护盾效果还会提升目标的护甲和魔法抗性，这些加成持续3秒。",
+      "effect_detail": "你的治疗效果和护盾效果还会提升目标30-60（随等级）护甲和魔法抗性，这些加成持续3秒。"
+    },
+    {
+      "id": "ARAM_WitchfulThinking",
+      "numeric_id": 1097,
+      "display_name": "巫师式思考",
+      "default_name": "Witchful Thinking",
+      "icon": "assets/ux/cherry/augments/icons/witchfulthinking_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得20-80（随等级）法术强度。",
+      "effect_detail": "获得20-80（随等级）法术强度。"
+    },
+    {
+      "id": "ARAM_WithHaste",
+      "numeric_id": 1098,
+      "display_name": "急急小子",
+      "default_name": "With Haste",
+      "icon": "assets/ux/cherry/augments/icons/withhaste_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得移动速度，相当于你的70%技能急速。",
+      "effect_detail": "获得+70%技能急速移动速度。"
+    },
+    {
+      "id": "ARAM_YowchMyCoins",
+      "numeric_id": 2089,
+      "display_name": "哎哟，我的硬币！",
+      "default_name": "Yowch, My Coins!",
+      "icon": "assets/ux/kiwi/augments/icons/youchmycoins_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在参与击杀敌方英雄后，该英雄会在附近掉落多枚硬币，你和友军可以收集它们。每枚硬币价值15金币。",
+      "effect_detail": "在参与击杀敌方英雄后，该英雄会在附近掉落?枚硬币，你和友军可以收集它们。每枚硬币价值15金币。\n\n?位好心人们“自愿”捐出了总共?枚硬币，你的队伍已经获得了?金币，其中?金币由你自己拾取。"
+    },
+    {
+      "id": "ARAM_Zealot",
+      "numeric_id": 2009,
+      "display_name": "狂热者",
+      "default_name": "Zealot",
+      "icon": "assets/ux/kiwi/augments/icons/zealot_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得?暴击几率和?攻击速度（随法术强度变化）。",
+      "effect_detail": "获得?暴击几率和?攻击速度（随法术强度变化）。"
+    },
+    {
+      "id": "ARAM_escAPADe",
+      "numeric_id": 1206,
+      "display_name": "魔法转物理",
+      "default_name": "escAPADe",
+      "icon": "assets/ux/cherry/augments/icons/escapade_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "将法术强度转化为额外攻击力。获得15%攻击力。",
+      "effect_detail": "将法术强度转化为额外攻击力，并获得+15%攻击力攻击力。\n\n当前转化：?\n\n每点法术强度转化为0.6攻击力。"
+    },
+    {
+      "id": "Ability_SelfAOE_DoubleCast",
+      "numeric_id": 2062,
+      "display_name": "回响施放",
+      "default_name": "Echo Cast",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_prismatic.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "施放你的【{{技能名}}】技能时会朝你的鼠标位置派出一个复制体并再次施放该技能。",
+      "effect_detail": "施放你的【{{技能名}}】技能时会朝你的鼠标位置派出一个复制体并且在0.25秒之后再次施放该技能。"
+    },
+    {
+      "id": "Adamant",
+      "numeric_id": 1327,
+      "display_name": "坚若磐石",
+      "default_name": "Adamant",
+      "icon": "assets/ux/kiwi/augments/icons/adamant_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": false,
+      "effect": "每当你定身或缚地一个敌人时，获得护甲和魔抗。",
+      "effect_detail": "每当你定身或缚地一个敌人时，获得持续10秒的2-10（随等级）护甲和魔抗(至多至10层)。"
+    },
+    {
+      "id": "BiggestSnowballEver",
+      "numeric_id": 1329,
+      "display_name": "史上最大雪球",
+      "default_name": "Biggest Snowball Ever",
+      "icon": "assets/ux/kiwi/augments/icons/biggestsnowballever_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的雪球获得100技能急速。\n\n你的雪球现在变得非常大，并且可以穿过小兵。它会减速， 击飞英雄，并造成额外伤害。\n\n如果你没有雪球，则获得一个雪球。",
+      "effect_detail": "你的雪球获得100技能急速。\n\n你的雪球现在变得非常大，并且可以穿过小兵。它会对敌人造成持续2秒的20%减速， 将他们击飞0.75秒，并造成额外200-350（随等级）（+60%法术强度）（+100%额外攻击力）伤害。\n\n如果你没有雪球，则获得一个雪球。"
+    },
+    {
+      "id": "BloodMoneyBurn",
+      "numeric_id": 2128,
+      "display_name": "炽燃利息",
+      "default_name": "Combusting Interest",
+      "icon": "assets/ux/kiwi/augments/icons/bloodmoney2_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "英雄身上的灼烧和持续伤害会生成金币。",
+      "effect_detail": "英雄身上的灼烧和持续伤害会生成1-3（随等级）+0.75%造成伤害的金币。\n\n已生成的金币：?"
+    },
+    {
+      "id": "Bonk",
+      "numeric_id": 2111,
+      "display_name": "邦！",
+      "default_name": "BONK!",
+      "icon": "assets/ux/kiwi/augments/icons/bonk_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "被【{{技能名}}】技能强化的攻击或技能会对目标和附近的敌人们造成额外伤害。",
+      "effect_detail": "被【{{技能名}}】技能强化的攻击或技能会对目标和附近的敌人们造成额外的30%伤害。\n\n被“邦”的额外英雄数量：?"
+    },
+    {
+      "id": "BrushPower",
+      "numeric_id": 2042,
+      "display_name": "藏身草丛",
+      "default_name": "Hide on Bush",
+      "icon": "assets/ux/kiwi/augments/icons/brushpower_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在进入草丛后，多造成20%伤害，持续2秒。留在草丛中会刷新这个效果。",
+      "effect_detail": "进入草丛会提供持续2秒的草丛能量。在草丛能量处于激活状态时，你多造成20%伤害。\n\n已造成的伤害：?\n\n待在草丛中会刷新【草丛能量】。"
+    },
+    {
+      "id": "BurstingTeeth",
+      "numeric_id": 2083,
+      "display_name": "牙仙子",
+      "default_name": "Tooth Fairy",
+      "icon": "assets/ux/kiwi/augments/icons/questburstingteeth_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "爆裂敌人会掉落牙齿。拾取牙齿会提供给你永久的穿甲和法术穿透。",
+      "effect_detail": "当你在2.5秒内对一个敌方英雄造成大于其25%生命值的伤害时，其会掉落一颗牙齿。\n\n你的?颗牙齿藏品目前给予你3×层数穿甲和3×层数法术穿透。\n\n对每个目标有4秒冷却时间"
+    },
+    {
+      "id": "ChainReaction",
+      "numeric_id": 2078,
+      "display_name": "连锁反应",
+      "default_name": "Chain Reaction",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_gold.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "如果一个被【{{技能名}}】技能击退的目标命中了另一个英雄，则二者都会被击飞并受到伤害。在与地形产生碰撞时，该击飞时长会延长并且他们会受到额外伤害。",
+      "effect_detail": "如果你用【{{技能名}}】技能击退的一个英雄命中了另一个英雄，二者都会被击飞0.5秒并且受到100-400（随等级）魔法伤害。如果敌方英雄们与地形产生碰撞，则会被击飞0.75秒并受到额外150-800（随等级）伤害。\n\n被击飞的敌人数：?\n墙体命中次数：?\n\n击飞时长和高度受益于你的技能的冷却时间。\n对于终极技能，该伤害值提升至250%。"
+    },
+    {
+      "id": "CritNCast",
+      "numeric_id": 2024,
+      "display_name": "由暴生急",
+      "default_name": "Crit 'n Cast",
+      "icon": "assets/ux/kiwi/augments/icons/critncast_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得相当于你40%暴击几率的技能急速。",
+      "effect_detail": "获得?技能急速(40%)。"
+    },
+    {
+      "id": "CriticalMissile",
+      "numeric_id": 1356,
+      "display_name": "暴击飞弹",
+      "default_name": "Critical Missile",
+      "icon": "assets/ux/kiwi/augments/icons/criticalmissile_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "当你暴击时，发射飞弹造成魔法伤害。\n\n获得 25%暴击几率。",
+      "effect_detail": "当你暴击时，发射1+暴击率/2个飞弹，每个造成15-65（随等级）魔法伤害。\n\n获得 25%暴击几率。"
+    },
+    {
+      "id": "CriticalRhythm",
+      "numeric_id": 1328,
+      "display_name": "暴击律动",
+      "default_name": "Critical Rhythm",
+      "icon": "assets/ux/kiwi/augments/icons/criticalrhythm_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的普攻在暴击时获得可叠加的攻击速度。\n\n获得 25%暴击几率。",
+      "effect_detail": "你的普攻在暴击时获得可叠加的6%攻击速度，至多至10层。\n\n获得 25%暴击几率。"
+    },
+    {
+      "id": "DarkWind",
+      "numeric_id": 2077,
+      "display_name": "贪欲束缚",
+      "default_name": "Ravenous Bind",
+      "icon": "assets/ux/kiwi/augments/icons/upgradehubris_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "用你的【{{技能名}}】技能定身或缚地敌方英雄时造成额外伤害并对你进行治疗。",
+      "effect_detail": "用你的【{{技能名}}】技能定身或缚地敌方英雄时造成额外15-90（随等级）（+10%法术强度）（+0.5%生命值）魔法伤害并治疗你?生命值。\n\n伤害总和：?\n最小治疗：50-200（随等级）（+5%法术强度）（+10%额外生命值）\n治疗总和：?\n\n治疗效果基于技能冷却时间至多提升至50%。"
+    },
+    {
+      "id": "DimensionShift_Active",
+      "numeric_id": 2063,
+      "display_name": "位面转移",
+      "default_name": "Dimension Shift",
+      "icon": "assets/ux/kiwi/augments/icons/whenthedarknesscomes_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得当黑暗到来召唤师技能。生成一个地带来将它其中的所有人传送到另一个位面。",
+      "effect_detail": "获得召唤师技能当黑暗到来。\n\n当黑暗到来：发射一道灿烂之光到一个位置。它着陆时，区域内的所有活着的单位都将在接下来的8秒期间被送到一个不同的领域。\n\n在你处于这个领域时，你获得：\n 300-1500（随等级）生命值\n 35-150（随等级）法术强度\n 35-150（随等级）攻击力\n 35%体型\n\n所有单位在该领域中都能自由地移动和行动，但不能以战略点(诸如防御塔或召唤水晶)为目标。\n\n“跟随你的光明……”——一个迷失的灵魂"
+    },
+    {
+      "id": "Donation",
+      "numeric_id": 1384,
+      "display_name": "捐赠",
+      "default_name": "Donation",
+      "icon": "assets/ux/kiwi/augments/icons/donation_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得1750金币。无需多问。",
+      "effect_detail": "收到1750金币。谢了！ :)"
+    },
+    {
+      "id": "DontChangeTheChannel",
+      "numeric_id": 2131,
+      "display_name": "别停止引导",
+      "default_name": "Don't Change the Channel",
+      "icon": "assets/ux/kiwi/augments/icons/dontchangethechannel_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你每引导一秒都会获得护盾值。",
+      "effect_detail": "在引导状态下，每秒获得?护盾值。它会在你未处于引导状态时不断衰减。\n\n总护盾值：?"
+    },
+    {
+      "id": "DoubleDefense",
+      "numeric_id": 2144,
+      "display_name": "加固护盾",
+      "default_name": "Bolstered",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_silver.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "来自【{{技能名}}】技能的护盾变得更强并且受益于目标的已损失生命值。",
+      "effect_detail": "来自【{{技能名}}】技能的护盾变强至多60%，受益于目标的已损失生命值。\n\n额外护盾：?\n在30%最大生命值时达到最大效能。"
+    },
+    {
+      "id": "DoubleStrike",
+      "numeric_id": 2148,
+      "display_name": "双重打击",
+      "default_name": "Double Strike",
+      "icon": "assets/ux/kiwi/augments/icons/adamant_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "【{{技能名}}】技能施加一次额外的攻击特效。",
+      "effect_detail": "【{{技能名}}】技能施加一次额外的攻击特效。"
+    },
+    {
+      "id": "EmpyreanPromise",
+      "numeric_id": 1331,
+      "display_name": "至高天诺言",
+      "default_name": "Empyrean Promise",
+      "icon": "assets/ux/kiwi/augments/icons/empyreampromise_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得15%治疗和护盾强度。获得至高天诺言作为一个召唤师技能。\n\n警惕\n传送至你的友军并在着陆时提供持续3秒的100-250（随等级）（+100%法术强度）（+10%额外生命值）护盾值。",
+      "effect_detail": "获得15%治疗和护盾强度。获得至高天诺言作为一个召唤师技能。\n\n警惕\n传送至你的友军并在着陆时提供持续3秒的100-250（随等级）（+100%法术强度）（+10%额外生命值）护盾值。"
+    },
+    {
+      "id": "EndlessDecimation",
+      "numeric_id": 2091,
+      "display_name": "无尽大杀四方",
+      "default_name": "Endless Decimation",
+      "icon": "assets/ux/cherry/augments/icons/endlessdecimate_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在战斗状态下，自动施放一次环形斧头挥舞从而造成物理伤害。被斧刃命中的敌人们受到额外伤害并治疗你。",
+      "effect_detail": "在战斗中每8秒自动施放一次环形斧头挥舞来造成物理伤害。对被斧刃命中的敌人们造成提升伤害(100-400（随等级）（+40%法术强度）（+60%攻击力）)并治疗你18%已损失生命值。被斧刃命中的每个敌人，都会将这个技能的冷却时间缩短10%，最小值为3秒。"
+    },
+    {
+      "id": "Equilibrium",
+      "numeric_id": 2082,
+      "display_name": "我们的治疗",
+      "default_name": "Our Healing",
+      "icon": "assets/ux/kiwi/augments/icons/equillibrium_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "每当你周围的某人进行治疗时，你获得相当于其15%治疗效果的治疗效果。从敌方治疗中获得双倍。",
+      "effect_detail": "每当你周围的某人进行治疗时，你获得相当于其15%治疗效果的治疗效果。从敌方治疗中获得双倍。"
+    },
+    {
+      "id": "EscapePlan",
+      "numeric_id": 1333,
+      "display_name": "逃跑计划",
+      "default_name": "Escape Plan",
+      "icon": "assets/ux/kiwi/augments/icons/escapeplan_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在降至35%生命值时，获得巨量持续衰减的护盾、持续衰减的移动速度和持续衰减的缩小效果。",
+      "effect_detail": "在降至35%生命值时，获得巨量+65%生命值持续衰减的护盾、持续衰减的150%移动速度和持续衰减的缩小效果。(75秒冷却时间)"
+    },
+    {
+      "id": "FinalForm",
+      "numeric_id": 1344,
+      "display_name": "最终形态",
+      "default_name": "Final Form",
+      "icon": "assets/ux/kiwi/augments/icons/finalform_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在施放你的终极技能时，获得持续10秒的最大生命值护盾、全能吸血和移动速度。",
+      "effect_detail": "在施放你的终极技能时，获得持续10秒的50%最大生命值护盾、20%全能吸血和30%额外移动速度。(20秒冷却时间)。"
+    },
+    {
+      "id": "FishBait",
+      "numeric_id": 2032,
+      "display_name": "鲨鱼诱饵",
+      "default_name": "Shark Bait",
+      "icon": "assets/ux/kiwi/augments/icons/fishbait_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在阵亡之后的若干秒，一头鲨鱼会啃噬所有附近的敌人们。你可以在阵亡后进行移动，以给鲨鱼攻击进行定位。",
+      "effect_detail": "阵亡时，变成一个鲨鱼诱饵。你不能采取除了移动之外的任何其它行动，会对附近的敌人们造成40%减速。在若干秒之后，一头鲨鱼会浮现，击飞所有附近的敌人们并啃咬他们，对范围内的所有敌人造成120-350（随等级） + 30%已损失生命值的魔法伤害。\n\n鲨鱼击杀敌方英雄的次数：?"
+    },
+    {
+      "id": "Flash2",
+      "numeric_id": 1348,
+      "display_name": "闪闪现现",
+      "default_name": "Flash 2",
+      "icon": "assets/ux/kiwi/augments/icons/flash2_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得第二个【闪现】召唤师技能和70召唤师技能急速。",
+      "effect_detail": "获得第二个【闪现】召唤师技能和70召唤师技能急速。"
+    },
+    {
+      "id": "ForgedByTheMaster",
+      "numeric_id": 2127,
+      "display_name": "大师铸就",
+      "default_name": "Forged By The Master",
+      "icon": "assets/ux/kiwi/augments/icons/forgedbythemaster_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "使你的装备和强化符文伤害提升?。",
+      "effect_detail": "你的装备和强化符文伤害提升?。\n\n额外伤害：?"
+    },
+    {
+      "id": "GlassCannon",
+      "numeric_id": 1325,
+      "display_name": "玻璃大炮",
+      "default_name": "Glass Cannon",
+      "icon": "assets/ux/kiwi/augments/icons/glasscannon_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "减少30%最大生命值。造成25%（近战）/15%（远程）额外真实伤害。",
+      "effect_detail": "减少30%最大生命值。造成25%（近战）/15%（远程）额外真实伤害。\n\n已造成的伤害：?"
+    },
+    {
+      "id": "GoldenSnowball",
+      "numeric_id": 1392,
+      "display_name": "神圣雪球",
+      "default_name": "Holy Snowball",
+      "icon": "assets/ux/kiwi/augments/icons/goldensnowball_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "雪球获得100技能急速。\n\n你在用【雪球】冲刺后短暂免疫伤害。\n\n如果你没有雪球，获得一个雪球。",
+      "effect_detail": "雪球获得100技能急速。\n\n你在用【雪球】冲刺后会免疫伤害1.5秒。\n\n如果你没有雪球，获得一个雪球。"
+    },
+    {
+      "id": "Goldrend",
+      "numeric_id": 1335,
+      "display_name": "夺金",
+      "default_name": "Goldrend",
+      "icon": "assets/ux/kiwi/augments/icons/goldrend_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "用攻击或技能对一个英雄造成伤害时会造成额外魔法伤害，并为你提供金币和 移动速度。",
+      "effect_detail": "用攻击或技能对一个英雄造成伤害时会造成额外50-150（随等级）（+20%法术强度）（+40%额外攻击力）魔法伤害，并为你提供3金币和持续1.5秒的25%移动速度(每个英雄有30秒冷却时间)。\n\n已造成的伤害：?\n已赚得金币：?"
+    },
+    {
+      "id": "GrowthSpurt",
+      "numeric_id": 1401,
+      "display_name": "生机迸发",
+      "default_name": "Growth Spurt",
+      "icon": "assets/ux/kiwi/augments/icons/growthspurt_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得生机迸发作为一个召唤师技能。\n\n生机迸发会猛然提升你的体型，击飞附近的敌人们并提供最大生命值。",
+      "effect_detail": "获得生机迸发作为一个召唤师技能。\n\n生机迸发会猛然提升你的体型，击飞附近的敌人们1秒并提供持续7秒的300最大生命值。"
+    },
+    {
+      "id": "HandOfBaron",
+      "numeric_id": 1389,
+      "display_name": "男爵之手",
+      "default_name": "Hand of Baron",
+      "icon": "assets/ux/kiwi/augments/icons/handofbaron_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得25%适应之力。附近友方小兵都获得极大增强。",
+      "effect_detail": "获得25%适应之力。附近友方小兵都获得极大增强。"
+    },
+    {
+      "id": "HextechSoul",
+      "numeric_id": 1416,
+      "display_name": "海克斯科技龙魂",
+      "default_name": "Hextech Soul",
+      "icon": "assets/ux/cherry/augments/icons/infernalsoul_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "周期性地使你的下一个伤害型技能或攻击触发一道闪电爆裂，连锁穿过敌人以造成伤害和减速。",
+      "effect_detail": "周期性地使你的下一个伤害型技能或攻击触发一道闪电爆裂，连锁穿过敌人以造成伤害和减速。"
+    },
+    {
+      "id": "InfiniteRecursion",
+      "numeric_id": 1388,
+      "display_name": "无限循环往复",
+      "default_name": "Infinite Recursion",
+      "icon": "assets/ux/kiwi/augments/icons/infiniterecursion_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得60技能急速，外加每次参与击杀3技能急速。",
+      "effect_detail": "获得60技能急速，外加每次参与击杀3技能急速。\n\n当前技能急速：3×层数（60）"
+    },
+    {
+      "id": "ItsGoTime",
+      "numeric_id": 2125,
+      "display_name": "前进时间到",
+      "default_name": "It's Go Time",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_silver.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "激活【{{技能名}}】技能会在其持续期间为你提供移动速度。",
+      "effect_detail": "激活【{{技能名}}】技能会在其持续期间为你提供?移动速度。"
+    },
+    {
+      "id": "KeepGoing",
+      "numeric_id": 2126,
+      "display_name": "装填",
+      "default_name": "Reload",
+      "icon": "assets/ux/cherry/augments/icons/lightningstrikes_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在【{{技能名}}】技能期间的普攻攻击特效会降低其冷却时间。",
+      "effect_detail": "在【{{技能名}}】技能期间的普攻攻击特效会降低其?秒冷却时间。\n\n已节省的秒数：?"
+    },
+    {
+      "id": "KillSecured",
+      "numeric_id": 2026,
+      "display_name": "杀意翻涌",
+      "default_name": "Kill Secured",
+      "icon": "assets/ux/kiwi/augments/icons/killsecure_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在朝着低生命值的敌人时，获得额外移动速度。",
+      "effect_detail": "在朝着低于40%生命值的敌人时，获得60%移动速度。"
+    },
+    {
+      "id": "KingMe",
+      "numeric_id": 1337,
+      "display_name": "尊我为王",
+      "default_name": "King Me",
+      "icon": "assets/ux/kiwi/augments/icons/kingme_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "当你第一次携带一件传说级装备并乘坐敌人的传送门时，你会加冕为王，升级你的装备并获得一个随机棱彩阶强化符文。",
+      "effect_detail": "当你第一次携带一件传说级装备并乘坐敌人的传送门时，你会加冕为王，升级你的装备并获得一个随机棱彩阶强化符文。"
+    },
+    {
+      "id": "LittleExtraHelp",
+      "numeric_id": 2096,
+      "display_name": "小小的额外帮助",
+      "default_name": "Lil' Extra Help",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_gold.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在你的【{{技能名}}】技能持续期间获得150（近战）/100（远程）攻击距离和75%（近战）/40%（远程）攻击速度。",
+      "effect_detail": "在你的【{{技能名}}】技能持续期间获得150（近战）/100（远程）攻击距离和75%（近战）/40%（远程）攻击速度。"
+    },
+    {
+      "id": "MercysStrike",
+      "numeric_id": 2133,
+      "display_name": "仁慈打击",
+      "default_name": "Mercy's Strike",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_gold.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在使用【{{技能名}}】技能为你的友军提供治疗或护盾之后，你的下一次普攻获得攻击距离、攻击速度并造成额外最大生命值魔法伤害。",
+      "effect_detail": "在使用【{{技能名}}】技能为你的友军提供治疗或护盾之后之后，你的下一次普攻获得300额外攻击距离、75%攻击速度并造成额外的2.5%（+20%治疗和护盾强度）最大生命值魔法伤害。\n\n已造成伤害的总和：?\n防御塔受到2.5%最大生命值魔法伤害。"
+    },
+    {
+      "id": "MightyShield",
+      "numeric_id": 1314,
+      "display_name": "强力护盾",
+      "default_name": "Mighty Shield",
+      "icon": "assets/ux/kiwi/augments/icons/mightyshield_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "当你获得护盾时，获得40-100（随等级）适应之力，持续3秒。(5秒冷却时间)",
+      "effect_detail": "当你获得护盾时，获得40-100（随等级）适应之力，持续3秒。(5秒冷却时间)"
+    },
+    {
+      "id": "Missile_Split",
+      "numeric_id": 2072,
+      "display_name": "咒语裂变",
+      "default_name": "Spell Split",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_prismatic.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在命中时、最大距离时或再次施放时，你的【{{技能名}}】技能的飞弹会分裂为两部分。",
+      "effect_detail": "在命中时、最大距离时或再次施放时，你的【{{技能名}}】技能的飞弹会分裂为两部分。\n\n额外命中的目标：?\n敌人被同一技能命中时，承受伤害会减少。"
+    },
+    {
+      "id": "NatureIsHealing",
+      "numeric_id": 2043,
+      "display_name": "自然即是治愈",
+      "default_name": "Nature is Healing",
+      "icon": "assets/ux/kiwi/augments/icons/natureishealing_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "进入草丛时回复大量生命值。",
+      "effect_detail": "进入草丛时回复40-300（随等级） + 15%已损失生命值，每个草丛有20秒冷却时间。\n\n总治疗量：?"
+    },
+    {
+      "id": "Nightstalking",
+      "numeric_id": 1326,
+      "display_name": "夜狩",
+      "default_name": "Nightstalking",
+      "icon": "assets/ux/kiwi/augments/icons/nightstalking_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在对敌人造成伤害的3秒内参与击杀该敌人会为你提供移动速度并使你进入隐身状态。",
+      "effect_detail": "在对敌人造成伤害的3秒内参与击杀该敌人会为你提供40%移动速度并使你进入隐身状态1.5秒。"
+    },
+    {
+      "id": "OminousPact",
+      "numeric_id": 1332,
+      "display_name": "不祥契约",
+      "default_name": "Ominous Pact",
+      "icon": "assets/ux/cherry/augments/icons/wisdomofages_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "基于已损失生命值，获得法术强度、移动速度和全能吸血，每次你施放技能时会对自身造成伤害。",
+      "effect_detail": "基于已损失生命值，获得75-150（随等级）法术强度，50%移动速度和20%全能吸血。施放技能会消耗你的5%当前生命值。\n\n在30%生命值时获得最大增益。"
+    },
+    {
+      "id": "Overextender",
+      "numeric_id": 2119,
+      "display_name": "过量延伸者",
+      "default_name": "Overextender",
+      "icon": "assets/ux/kiwi/augments/icons/overextender_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "回城并进入到你的加农炮发射器。它的距离、飞行速度和伤害已经得到显著提升。",
+      "effect_detail": "你的加农炮发射器的距离、飞行速度和伤害已经得到显著提升。回城并进入到你的加农炮发射器。\n\n飞跃的距离数：?"
+    },
+    {
+      "id": "Overkill",
+      "numeric_id": 2135,
+      "display_name": "针插垫",
+      "default_name": "Pin Cushion",
+      "icon": "assets/ux/cherry/augments/icons/symphonyofwar_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在【{{技能名}}】技能期间进行攻击会对你的目标凿下大钉。大钉会积累伤害、处决、并在到期时提供移动速度。",
+      "effect_detail": "在【{{技能名}}】技能期间进行攻击会对你的目标凿下大钉。\n\n大钉会在【{{技能名}}】技能到期时引爆，每层造成20-60（随等级）物理伤害并提供持续3秒的10移动速度。如果已积累的伤害足以击杀该敌方英雄，则大钉将提前引爆并将其处决。\n\n最多大钉引爆数：?"
+    },
+    {
+      "id": "Overloaded",
+      "numeric_id": 2123,
+      "display_name": "超负荷",
+      "default_name": "Overloaded",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_prismatic.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "使用另一个技能会重置【{{技能名}}】技能的冷却时间。",
+      "effect_detail": "使用另一个技能会重置【{{技能名}}】技能的冷却时间。\n\n重置次数：?\n有用的重置次数：?\n重置效率：?%\n\n“它们来找卷轴了……按计划来……EQEQEQ……” —— 那个蓝人"
+    },
+    {
+      "id": "PatOnTheBack",
+      "numeric_id": 2137,
+      "display_name": "轻拍背部",
+      "default_name": "Pat On The Back",
+      "icon": "assets/ux/kiwi/augments/icons/patontheback_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "友军会在你走过时鼓励你，为你提供护盾和移动速度。",
+      "effect_detail": "友军会在你走过时鼓励你，为你提供持续3秒的?护盾和?移动速度。这个效果可以叠加。\n\n每个友军需要经过?秒冷却时间才能再次轻拍你的背部。\n\n已受到的鼓励次数：?"
+    },
+    {
+      "id": "PinCushion",
+      "numeric_id": 2139,
+      "display_name": "豪猪",
+      "default_name": "Porcupine",
+      "icon": "assets/ux/kiwi/augments/icons/pincushion_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "承受来自英雄的伤害会积攒一次尖针迸发，这些尖针会从你身上飞出，对附近的敌人们造成伤害和减速。",
+      "effect_detail": "承受来自英雄的伤害会积攒一次尖针爆裂。当达到临界质量时，尖针就会爆裂，对附近敌人们造成?物理伤害和持续2秒的?减速。\n\n爆裂次数：?\n伤害：?"
+    },
+    {
+      "id": "PinballSnowball",
+      "numeric_id": 1358,
+      "display_name": "弹球",
+      "default_name": "Pinball",
+      "icon": "assets/ux/kiwi/augments/icons/pinballsnowball_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的雪球获得技能急速并且造成额外的真实伤害。\n\n当雪球从墙体上反弹时，它的体型和伤害获得提升，并缩短它的冷却时间。",
+      "effect_detail": "你的雪球获得50技能急速，造成额外的100-500（随等级） 真实伤害并且可以从墙体上反弹。每次反弹会提升它 25%体型、20%造成伤害，并且缩短它30%冷却时间。\n\n反弹次数：?"
+    },
+    {
+      "id": "Poltergeist",
+      "numeric_id": 1347,
+      "display_name": "吵闹鬼",
+      "default_name": "Poltergeist",
+      "icon": "assets/ux/kiwi/augments/icons/poltergeist_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得【吵闹鬼】作为一个召唤师技能。\n\n吵闹鬼会同时施放召唤师技能【屏障】和【幽灵疾步】。",
+      "effect_detail": "获得【吵闹鬼】作为一个召唤师技能。\n\n吵闹鬼会同时施放召唤师技能【屏障】和【幽灵疾步】。"
+    },
+    {
+      "id": "PoroCharge_Active",
+      "numeric_id": 2046,
+      "display_name": "魄罗蛮冲",
+      "default_name": "Poro Stampede",
+      "icon": "assets/ux/kiwi/augments/icons/questporocharge_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "任务：收集【魄罗佳肴】并投喂5只魄罗\n\n奖励：获得【魄罗冲锋】召唤师技能，可让魄罗们对敌方队伍发动几波攻势。每任务等级都会解锁额外的波次。\n\n“噢吼！它们可真萌啊！”——魄罗驯养人",
+      "effect_detail": "【魄罗佳肴】会每25-15（随等级）秒出现在你周围。投喂魄罗会给你魄罗之爱层数。在5层时，解锁魄罗冲锋召唤师技能。投喂更多魄罗会提升你发动攻势的波次。\n\n魄罗冲锋：发动若干波次的魄罗攻势，对敌方英雄们造成100-200（随等级）（20×层数）物理伤害。\n\n你当前可发动?波魄罗攻势。\n\n魄罗们仅能命中单个敌人，并且仅有第一波攻势会击飞敌人们。\n\n“噢吼！它们可真萌啊！”——魄罗驯养人"
+    },
+    {
+      "id": "PressureCooker",
+      "numeric_id": 2102,
+      "display_name": "高压锅",
+      "default_name": "Pressure Cooker",
+      "icon": "assets/ux/kiwi/augments/icons/questpressurecooker_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "每一秒，对附近的敌方英雄们施加一层可叠加的灼烧，这个效果受益于你的最大生命值。\n\n任务：对敌方英雄造成灼烧伤害\n\n奖励：提升【高压锅】的规模和伤害，基于任务等级。",
+      "effect_detail": "{{Kiwi_PressureCooker_Tooltip?}}"
+    },
+    {
+      "id": "PromQueen",
+      "numeric_id": 1421,
+      "display_name": "舞会女王",
+      "default_name": "Prom Queen",
+      "icon": "assets/ux/kiwi/augments/icons/promqueen_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "每35秒，自动施放一道闪亮宝冠降临在你头上。当它着陆时，获得洛的终极技能，魅惑你碰到的敌人们。",
+      "effect_detail": "每35秒，自动施放一道闪亮宝冠降临在你头上。当它着陆时，获得洛的终极技能，魅惑你碰到的敌人们。"
+    },
+    {
+      "id": "Quest_Sneakerhead",
+      "numeric_id": 1343,
+      "display_name": "王中王，靴中靴",
+      "default_name": "Sneakerhead",
+      "icon": "assets/ux/kiwi/augments/icons/sneakerhead_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "即刻：随机获得一双升级后的靴子。\n\n需求：完成其任务，以更换为另一双。\n\n奖励：嘉文一世之靴",
+      "effect_detail": "完成以下的任务即可获得一份超级大奖：\n\n任务1：装备【狂战士胫甲】时，攻击?/25次\n任务2：装备【轻灵之靴】时，移动?/300步\n任务3：装备【明朗之靴】时，施放?/20次技能\n任务4：装备【水银之靴】时，受到控制效果?/5次\n任务5：装备【铁板靴】时，减少?/200攻击伤害\n任务6：装备【法师之靴】时，造成?/1500技能伤害"
+    },
+    {
+      "id": "Quest_UltraHydra",
+      "numeric_id": 2141,
+      "display_name": "终极九头蛇",
+      "default_name": "Ultra Hydra",
+      "icon": "assets/ux/kiwi/augments/icons/ultrahydra_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在完成一个【九头蛇】装备时，获得一个提亚马特。\n\n任务：拥有【贪欲九头蛇】，【亵渎九头蛇】和【巨型九头蛇】。\n\n奖励：获得【终极九头蛇】。",
+      "effect_detail": "在完成一个【九头蛇】装备时，获得一个提亚马特。\n\n任务：拥有【贪欲九头蛇】，【亵渎九头蛇】和【巨型九头蛇】。\n\n奖励：获得【终极九头蛇】。"
+    },
+    {
+      "id": "SharkTempest",
+      "numeric_id": 2034,
+      "display_name": "鲨鱼暴风",
+      "default_name": "Shark Tempest",
+      "icon": "assets/ux/kiwi/augments/icons/sharktempest_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "鲨鱼们环绕着你的【雪球】，对附近的敌人们造成伤害和减速。当你的【雪球】命中一个英雄时，其会陷入一阵鲨鱼风暴之中！",
+      "effect_detail": "鲨鱼们环绕着你的【雪球】，对它们途经的敌人们造成减速和50-100（随等级）魔法伤害。如果你的【雪球】命中了一个英雄，鲨鱼们会吸附至其身上并生成一阵鲨鱼暴风，从而对所有附近的敌人们造成每秒25-75（随等级）（+20%额外攻击力）（+12%法术强度）魔法伤害和持续3秒的30%减速。"
+    },
+    {
+      "id": "ShrinkEngine",
+      "numeric_id": 1373,
+      "display_name": "缩小引擎",
+      "default_name": "Shrink Engine",
+      "icon": "assets/ux/kiwi/augments/icons/shrinkengine_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "参与击杀后会让你变小并且获得技能急速和移动速度。\n\n阵亡时损失65%层数。",
+      "effect_detail": "参与击杀后会让你变小4%，每次提供8技能急速和1%移动速度。\n\n阵亡时损失65%层数。\n------------------------------\n你目前有?层，为你提供：\n+ ?技能急速\n+ ?%移动速度"
+    },
+    {
+      "id": "SkipTheBasics",
+      "numeric_id": 2118,
+      "display_name": "大招工具人",
+      "default_name": "Ult Bot",
+      "icon": "assets/ux/kiwi/augments/icons/skipthebasic_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的技能急速仅作用于终极技能，但效果多50%。获得100技能急速。",
+      "effect_detail": "你的技能急速仅作用于终极技能，但效果多50%。获得100技能急速。"
+    },
+    {
+      "id": "SnapBack",
+      "numeric_id": 2109,
+      "display_name": "复位",
+      "default_name": "Snap Back",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_gold.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "再次施放【{{技能名}}】技能时会产生爆炸，并回到你的原本位置。",
+      "effect_detail": "再次施放【{{技能名}}】技能时会产生爆炸，造成+30%法术强度（+30%攻击力）（100-400（随等级））魔法伤害，并回到你的原本位置。"
+    },
+    {
+      "id": "SnowballUpgrade",
+      "numeric_id": 1334,
+      "display_name": "升级：雪球",
+      "default_name": "Snowball Upgrade",
+      "icon": "assets/ux/kiwi/augments/icons/snowballupgrade_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": false,
+      "effect": "雪球获得50技能急速。击中一个敌人时，会产生一次降雪，来对附近的敌人造成范围伤害和减速效果。\n\n如果你没有雪球，获得一个雪球。",
+      "effect_detail": "你的雪球获得50技能急速。\n击中时会产生一片区域，使其中的敌人受到50%（+0.06%法术强度）减速效果，以及在2秒的持续时间里每秒造成100（+60%法术强度）（+100%额外攻击力）魔法伤害(总计100（+60%法术强度）（+100%额外攻击力）×2秒魔法伤害)。"
+    },
+    {
+      "id": "Snowbomb",
+      "numeric_id": 2080,
+      "display_name": "冰雪爆裂",
+      "default_name": "Snowblast",
+      "icon": "assets/ux/kiwi/augments/icons/snowbomb_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "再次施放雪球会造成提升伤害、击飞该目标、并击退附近的敌人们。",
+      "effect_detail": "你的雪球获得100技能急速。这个技能的再次施放造成100%提升伤害、击飞该目标、并击退附近的敌人们。\n\n已击退的单位数：?"
+    },
+    {
+      "id": "Sonata",
+      "numeric_id": 1420,
+      "display_name": "咏叹奏鸣",
+      "default_name": "Sonata",
+      "icon": "assets/ux/kiwi/augments/icons/sonata_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "每0秒，以一个不断交替的旋律来自动施放坚毅咏叹调和迅捷奏鸣曲。\n\n坚毅咏叹调治疗附近友军并提供一个临时的护盾光环。\n\n迅捷奏鸣曲提供一个临时光环来提供额外移动速度。",
+      "effect_detail": "每0秒，以一个不断交替的旋律来自动施放坚毅咏叹调和迅捷奏鸣曲。\n\n坚毅咏叹调治疗附近友军并提供一个临时的护盾光环。\n\n迅捷奏鸣曲提供一个临时光环来提供额外移动速度。"
+    },
+    {
+      "id": "SoulEater",
+      "numeric_id": 1375,
+      "display_name": "吞噬灵魂",
+      "default_name": "Soul Eater",
+      "icon": "assets/ux/kiwi/augments/icons/souleater_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "定身一个敌方英雄时会提供20最大生命值。\n\n如果是你的第二个强化符文，会自带300生命值。",
+      "effect_detail": "定身一个敌方英雄时会提供20最大生命值。\n\n总生命值获取：20×层数\n如果是你的第二个强化符文，会自带300生命值。"
+    },
+    {
+      "id": "SpecializedEmpowerment",
+      "numeric_id": 2116,
+      "display_name": "威能之追求",
+      "default_name": "Pursuit of Power",
+      "icon": "assets/ux/cherry/augments/icons/marksmage_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "任务：用【{{技能名}}】技能命中敌人10次。\n\n奖励：永久提升【{{技能名}}】技能伤害。",
+      "effect_detail": "{{Augment_SpecializedEmpowerment_Tooltip?}}"
+    },
+    {
+      "id": "SpellVolley",
+      "numeric_id": 2054,
+      "display_name": "三重射击",
+      "default_name": "Tripleshot",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_prismatic.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的【{{技能名}}】技能会瞄准你前方2个额外的敌人。",
+      "effect_detail": "你的【{{技能名}}】技能会瞄准你前方2个额外的敌人。\n\n额外命中的目标数：?\n单位从同一技能中承受伤害会减少。"
+    },
+    {
+      "id": "SquishySlappyGrab",
+      "numeric_id": 2115,
+      "display_name": "软弹啪叽抓",
+      "default_name": "Squishy Slappy Grab",
+      "icon": "assets/ux/kiwi/augments/icons/squishyslappygrab_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "偶尔对所有附近的敌方英雄放出软弹啪叽的手，然后用灵链系住。你的下次攻击将拉拽所有被系住的敌人。",
+      "effect_detail": "偶尔对所有附近的敌方英雄放出软弹啪叽的手，然后用灵链系住4秒。当你处于系住敌人的状态时，你的下一次攻击将拉拽其到你的位置，造成?魔法伤害和0.25秒晕眩。你每拉拽到一个敌人就会获得持续2.5秒的?护盾值。\n\n这个效果有0秒冷却时间。\n\n已抓到的敌人数：?\n已造成的伤害：?\n已获得的护盾值：?"
+    },
+    {
+      "id": "SupportMain",
+      "numeric_id": 2108,
+      "display_name": "主玩辅助",
+      "default_name": "Support Main",
+      "icon": "assets/ux/kiwi/augments/icons/questsupportmain_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "任务：治疗友方英雄3000生命值。\n\n奖励：你提供的任何治疗效果现在还会在初始治疗之后提供持续治疗。",
+      "effect_detail": "任务：治疗友方英雄3000生命值。\n\n奖励：你提供的任何治疗效果现在还会在3秒里提供相当于25%初始治疗量的持续治疗效果。\n\n已造成的治疗：? / 3000"
+    },
+    {
+      "id": "SurgeField",
+      "numeric_id": 2134,
+      "display_name": "电涌力场",
+      "default_name": "Surge Field",
+      "icon": "assets/ux/kiwi/augments/icons/surgefield_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在施放终极技能时，在你周围生成一个地带来提供技能急速和移动速度。在其中时，它会发射飞弹，飞弹造成相当于你造成的20%伤害。",
+      "effect_detail": "在施放终极技能时，在你周围生成一个地带。在它其中时，获得50技能急速和40%移动速度，并发射若干飞弹来对敌人们造成20%已造成伤害。\n\n这个地带会在你第一次离开它时跟随你，并且在你第二次离开它时，它会在短暂持续之后消散。\n\n飞弹伤害：?"
+    },
+    {
+      "id": "SwiftAndSafe",
+      "numeric_id": 1315,
+      "display_name": "快中求稳",
+      "default_name": "Swift and Safe",
+      "icon": "assets/ux/kiwi/augments/icons/swiftandsafe_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "在冲刺或闪烁后，获得护盾值。",
+      "effect_detail": "在冲刺或闪烁后，获得持续2秒的65-290（随等级）（+26%法术强度）（+65%额外攻击力）护盾值。 (5秒冷却时间)"
+    },
+    {
+      "id": "Terraind",
+      "numeric_id": 2129,
+      "display_name": "地形专家",
+      "default_name": "Terrain'd",
+      "icon": "assets/ux/cherry/augments/icons/lightningstrikes_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你的【{{技能名}}】技能会在它周围的一个区域内造成伤害。",
+      "effect_detail": "由你的【{{技能名}}】技能生成的地形会每秒对附近的敌人们造成5-45（随等级）（+5%法术强度）×4魔法伤害。\n\n地形伤害：?\n\n如果是终极技能，那么此伤害提升?。"
+    },
+    {
+      "id": "TitansPulse",
+      "numeric_id": 2076,
+      "display_name": "保持坚定",
+      "default_name": "Stay Resolute",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_silver.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "当【{{技能名}}】技能对敌方英雄造成伤害时，获得20护甲和魔法抗性。",
+      "effect_detail": "用【{{技能名}}】技能对敌方英雄造成伤害会基于其伤害类型为你提供20护甲或魔抗。\n\n额外护甲：?\n额外魔抗：?\n\n如果这不是你的第一个强化符文，获得20护甲和魔抗。"
+    },
+    {
+      "id": "TrustyWeapon",
+      "numeric_id": 2136,
+      "display_name": "可靠武器",
+      "default_name": "Trusty Weapon",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_silver.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "用【{{技能名}}】技能打击敌方英雄时会铸造一条友谊纽带。\n\n【{{技能名}}】技能基于你的友谊等级获得到临时提升伤害",
+      "effect_detail": "在你用【{{技能名}}】技能打击一个敌方英雄时，铸造一条友谊纽带来为该技能提供?提升伤害，持续6秒。这个效果可以叠加。\n\n额外伤害：?\n最大友谊等级：?\n\n“我——我才不是喜欢你呢！”——{{SpellNameOnly}}"
+    },
+    {
+      "id": "Twinfire",
+      "numeric_id": 1415,
+      "display_name": "双生火焰",
+      "default_name": "Twin Fire",
+      "icon": "assets/ux/kiwi/augments/icons/twinfire_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "造成技能伤害时，发射1+暴击率/3个飞弹，每个造成10-30（随等级）（+7%额外攻击力）（+7%法术强度）魔法伤害。\n\n此外，获得25%暴击几率。",
+      "effect_detail": "造成技能伤害时，发射1+暴击率/3个飞弹，每个造成10-30（随等级）（+7%额外攻击力）（+7%法术强度）魔法伤害。\n\n此外，获得25%暴击几率。"
+    },
+    {
+      "id": "UltimateAwakening",
+      "numeric_id": 1349,
+      "display_name": "终极唤醒",
+      "default_name": "Ultimate Awakening",
+      "icon": "assets/ux/kiwi/augments/icons/zerohour_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得30终极技能急速。\n在施放你的终极技能后，刷新你的所有基础技能并获得持续15秒的300基础技能急速。(20秒冷却时间)",
+      "effect_detail": "获得30终极技能急速。\n在施放你的终极技能后，刷新你的所有基础技能并获得持续15秒的300基础技能急速。(20秒冷却时间)"
+    },
+    {
+      "id": "Upgrade_DeathDance",
+      "numeric_id": 2157,
+      "display_name": "升级：死亡之舞",
+      "default_name": "Upgrade Death's Dance",
+      "icon": "assets/ux/kiwi/augments/icons/upgradedeathdance_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得 250金币。\n\n你所受的40%（近战）/15%（远程）伤害会在周期内持续扣除。\n在参与一次击杀后，即刻治疗更多生命值。",
+      "effect_detail": "获得 250金币。\n\n你所受的40%（近战）/15%（远程）伤害会在3秒里持续扣除。\n在参与一次击杀后，即刻治疗+125%额外攻击力生命值。"
+    },
+    {
+      "id": "Upgrade_Ravenous",
+      "numeric_id": 2140,
+      "display_name": "升级：贪欲九头蛇",
+      "default_name": "Upgrade Ravenous Hydra",
+      "icon": "assets/ux/kiwi/augments/icons/upgradesheen_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "你对敌人的技能命中会触发顺劈。提升【贪欲九头蛇】的生命偷取至20%。\n\n获得500金币金币.",
+      "effect_detail": "你对敌人的技能命中会触发顺劈。提升【贪欲九头蛇】的生命偷取至20%。\n\n获得500金币金币."
+    },
+    {
+      "id": "Upgrade_SunderedSky",
+      "numeric_id": 2143,
+      "display_name": "升级：焚天",
+      "default_name": "Upgrade Sundered Sky",
+      "icon": "assets/ux/kiwi/augments/icons/upgradeie_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "将【焚天】对每个目标的冷却时间缩短至5秒，并且治疗你9%已损失生命值。\n\n获得500金币金币。",
+      "effect_detail": "将【焚天】对每个目标的冷却时间缩短至5秒，并且治疗你9%已损失生命值。\n\n获得500金币金币。"
+    },
+    {
+      "id": "Upgrade_SwordOfBlossom",
+      "numeric_id": 1379,
+      "display_name": "升级：花晓之剑",
+      "default_name": "Upgrade Sword of Blossoming Dawn",
+      "icon": "assets/ux/kiwi/augments/icons/upgrademikaelsblessing_large.tex",
+      "rarity": "kPrismatic",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得100%攻击速度。\n\n你对英雄的攻击会使来自【花晓之剑】的治疗效果提升250%。",
+      "effect_detail": "获得100%攻击速度。\n\n你对英雄的攻击会使来自【花晓之剑】的治疗效果提升250%。"
+    },
+    {
+      "id": "Vampirism",
+      "numeric_id": 1346,
+      "display_name": "吸血习性",
+      "default_name": "Vampirism",
+      "icon": "assets/ux/kiwi/augments/icons/vampired_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": false,
+      "effect": "你不再能够被友军治疗或获得生命回复。获得25%全能吸血。",
+      "effect_detail": "你不再能够被友军治疗或获得生命回复。获得25%全能吸血。"
+    },
+    {
+      "id": "VeilOfWarding",
+      "numeric_id": 1034,
+      "display_name": "防护面纱",
+      "default_name": "Veil of Warding",
+      "icon": "assets/ux/kiwi/augments/icons/poltergeist_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "每30秒获得一层法术护盾来格挡下一个敌方技能。",
+      "effect_detail": "每30秒获得一层法术护盾来格挡下一个敌方技能。"
+    },
+    {
+      "id": "VoidDash",
+      "numeric_id": 2097,
+      "display_name": "虚空冲刺",
+      "default_name": "Void Dash",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_gold.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": false,
+      "effect": "用【{{技能名}}】技能冲刺时会产生一片【虚空地带】来对敌方英雄们造成减速和魔法伤害。",
+      "effect_detail": "【{{技能名}}】技能会在目标终点产生一片【虚空地带】。它会对敌方英雄们造成持续1秒的35%减速以及80-400（随等级）（+100%技能急速）魔法伤害。\n\n已减速的英雄数：?"
+    },
+    {
+      "id": "WardingWeapon",
+      "numeric_id": 2138,
+      "display_name": "自适应防护",
+      "default_name": "Adaptive Ward",
+      "icon": "assets/ux/kiwi/augments/icons/genericabilityaugmenticon_silver.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "用【{{技能名}}】技能打击一个敌方英雄时，为你提供持续6秒的?护甲或魔法抗性，基于该技能的伤害类型。这个效果可以叠加。",
+      "effect_detail": "用【{{技能名}}】技能打击一个敌方英雄时，为你提供持续6秒的?护甲或魔法抗性，基于该技能的伤害类型。这个效果可以叠加。\n\n最大防护等级：?"
+    },
+    {
+      "id": "WarlockJuicebox",
+      "numeric_id": 2132,
+      "display_name": "术士果汁盒",
+      "default_name": "Warlock Juicebox",
+      "icon": "assets/ux/kiwi/augments/icons/warlockjuicebox_large.tex",
+      "rarity": "kGold",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "获得?全能吸血。",
+      "effect_detail": "获得?全能吸血。"
+    },
+    {
+      "id": "YouSpinMeRightRound",
+      "numeric_id": 1386,
+      "display_name": "转得我眩晕了",
+      "default_name": "Spin Me Right Round",
+      "icon": "assets/ux/kiwi/augments/icons/youspinmerightround_large.tex",
+      "rarity": "kSilver",
+      "modes": [
+        "KIWI"
+      ],
+      "enabled": true,
+      "effect": "将一个召唤师技能替换为骄行荡寇。\n\n骄行荡寇发射一根钩爪，吸附在地形上，在此之后，你可以再次施放来绕着它摆荡。在摆荡状态下，自动攻击相距最近的那个敌人。在与一个敌方英雄碰撞或再次施放时结束摆荡。",
+      "effect_detail": "将一个召唤师技能替换为骄行荡寇。\n\n骄行荡寇发射一根钩爪，吸附在地形上，在此之后，你可以再次施放来绕着它摆荡。在摆荡状态下，自动攻击相距最近的那个敌人。在与一个敌方英雄碰撞或再次施放时结束摆荡。"
+    }
+  ]
+}

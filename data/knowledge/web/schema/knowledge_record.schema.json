@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "knowledge_record.schema.json",
+  "title": "Phase3 Knowledge Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "knowledge_id",
+    "knowledge_type",
+    "claim_ids",
+    "fusion_status",
+    "patch",
+    "champion",
+    "augment",
+    "items",
+    "summary",
+    "confidence",
+    "conflict_group"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "knowledge_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+    "knowledge_type": {"enum": ["ITEM_IMPACT", "AUGMENT_SYNERGY"]},
+    "claim_ids": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"}
+    },
+    "fusion_status": {"enum": ["SINGLE_SOURCE", "FUSED_CONSENSUS", "CONFLICTED"]},
+    "patch": {"type": "string", "pattern": "^(UNKNOWN|[1-9][0-9]?\\.[1-9][0-9]?[a-z]?)$"},
+    "champion": {"type": "string", "minLength": 1, "maxLength": 128},
+    "augment": {"type": "string", "minLength": 1, "maxLength": 128},
+    "items": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 128}
+    },
+    "summary": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "confidence": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+    "conflict_group": {
+      "anyOf": [
+        {"type": "null"},
+        {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"}
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"knowledge_type": {"const": "ITEM_IMPACT"}}, "required": ["knowledge_type"]},
+      "then": {"properties": {"items": {"minItems": 1}}}
+    },
+    {
+      "if": {"properties": {"fusion_status": {"const": "SINGLE_SOURCE"}}, "required": ["fusion_status"]},
+      "then": {"properties": {"claim_ids": {"minItems": 1, "maxItems": 1}}}
+    },
+    {
+      "if": {"properties": {"fusion_status": {"const": "FUSED_CONSENSUS"}}, "required": ["fusion_status"]},
+      "then": {"properties": {"claim_ids": {"minItems": 2}, "conflict_group": {"const": null}}}
+    },
+    {
+      "if": {"properties": {"fusion_status": {"const": "CONFLICTED"}}, "required": ["fusion_status"]},
+      "then": {
+        "properties": {
+          "claim_ids": {"minItems": 2},
+          "conflict_group": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"}
+        }
+      }
+    }
+  ]
+}

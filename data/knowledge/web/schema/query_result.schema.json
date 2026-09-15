@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "query_result.schema.json",
+  "title": "Phase3 Player-safe Query Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "query_id",
+    "knowledge_ids",
+    "source_ids",
+    "patch",
+    "champion",
+    "augment",
+    "items",
+    "summary",
+    "confidence"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "query_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+    "knowledge_ids": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"}
+    },
+    "source_ids": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"}
+    },
+    "patch": {"type": "string", "pattern": "^(UNKNOWN|[1-9][0-9]?\\.[1-9][0-9]?[a-z]?)$"},
+    "champion": {"type": "string", "minLength": 1, "maxLength": 128},
+    "augment": {"type": "string", "minLength": 1, "maxLength": 128},
+    "items": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 128}
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000,
+      "pattern": "^(?!.*(必须选|一定要选|必选)).*$"
+    },
+    "confidence": {"type": "number", "minimum": 0.0, "maximum": 1.0}
+  }
+}

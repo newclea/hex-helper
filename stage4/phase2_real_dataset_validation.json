@@ -1,0 +1,128 @@
+{
+  "annotated_sample_count": 3,
+  "benchmark_eligible_sample_count": 3,
+  "benchmark_excluded_counts": {
+    "invalid_or_unannotated_real": 0,
+    "synthetic": 0,
+    "unknown": 0
+  },
+  "dataset_root": "F:\\Realworld\\lol\\data\\dataset\\augment_offers",
+  "duplicate_sample_hashes": [],
+  "duplicate_sample_ids": [],
+  "invalid_card_count": 0,
+  "issues": [],
+  "knowledge_path": "F:\\Realworld\\lol\\data\\knowledge\\augments.zh-CN.json",
+  "provenance_counts": {
+    "real": 3,
+    "synthetic": 0,
+    "unknown": 0
+  },
+  "real_sample_count": 3,
+  "resolution_distribution": {
+    "CENTER": {
+      "238x353": 3
+    },
+    "LEFT": {
+      "238x353": 3
+    },
+    "RAW": {
+      "1280x800": 3
+    },
+    "RIGHT": {
+      "238x353": 3
+    }
+  },
+  "sample_count": 3,
+  "samples": [
+    {
+      "annotated": true,
+      "artifact_naming": "legacy_deprecated",
+      "benchmark_eligible": true,
+      "issues": [],
+      "path": "real/real-preview-1787670257978-f010",
+      "provenance": "real",
+      "sample_id": "real-preview-1787670257978-f010",
+      "sample_sha256": "230bf62a4db80c529b00a19e64181f03290f0a4da43cff415b289c3114a04ba1",
+      "valid": true,
+      "warnings": [
+        {
+          "code": "deprecated_artifact_names",
+          "message": "LEFT.png/CENTER.png/RIGHT.png 仅用于一次迁移兼容；请迁移为 LEFT_CARD.png/CENTER_CARD.png/RIGHT_CARD.png",
+          "path": "real/real-preview-1787670257978-f010",
+          "provenance": "real",
+          "sample_id": "real-preview-1787670257978-f010"
+        }
+      ]
+    },
+    {
+      "annotated": true,
+      "artifact_naming": "legacy_deprecated",
+      "benchmark_eligible": true,
+      "issues": [],
+      "path": "real/real-preview-1787670257978-f020",
+      "provenance": "real",
+      "sample_id": "real-preview-1787670257978-f020",
+      "sample_sha256": "170dcf19361ba634bd12e763d08161ad7b5131eba6c62d0104dad82088d137d9",
+      "valid": true,
+      "warnings": [
+        {
+          "code": "deprecated_artifact_names",
+          "message": "LEFT.png/CENTER.png/RIGHT.png 仅用于一次迁移兼容；请迁移为 LEFT_CARD.png/CENTER_CARD.png/RIGHT_CARD.png",
+          "path": "real/real-preview-1787670257978-f020",
+          "provenance": "real",
+          "sample_id": "real-preview-1787670257978-f020"
+        }
+      ]
+    },
+    {
+      "annotated": true,
+      "artifact_naming": "legacy_deprecated",
+      "benchmark_eligible": true,
+      "issues": [],
+      "path": "real/real-preview-1787670572085-f0025",
+      "provenance": "real",
+      "sample_id": "real-preview-1787670572085-f0025",
+      "sample_sha256": "4bf7980c84a184bb93bbb83438ebbbcac5ef5832c5e8f4ea5618e4046602fe8a",
+      "valid": true,
+      "warnings": [
+        {
+          "code": "deprecated_artifact_names",
+          "message": "LEFT.png/CENTER.png/RIGHT.png 仅用于一次迁移兼容；请迁移为 LEFT_CARD.png/CENTER_CARD.png/RIGHT_CARD.png",
+          "path": "real/real-preview-1787670572085-f0025",
+          "provenance": "real",
+          "sample_id": "real-preview-1787670572085-f0025"
+        }
+      ]
+    }
+  ],
+  "schema_version": 1,
+  "synthetic_sample_count": 0,
+  "unannotated_sample_count": 0,
+  "unknown_sample_count": 0,
+  "valid": true,
+  "valid_card_count": 9,
+  "warning_count": 3,
+  "warnings": [
+    {
+      "code": "deprecated_artifact_names",
+      "message": "LEFT.png/CENTER.png/RIGHT.png 仅用于一次迁移兼容；请迁移为 LEFT_CARD.png/CENTER_CARD.png/RIGHT_CARD.png",
+      "path": "real/real-preview-1787670257978-f010",
+      "provenance": "real",
+      "sample_id": "real-preview-1787670257978-f010"
+    },
+    {
+      "code": "deprecated_artifact_names",
+      "message": "LEFT.png/CENTER.png/RIGHT.png 仅用于一次迁移兼容；请迁移为 LEFT_CARD.png/CENTER_CARD.png/RIGHT_CARD.png",
+      "path": "real/real-preview-1787670257978-f020",
+      "provenance": "real",
+      "sample_id": "real-preview-1787670257978-f020"
+    },
+    {
+      "code": "deprecated_artifact_names",
+      "message": "LEFT.png/CENTER.png/RIGHT.png 仅用于一次迁移兼容；请迁移为 LEFT_CARD.png/CENTER_CARD.png/RIGHT_CARD.png",
+      "path": "real/real-preview-1787670572085-f0025",
+      "provenance": "real",
+      "sample_id": "real-preview-1787670572085-f0025"
+    }
+  ]
+}
