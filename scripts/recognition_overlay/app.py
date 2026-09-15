@@ -41,7 +41,11 @@ from paths import (
 )
 from live_client import LiveClientPoller
 from view_model import RecognitionViewModel
-from click_flag import AUTO_REREAD_INTERVAL_SECONDS, AutoRereadMonitor
+from click_flag import (
+    AUTO_REREAD_INTERVAL_SECONDS,
+    AutoRereadMonitor,
+    write_left_click,
+)
 from vision_client import VisionSupervisor
 from cat_overlay import CatOverlayWindow
 from controller import ProductController, default_recommendation_root
@@ -143,13 +147,15 @@ class RecognitionApp:
             self.product = ProductController(
                 engine=engine,
                 store=StrategyStore(strategy_path()),
+                configured_mode=args.mode,
                 on_change=self._on_product_change,
             )
             self.window = CatOverlayWindow(
                 width=args.width,
-                height=min(args.height, 300),
+                height=min(args.height, 340),
                 cat_path=repository_root / "assets" / "gamebuddy-cat.png",
                 on_strategy=self.product.select_strategy,
+                on_refresh=self._on_manual_refresh,
                 on_ready=self._start_workers,
                 on_close=self.stop,
             )
@@ -197,6 +203,12 @@ class RecognitionApp:
         with self._lock:
             if self.model.mark_recognize_waiting():
                 self._publish()
+
+    def _on_manual_refresh(self) -> None:
+        with self._lock:
+            self.model.mark_left_click()
+            write_left_click(vision_workspace())
+            self._publish()
 
     def _on_lcu(self, event: Mapping[str, Any]) -> None:
         with self._lock:
