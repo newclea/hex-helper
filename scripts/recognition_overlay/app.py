@@ -44,7 +44,6 @@ from view_model import RecognitionViewModel
 from click_flag import (
     AUTO_REREAD_INTERVAL_SECONDS,
     AutoRereadMonitor,
-    write_left_click,
 )
 from vision_client import VisionSupervisor
 from cat_overlay import CatOverlayWindow
@@ -207,8 +206,8 @@ class RecognitionApp:
     def _on_manual_refresh(self) -> None:
         with self._lock:
             self.model.mark_left_click()
-            write_left_click(vision_workspace())
             self._publish()
+        self.vision.request_reread()
 
     def _on_lcu(self, event: Mapping[str, Any]) -> None:
         with self._lock:

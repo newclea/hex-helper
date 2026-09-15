@@ -1858,6 +1858,25 @@ class ViewModelTests(unittest.TestCase):
 
 
 class VisionClientTests(unittest.TestCase):
+    def test_manual_reread_temporarily_opens_ocr_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp)
+            supervisor = vision_client.VisionSupervisor(
+                exe=None,
+                knowledge=workspace / "knowledge.json",
+                workspace=workspace,
+                on_payload=lambda _kind, _payload: None,
+                on_status=lambda _status, _detail: None,
+                completed_offers=lambda: 0,
+                champion=lambda: None,
+                should_ocr=lambda: False,
+            )
+            self.assertFalse(supervisor._ocr_open())
+            supervisor.request_reread()
+            self.assertTrue(supervisor._ocr_open())
+            supervisor._finish_forced_reread()
+            self.assertFalse(supervisor._ocr_open())
+
     def test_classifies_game_state_and_selection(self) -> None:
         game_state = vision_client.parse_vision_line(
             json.dumps(

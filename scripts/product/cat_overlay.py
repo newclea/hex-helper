@@ -50,6 +50,9 @@ class CatOverlayWindow:
         self._canvas: Any = None
         self._cat: Any = None
         self._click_regions: list[tuple[int, int, int, int, str]] = []
+        self._wndproc: Any = None
+        self._old_wndproc: int | None = None
+        self._hwnd: int | None = None
 
     def set_view(self, view: Mapping[str, Any]) -> None:
         self._updates.put(dict(view))
@@ -88,11 +91,72 @@ class CatOverlayWindow:
             ex_style &= ~ws_ex_transparent
         set_long(hwnd, -20, ex_style)
 
+    def _install_hit_test(self) -> None:
+        if os.name != "nt" or self._root is None:
+            return
+        user32 = ctypes.windll.user32
+        hwnd = int(self._root.winfo_id())
+        wndproc_type = ctypes.WINFUNCTYPE(
+            ctypes.c_ssize_t,
+            ctypes.c_void_p,
+            ctypes.c_uint,
+            ctypes.c_size_t,
+            ctypes.c_ssize_t,
+        )
+        user32.SetWindowLongPtrW.argtypes = [
+            ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p
+        ]
+        user32.SetWindowLongPtrW.restype = ctypes.c_ssize_t
+        user32.CallWindowProcW.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_uint,
+            ctypes.c_size_t,
+            ctypes.c_ssize_t,
+        ]
+        user32.CallWindowProcW.restype = ctypes.c_ssize_t
+        old_wndproc = 0
+
+        def window_proc(
+            window: int, message: int, wparam: int, lparam: int
+        ) -> int:
+            if message == 0x0084:  # WM_NCHITTEST
+                class Point(ctypes.Structure):
+                    _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]
+
+                point = Point(
+                    ctypes.c_short(lparam & 0xFFFF).value,
+                    ctypes.c_short((lparam >> 16) & 0xFFFF).value,
+                )
+                user32.ScreenToClient(window, ctypes.byref(point))
+                for left, top, right, bottom, _ in self._click_regions:
+                    if left <= point.x <= right and top <= point.y <= bottom:
+                        return 1  # HTCLIENT
+                return -1  # HTTRANSPARENT
+            return int(
+                user32.CallWindowProcW(
+                    old_wndproc, window, message, wparam, lparam
+                )
+            )
+
+        callback = wndproc_type(window_proc)
+        callback_address = ctypes.cast(callback, ctypes.c_void_p)
+        old_wndproc = int(user32.SetWindowLongPtrW(hwnd, -4, callback_address))
+        if old_wndproc:
+            self._hwnd = hwnd
+            self._old_wndproc = old_wndproc
+            self._wndproc = callback
+
     def _draw(self) -> None:
         canvas = self._canvas
         canvas.delete("all")
         self._click_regions = []
         options = self._view.get("options")
+        visible_options = (
+            [item for item in options[:3] if isinstance(item, Mapping)]
+            if isinstance(options, list)
+            else []
+        )
         refresh_available = (
             self.on_refresh is not None
             and self._view.get("refresh_available") is True
@@ -123,7 +187,7 @@ class CatOverlayWindow:
             outline=BUBBLE_BORDER,
         )
         message = str(self._view.get("message") or "")
-        canvas.create_text(
+        message_item = canvas.create_text(
             28,
             30,
             anchor="nw",
@@ -132,11 +196,36 @@ class CatOverlayWindow:
             fill=INK,
             font=("Microsoft YaHei UI", 12, "bold"),
         )
-        y = 154 if message.count("\n") >= 3 else 92
-        if isinstance(options, list):
-            for option in options[:3]:
-                if not isinstance(option, Mapping):
-                    continue
+        option_height = (
+            48 + max(0, len(visible_options) - 1) * 54
+            if visible_options
+            else 0
+        )
+        latest_option_y = bubble_bottom - option_height
+        max_message_bottom = (
+            latest_option_y - 16 if visible_options else bubble_bottom - 12
+        )
+        message_box = canvas.bbox(message_item)
+        if message_box and message_box[3] > max_message_bottom:
+            low, high, best = 0, len(message), ""
+            while low <= high:
+                middle = (low + high) // 2
+                candidate = message[:middle].rstrip() + "…"
+                canvas.itemconfigure(message_item, text=candidate)
+                candidate_box = canvas.bbox(message_item)
+                if candidate_box and candidate_box[3] <= max_message_bottom:
+                    best = candidate
+                    low = middle + 1
+                else:
+                    high = middle - 1
+            canvas.itemconfigure(message_item, text=best or "…")
+            message_box = canvas.bbox(message_item)
+        y = min(
+            max(92, (message_box[3] + 16) if message_box else 92),
+            latest_option_y,
+        )
+        if visible_options:
+            for option in visible_options:
                 available = option.get("available") is True
                 option_id = str(option.get("id") or "")
                 title = str(option.get("title") or "")
@@ -192,6 +281,12 @@ class CatOverlayWindow:
     def _close(self) -> None:
         if self.on_close is not None:
             self.on_close()
+        if os.name == "nt" and self._hwnd and self._old_wndproc:
+            ctypes.windll.user32.SetWindowLongPtrW(
+                self._hwnd, -4, self._old_wndproc
+            )
+            self._old_wndproc = None
+            self._wndproc = None
         if self._root is not None:
             self._root.destroy()
 
@@ -218,6 +313,8 @@ class CatOverlayWindow:
         )
         self._canvas = canvas
         canvas.pack(fill="both", expand=True)
+        root.update_idletasks()
+        self._install_hit_test()
         image = tk.PhotoImage(file=str(self.cat_path))
         factor = max(1, image.width() // 112)
         self._cat = image.subsample(factor, factor)

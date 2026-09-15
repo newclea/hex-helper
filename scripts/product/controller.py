@@ -26,11 +26,29 @@ class ProductController:
         self._strategy_id: str | None = None
         self._match_id: str | None = None
         self._hero: str | None = None
+        self._champ_select_page = "advice"
+        self._advice_page = 0
 
     def select_strategy(self, strategy_id: str) -> None:
         hero = str(self._last_snapshot.get("champion") or "").strip()
         match_id = str(self._last_snapshot.get("match_id") or "").strip()
         if not hero or not match_id:
+            return
+        if (
+            strategy_id == "__next_advice__"
+            and self._last_snapshot.get("phase") == "ChampSelect"
+        ):
+            self._advice_page += 1
+            if self.on_change is not None:
+                self.on_change()
+            return
+        if (
+            strategy_id == "__show_strategy__"
+            and self._last_snapshot.get("phase") == "ChampSelect"
+        ):
+            self._champ_select_page = "strategy"
+            if self.on_change is not None:
+                self.on_change()
             return
         option = next(
             (
@@ -57,6 +75,8 @@ class ProductController:
             self._match_id = match_id
             self._strategy_id = None
             self._hero = None
+            self._champ_select_page = "advice"
+            self._advice_page = 0
         if not hero and phase == "ChampSelect" and bench:
             selection_lines = self.engine.champion_select_recommendations(
                 current_hero=None,
@@ -85,6 +105,8 @@ class ProductController:
         if hero != self._hero:
             self._hero = hero
             self._strategy_id = None
+            self._champ_select_page = "advice"
+            self._advice_page = 0
         persisted = self.store.load(match_id)
         if (
             self._strategy_id is None
@@ -111,12 +133,30 @@ class ProductController:
                 }
 
         if self._strategy_id is None:
+            if phase == "ChampSelect" and self._champ_select_page == "advice":
+                page_size = 2
+                page_count = max(1, (len(selection_lines) + page_size - 1) // page_size)
+                self._advice_page = min(self._advice_page, page_count - 1)
+                start = self._advice_page * page_size
+                page_lines = selection_lines[start : start + page_size]
+                has_more = start + page_size < len(selection_lines)
+                return {
+                    "state": "champ_select_advice",
+                    "message": "\n".join(page_lines),
+                    "options": [{
+                        "id": "__next_advice__" if has_more else "__show_strategy__",
+                        "title": "继续查看建议" if has_more else "选择本局推荐方式",
+                        "subtitle": (
+                            f"第 {self._advice_page + 1}/{page_count} 页，点击查看下一页"
+                            if has_more
+                            else "查看胜率优先和两种趣味玩法"
+                        ),
+                        "available": True,
+                    }],
+                }
             return {
                 "state": "choose_strategy",
-                "message": "\n".join(
-                    selection_lines
-                    + [f"{hero} 已确认，选一种本局推荐方式："]
-                ),
+                "message": f"{hero} 已确认，选一种本局推荐方式：",
                 "options": [item.as_dict() for item in self.engine.strategy_options(hero)],
             }
 
@@ -164,14 +204,7 @@ class ProductController:
                 "message": "\n".join(selection_lines),
                 "options": [],
             }
-        ocr_expected = str(snapshot.get("mayhem_status") or "") in {
-            "ARMED",
-            "DEATH_TRIGGERED",
-            "FOUNTAIN_TRIGGERED",
-            "QUEUED_OFFER_TRIGGERED",
-            "OFFER_DETECTED",
-            "WINDOW_EXPIRED",
-        } or str(snapshot.get("vision_status") or "") == "识别中"
+        ocr_expected = snapshot.get("ocr_allowed") is True
         if phase != "ChampSelect" and not choices and ocr_expected:
             return {
                 "state": "ocr_unavailable",
