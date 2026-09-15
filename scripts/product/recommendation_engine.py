@@ -387,7 +387,7 @@ class RecommendationEngine:
                 if rate is not None
                 else (
                     f"胜率池暂无{scope}的有效数据，"
-                    f"临时按稳定槽位选择{SLOT_LABELS[card['slot']]}。"
+                    f"临时选择「{card['name']}」海克斯。"
                 )
             )
             return Recommendation(
@@ -442,7 +442,7 @@ class RecommendationEngine:
         else:
             fallback = (
                 "胜率池也暂无有效数据，"
-                f"临时选{SLOT_LABELS[card['slot']]}"
+                f"临时选择「{card['name']}」海克斯"
             )
         return Recommendation(
             augment=card["name"],

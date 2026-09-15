@@ -145,8 +145,8 @@ class ProductController:
                 return {
                     "state": "recommendation",
                     "message": (
-                        f"推荐选「{recommendation.augment}」"
-                        f"（{recommendation.position}）。\n{recommendation.reason}"
+                        f"推荐选择「{recommendation.augment}」海克斯。"
+                        f"\n{recommendation.reason}"
                         + (
                             "\n存在海克斯未准确识别，可点击猫咪刷新。"
                             if incomplete

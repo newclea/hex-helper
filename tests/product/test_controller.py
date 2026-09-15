@@ -44,7 +44,8 @@ class ProductControllerTest(unittest.TestCase):
             ]
             recommendation = controller.present(snapshot)
             self.assertEqual("recommendation", recommendation["state"])
-            self.assertIn("左侧", recommendation["message"])
+            self.assertIn("选择「核心甲」海克斯", recommendation["message"])
+            self.assertNotIn("左侧", recommendation["message"])
             snapshot["offer"] = []
             snapshot["selected"] = [{"name": "核心甲"}]
             snapshot["mayhem_status"] = "DEATH_TRIGGERED"
