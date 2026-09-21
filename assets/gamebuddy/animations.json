@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "fallback": "../gamebuddy-cat.png",
+  "clips": {
+    "idle": {
+      "frame_ms": 120,
+      "loop": true,
+      "frames": [
+        "idle/000.png", "idle/001.png", "idle/002.png", "idle/003.png",
+        "idle/004.png", "idle/005.png", "idle/006.png", "idle/007.png",
+        "idle/008.png", "idle/009.png", "idle/010.png", "idle/011.png"
+      ]
+    },
+    "greeting": {
+      "frame_ms": 100,
+      "loop": true,
+      "frames": [
+        "greeting/000.png", "greeting/001.png", "greeting/002.png",
+        "greeting/003.png", "greeting/004.png", "greeting/005.png",
+        "greeting/006.png", "greeting/007.png", "greeting/008.png",
+        "greeting/009.png"
+      ]
+    },
+    "thinking": {
+      "frame_ms": 100,
+      "loop": true,
+      "frames": [
+        "thinking/000.png", "thinking/001.png", "thinking/002.png",
+        "thinking/003.png", "thinking/004.png", "thinking/005.png",
+        "thinking/006.png", "thinking/007.png", "thinking/008.png",
+        "thinking/009.png"
+      ]
+    },
+    "listening": {
+      "frame_ms": 100,
+      "loop": true,
+      "frames": [
+        "listening/000.png", "listening/001.png", "listening/002.png",
+        "listening/003.png", "listening/004.png", "listening/005.png",
+        "listening/006.png", "listening/007.png"
+      ]
+    },
+    "success": {
+      "frame_ms": 100,
+      "loop": true,
+      "frames": [
+        "success/000.png", "success/001.png", "success/002.png",
+        "success/003.png", "success/004.png", "success/005.png",
+        "success/006.png", "success/007.png", "success/008.png",
+        "success/009.png"
+      ]
+    },
+    "failure": {
+      "frame_ms": 120,
+      "loop": true,
+      "frames": [
+        "failure/000.png", "failure/001.png", "failure/002.png",
+        "failure/003.png", "failure/004.png", "failure/005.png",
+        "failure/006.png", "failure/007.png", "failure/008.png",
+        "failure/009.png", "failure/010.png", "failure/011.png"
+      ]
+    }
+  }
+}
