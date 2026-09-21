@@ -67,14 +67,11 @@ class AnimationStateController:
     def update(self, view: Mapping[str, Any], now: float, dragging: bool = False) -> str:
         if dragging:
             return "thinking"
-        base = select_base_state(view)
-        if base == "failure":
-            return base
         if self._greeting_until is None:
             return self.start(now)
         if now < self._greeting_until:
             return "greeting"
-        return base
+        return select_base_state(view)
 
 
 def _safe_frame_path(root: Path, value: object) -> Path | None:

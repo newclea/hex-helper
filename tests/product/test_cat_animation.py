@@ -93,11 +93,12 @@ class AnimationStateTests(unittest.TestCase):
         self.assertEqual("thinking", controller.update(view, 4.0, dragging=True))
         self.assertEqual("success", controller.update(view, 4.1, dragging=False))
 
-    def test_failure_preempts_transition(self) -> None:
+    def test_startup_greeting_hides_failure_until_cycle_finishes(self) -> None:
         controller = AnimationStateController()
-        controller.update({"state": "recommendation", "bubble_visible": True}, 0.0)
-        view = {"state": "ocr_error", "bubble_visible": True}
-        self.assertEqual("failure", controller.update(view, 0.1))
+        failure = {"state": "ocr_error", "bubble_visible": True}
+        self.assertEqual("greeting", controller.update(failure, 0.0))
+        self.assertEqual("greeting", controller.update(failure, 2.99))
+        self.assertEqual("failure", controller.update(failure, 3.0))
 
     def test_base_mapping(self) -> None:
         cases = (

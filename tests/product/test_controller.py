@@ -46,6 +46,25 @@ class ProductControllerTextTests(unittest.TestCase):
             view = controller.present({"phase": "InProgress", "match_id": "waiting"})
         self.assertNotIn("message_blocks", view)
 
+    def test_hidden_offer_ignores_stale_ocr_error(self) -> None:
+        engine = RecommendationEngine.load(Path("data/recommendation"))
+        with TemporaryDirectory() as directory:
+            controller = ProductController(
+                engine=engine,
+                store=StrategyStore(Path(directory) / "strategy.json"),
+            )
+            view = controller.present({
+                "phase": "InProgress",
+                "match_id": "hidden-offer",
+                "champion": "万花通灵 妮蔻",
+                "game_mode": "KIWI",
+                "offer_visible": False,
+                "ocr_feedback": {"state": "ocr_error"},
+            })
+        self.assertFalse(view["bubble_visible"])
+        self.assertEqual([], view["options"])
+        self.assertNotEqual("ocr_error", view["state"])
+
 
 if __name__ == "__main__":
     unittest.main()

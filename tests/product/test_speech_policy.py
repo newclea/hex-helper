@@ -82,6 +82,15 @@ class CompanionSpeechPolicyTests(unittest.TestCase):
         view = {"state": "waiting", "bubble_visible": False, "message": "等待"}
         self.assertEqual((), policy.update(view, 1.0))
 
+    def test_hidden_ocr_error_is_not_spoken(self) -> None:
+        policy = CompanionSpeechPolicy()
+        messages = policy.update(
+            {"state": "ocr_error", "bubble_visible": False},
+            1.0,
+        )
+        self.assertEqual((), messages)
+        self.assertEqual((), policy.tick(4.0))
+
     def test_recommendation_can_repeat_after_hidden_epoch(self) -> None:
         policy = CompanionSpeechPolicy()
         view = {
