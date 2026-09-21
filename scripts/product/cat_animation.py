@@ -18,8 +18,7 @@ ANIMATION_STATES = (
     "success",
     "failure",
 )
-GREETING_SECONDS = 1.2
-LISTENING_SECONDS = 0.6
+GREETING_SECONDS = 3.0
 FAILURE_STATES = frozenset({"ocr_error", "recommendation_unavailable", "unsupported_mode"})
 THINKING_STATES = frozenset({"ocr_reading", "ocr_confirming", "ocr_updating"})
 
@@ -55,32 +54,27 @@ def select_base_state(view: Mapping[str, Any]) -> str:
 
 
 class AnimationStateController:
-    """Add finite greeting/listening transitions to persistent view states."""
+    """Show one startup greeting, then map views directly to animation states."""
 
     def __init__(self) -> None:
-        self._last_visible = False
-        self._last_base = "idle"
-        self._transition: str | None = None
-        self._transition_until = 0.0
+        self._greeting_until: float | None = None
 
-    def update(self, view: Mapping[str, Any], now: float) -> str:
-        visible = view.get("bubble_visible") is not False
+    def start(self, now: float) -> str:
+        if self._greeting_until is None:
+            self._greeting_until = now + GREETING_SECONDS
+        return "greeting"
+
+    def update(self, view: Mapping[str, Any], now: float, dragging: bool = False) -> str:
+        if dragging:
+            return "thinking"
         base = select_base_state(view)
-        became_visible = visible and not self._last_visible
-        entered_thinking = base == "thinking" and self._last_base != "thinking"
-        if not visible or base == "failure":
-            self._transition = None
-        elif entered_thinking:
-            self._transition = "listening"
-            self._transition_until = now + LISTENING_SECONDS
-        elif became_visible and base not in {"thinking", "failure"}:
-            self._transition = "greeting"
-            self._transition_until = now + GREETING_SECONDS
-        elif self._transition is not None and now >= self._transition_until:
-            self._transition = None
-        self._last_visible = visible
-        self._last_base = base
-        return self._transition or base
+        if base == "failure":
+            return base
+        if self._greeting_until is None:
+            return self.start(now)
+        if now < self._greeting_until:
+            return "greeting"
+        return base
 
 
 def _safe_frame_path(root: Path, value: object) -> Path | None:

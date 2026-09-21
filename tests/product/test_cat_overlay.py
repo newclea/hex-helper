@@ -90,10 +90,10 @@ class FakeTk:
 
 class FakeTimeline:
     def __init__(self) -> None:
-        self.frozen: list[bool] = []
+        self.states: list[str] = []
 
-    def set_frozen(self, frozen, _now):
-        self.frozen.append(frozen)
+    def set_state(self, state, _now):
+        self.states.append(state)
 
 
 class RecordingCanvas(FakeCanvas):
@@ -320,31 +320,37 @@ class CatOverlayInteractionTests(unittest.TestCase):
         window._invoke_action("__refresh__")
         window.on_refresh.assert_called_once_with()
 
-    def test_drag_freezes_then_release_resumes_animation(self) -> None:
+    def test_drag_uses_thinking_then_release_restores_business_state(self) -> None:
         window = make_window()
         timeline = FakeTimeline()
         window._animation_timeline = timeline
-        times = iter((1.0, 1.5, 1.6))
+        window._view = {"state": "recommendation", "bubble_visible": True}
+        window._sync_animation_state(0.0)
+        timeline.states.clear()
+        times = iter((4.0, 4.5, 4.6))
         window._clock = lambda: next(times)
         pressed = event_at(window.width - 72, 74, x_root=1000, y_root=100)
         moved = event_at(window.width - 72, 74, x_root=1040, y_root=120)
         window._on_left_press(pressed)
         window._activate_long_press()
         window._on_left_release(moved)
-        self.assertEqual([True, False], timeline.frozen)
+        self.assertEqual(["thinking", "success"], timeline.states)
 
-    def test_capture_loss_cancels_active_drag(self) -> None:
+    def test_capture_loss_restores_business_animation(self) -> None:
         window = make_window()
         timeline = FakeTimeline()
         window._animation_timeline = timeline
-        times = iter((1.0, 1.5, 1.5))
+        window._view = {"state": "champ_select", "bubble_visible": True}
+        window._sync_animation_state(0.0)
+        timeline.states.clear()
+        times = iter((4.0, 4.5, 4.5))
         window._clock = lambda: next(times)
         pressed = event_at(window.width - 72, 74, x_root=1000, y_root=100)
         window._on_left_press(pressed)
         window._activate_long_press()
         window._cancel_pointer()
         self.assertFalse(window._drag.active)
-        self.assertEqual([True, False], timeline.frozen)
+        self.assertEqual(["thinking", "listening"], timeline.states)
 
     def test_right_click_outside_cat_is_ignored(self) -> None:
         window = make_window()

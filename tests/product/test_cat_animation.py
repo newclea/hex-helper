@@ -17,18 +17,26 @@ from cat_animation import (
 
 
 class AnimationStateTests(unittest.TestCase):
-    def test_visible_edge_greets_then_uses_business_state(self) -> None:
+    def test_startup_greeting_lasts_one_three_second_cycle(self) -> None:
         controller = AnimationStateController()
-        controller.update({"state": "in_game", "bubble_visible": False}, 0.0)
-        view = {"state": "recommendation", "bubble_visible": True}
-        self.assertEqual("greeting", controller.update(view, 0.1))
-        self.assertEqual("success", controller.update(view, 1.31))
+        view = {"state": "waiting", "bubble_visible": False}
+        self.assertEqual("greeting", controller.update(view, 0.0))
+        self.assertEqual("greeting", controller.update(view, 2.99))
+        self.assertEqual("idle", controller.update(view, 3.0))
+        self.assertEqual("idle", controller.update(view, 10.0))
 
-    def test_new_ocr_cycle_listens_then_thinks(self) -> None:
+    def test_ocr_uses_head_scratch_immediately(self) -> None:
         controller = AnimationStateController()
+        controller.update({"state": "waiting"}, 0.0)
         view = {"state": "ocr_reading", "bubble_visible": True}
-        self.assertEqual("listening", controller.update(view, 2.0))
-        self.assertEqual("thinking", controller.update(view, 2.61))
+        self.assertEqual("thinking", controller.update(view, 3.1))
+
+    def test_dragging_overrides_and_release_restores_business_state(self) -> None:
+        controller = AnimationStateController()
+        controller.update({"state": "waiting"}, 0.0)
+        view = {"state": "recommendation", "bubble_visible": True}
+        self.assertEqual("thinking", controller.update(view, 4.0, dragging=True))
+        self.assertEqual("success", controller.update(view, 4.1, dragging=False))
 
     def test_failure_preempts_transition(self) -> None:
         controller = AnimationStateController()
@@ -102,12 +110,13 @@ class ManifestTests(unittest.TestCase):
             self._write_manifest(root)
             self.assertIsNotNone(load_animation_manifest(root))
 
-    def test_rejects_missing_frame(self) -> None:
+    def test_missing_frame_leaves_approved_static_fallback_available(self) -> None:
         with TemporaryDirectory() as directory:
             root = Path(directory) / "gamebuddy"
             root.mkdir()
             self._write_manifest(root, missing_frame=True)
             self.assertIsNone(load_animation_manifest(root))
+            self.assertEqual(b"fallback", (root.parent / "gamebuddy-cat.png").read_bytes())
 
     def test_rejects_malformed_json(self) -> None:
         with TemporaryDirectory() as directory:
@@ -115,6 +124,18 @@ class ManifestTests(unittest.TestCase):
             root.mkdir()
             (root / "animations.json").write_text("{", "utf-8")
             self.assertIsNone(load_animation_manifest(root))
+
+    def test_product_loops_are_three_seconds_and_contain_a_blink(self) -> None:
+        root = Path(__file__).resolve().parents[2] / "assets" / "gamebuddy"
+        manifest = load_animation_manifest(root)
+        self.assertIsNotNone(manifest)
+        assert manifest is not None
+        for state, clip in manifest.clips.items():
+            with self.subTest(state=state):
+                duration_ms = len(clip.frames) * clip.frame_ms
+                self.assertGreaterEqual(duration_ms, 2800)
+                self.assertLessEqual(duration_ms, 3200)
+                self.assertGreater(len({path.read_bytes() for path in clip.frames}), 1)
 
 
 if __name__ == "__main__":

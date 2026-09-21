@@ -636,7 +636,7 @@ class CatOverlayWindow:
     def _sync_animation_state(self, now: float) -> None:
         if self._animation_timeline is None:
             return
-        state = self._animation_state.update(self._view, now)
+        state = self._animation_state.update(self._view, now, dragging=self._drag.dragging)
         self._animation_timeline.set_state(state, now)
 
     def _advance_animation(self, now: float) -> None:
@@ -990,8 +990,7 @@ class CatOverlayWindow:
         now = self._clock()
         if not self._drag.activate(now):
             return
-        if self._animation_timeline is not None:
-            self._animation_timeline.set_frozen(True, now)
+        self._sync_animation_state(now)
 
     def _on_left_press(self, event: Any) -> None:
         target = self._target_at(int(event.x), int(event.y))
@@ -1014,8 +1013,6 @@ class CatOverlayWindow:
         result = self._drag.move(Point(int(event.x_root), int(event.y_root)), now)
         if not result.dragging or result.requested_origin is None:
             return
-        if self._animation_timeline is not None:
-            self._animation_timeline.set_frozen(True, now)
         candidate = Rect(
             result.requested_origin.x,
             result.requested_origin.y,
@@ -1042,8 +1039,7 @@ class CatOverlayWindow:
             now,
             inside_cat=target == "__cat__",
         )
-        if self._animation_timeline is not None:
-            self._animation_timeline.set_frozen(False, now)
+        self._sync_animation_state(now)
         if result == "click" and self._view.get("refresh_available") is True:
             if self.on_refresh is not None:
                 self.on_refresh()
@@ -1054,8 +1050,8 @@ class CatOverlayWindow:
         self._release_pointer_capture()
         self._drag.cancel()
         self._pressed_action = None
-        if was_dragging and self._animation_timeline is not None:
-            self._animation_timeline.set_frozen(False, self._clock())
+        if was_dragging:
+            self._sync_animation_state(self._clock())
 
     def _dismiss_menu(self) -> None:
         if self._exit_menu is not None and self._menu_posted:
