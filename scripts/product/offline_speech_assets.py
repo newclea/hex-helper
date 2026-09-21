@@ -9,6 +9,13 @@ from pathlib import Path
 
 MODEL_DIRECTORY = Path("assets/speech/melo-tts-zh_en-int8")
 WHEEL_DIRECTORY = Path("vendor/speech/wheels/cp311-win_amd64")
+EXPECTED_WHEEL_FILES = (
+    "cffi-2.1.1-cp311-cp311-win_amd64.whl",
+    "pycparser-3.0-py3-none-any.whl",
+    "sherpa_onnx-1.13.8-cp311-cp311-win_amd64.whl",
+    "sherpa_onnx_core-1.13.8-py3-none-win_amd64.whl",
+    "sounddevice-0.5.3-py3-none-win_amd64.whl",
+)
 REQUIRED_MODEL_FILES = (
     "model.int8.onnx",
     "tokens.txt",
@@ -54,6 +61,8 @@ def resolve_offline_speech_paths(bundle_root: Path) -> OfflineSpeechPaths:
     wheel_dir = root / WHEEL_DIRECTORY
     if not wheel_dir.is_dir():
         raise ValueError(f"required offline speech directory is missing: {wheel_dir}")
+    for filename in EXPECTED_WHEEL_FILES:
+        _require_file(wheel_dir / filename)
     return OfflineSpeechPaths(
         model=model_root / "model.int8.onnx",
         tokens=model_root / "tokens.txt",
@@ -86,20 +95,74 @@ def _manifest_target(bundle_root: Path, relative_text: str) -> Path | None:
     return target
 
 
-def verify_manifest(bundle_root: Path, manifest_path: Path) -> list[str]:
+def _expected_artifacts() -> set[str]:
+    model_files = {
+        (MODEL_DIRECTORY / relative).as_posix()
+        for relative in REQUIRED_MODEL_FILES
+    }
+    wheel_files = {
+        (WHEEL_DIRECTORY / filename).as_posix()
+        for filename in EXPECTED_WHEEL_FILES
+    }
+    return model_files | wheel_files
+
+
+def _actual_artifacts(bundle_root: Path) -> set[str]:
+    root = bundle_root.resolve()
+    files: set[str] = set()
+    for relative_root in (MODEL_DIRECTORY, WHEEL_DIRECTORY):
+        artifact_root = root / relative_root
+        if artifact_root.is_dir():
+            files.update(
+                path.relative_to(root).as_posix()
+                for path in artifact_root.rglob("*")
+                if path.is_file()
+            )
+    return files
+
+
+def _read_manifest(manifest_path: Path) -> tuple[dict[str, str], list[str]]:
+    entries: dict[str, str] = {}
     errors: list[str] = []
-    try:
-        lines = manifest_path.read_text(encoding="utf-8").splitlines()
-    except OSError as error:
-        return [f"cannot read manifest {manifest_path}: {error}"]
-    for line_number, line in enumerate(lines, start=1):
+    for line_number, line in enumerate(
+        manifest_path.read_text(encoding="utf-8").splitlines(), start=1
+    ):
         if not line.strip():
             continue
         parts = line.split(maxsplit=1)
-        if len(parts) != 2 or len(parts[0]) != 64:
+        digest = parts[0].lower() if parts else ""
+        valid_digest = len(digest) == 64 and all(
+            char in "0123456789abcdef" for char in digest
+        )
+        if len(parts) != 2 or not valid_digest:
             errors.append(f"invalid manifest line {line_number}: {line}")
             continue
-        expected, relative_text = parts[0].lower(), parts[1].strip()
+        relative_text = parts[1].strip().replace("\\", "/")
+        if relative_text in entries:
+            errors.append(f"duplicate manifest path: {relative_text}")
+        else:
+            entries[relative_text] = digest
+    return entries, errors
+
+
+def verify_manifest(bundle_root: Path, manifest_path: Path) -> list[str]:
+    try:
+        entries, errors = _read_manifest(manifest_path)
+    except OSError as error:
+        return [f"cannot read manifest {manifest_path}: {error}"]
+    expected_paths = _expected_artifacts()
+    for relative_text in sorted(set(entries) - expected_paths):
+        if _manifest_target(bundle_root, relative_text) is None:
+            errors.append(f"unsafe manifest path: {relative_text}")
+        else:
+            errors.append(f"unexpected manifest path: {relative_text}")
+    for relative_text in sorted(_actual_artifacts(bundle_root) - expected_paths):
+        errors.append(f"unexpected bundled file: {relative_text}")
+    for relative_text in sorted(expected_paths):
+        expected = entries.get(relative_text)
+        if expected is None:
+            errors.append(f"missing manifest entry: {relative_text}")
+            continue
         target = _manifest_target(bundle_root, relative_text)
         if target is None:
             errors.append(f"unsafe manifest path: {relative_text}")

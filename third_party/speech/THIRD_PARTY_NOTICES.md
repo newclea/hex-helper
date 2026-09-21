@@ -28,10 +28,20 @@ build configuration.
 
 - Revision: `a0d5c6a264c0ef92d70d8661d8cc502d79627cd6`
 - Artifacts: `model.int8.onnx`, `tokens.txt`, `lexicon.txt`, four rule FSTs, and the bundled `dict` tree
-- Converted model source: https://huggingface.co/csukuangfj/vits-melo-tts-zh_en/tree/a0d5c6a264c0ef92d70d8661d8cc502d79627cd6
+- Converted model source:
+  https://huggingface.co/csukuangfj/vits-melo-tts-zh_en/tree/a0d5c6a264c0ef92d70d8661d8cc502d79627cd6
 - Original project: https://github.com/myshell-ai/MeloTTS
 - License: MIT
 - License file: `licenses/melo-tts-model-MIT.txt`
+
+## cppjieba dictionaries
+
+- Version: 5.0.5
+- Artifacts: the files under `assets/speech/melo-tts-zh_en-int8/dict`
+- Source: https://github.com/yanyiwu/cppjieba/tree/v5.0.5
+- Copyright: Copyright (c) 2013
+- License: MIT
+- License file: `licenses/cppjieba-MIT.txt`
 
 ## python-sounddevice
 
@@ -51,8 +61,8 @@ The Windows wheel includes PortAudio binaries. Its bundled attribution is preser
 - Artifact: `cffi-2.1.1-cp311-cp311-win_amd64.whl`
 - Source: https://github.com/python-cffi/cffi/tree/v2.1.1
 - Package source: https://pypi.org/project/cffi/2.1.1/
-- License: MIT
-- License file: `licenses/cffi-MIT.txt`
+- License: MIT No Attribution (`MIT-0`), as declared by the 2.1.1 wheel metadata
+- License file: `licenses/cffi-MIT-0.txt`
 
 ## pycparser
 

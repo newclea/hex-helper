@@ -24,6 +24,7 @@ sounddevice 0.5.3, PowerShell launcher, JSON Lines worker protocol.
 - Use sherpa-onnx 1.13.8, sherpa-onnx-core 1.13.8, sounddevice 0.5.3,
   and MeloTTS revision `a0d5c6a264c0ef92d70d8661d8cc502d79627cd6`.
 - Bundle only `model.int8.onnx`; do not add the 170 MB full-precision model.
+- Keep the wheelhouse to the five pinned wheels listed in Task 3; NumPy is intentionally not bundled.
 - Keep `SpeechMessage`, `SpeechQueue`, `SpeechService`, `CompanionSpeechPolicy`,
   and the right-click voice toggle semantics unchanged.
 - Preserve the existing level-3 initial-offer rule and post-selection confirmation scan.
@@ -372,8 +373,10 @@ Create `tests/product/test_offline_speech_assets.py` using temporary directories
 - `test_resolve_requires_model_tokens_lexicon_fsts_and_dictionary` creates every required file and asserts the
   returned paths.
 - `test_missing_required_model_file_raises_value_error` omits `model.int8.onnx` and checks the path in the error.
-- `test_manifest_accepts_matching_sha256` writes one file and a matching manifest line.
+- `test_manifest_accepts_matching_sha256` creates the complete required artifact set and matching manifest lines.
 - `test_manifest_rejects_missing_changed_and_parent_paths` checks a missing file, a changed digest, and `../escape`.
+- `test_manifest_rejects_empty_manifest` checks that an empty manifest cannot validate a complete bundle.
+- `test_manifest_rejects_unlisted_extra_model_and_wheel_files` checks that extra artifacts fail verification.
 
 The test manifest line format is:
 
@@ -397,6 +400,8 @@ Expected: import failure because `offline_speech_assets.py` does not exist.
 Create an immutable `OfflineSpeechPaths` dataclass containing `model`, `tokens`, `lexicon`, `data_dir`,
 `rule_fsts`, and `wheel_dir`. Resolve all paths beneath the supplied bundle root and reject missing files,
 directories, absolute manifest paths, and `..` components. Stream files into `hashlib.sha256()` in 1 MiB chunks.
+Verification must compare manifest paths with the exact required model and five-wheel artifact set. Empty manifests,
+missing entries, duplicate entries, and extra model or wheel files must fail even when all listed hashes match.
 
 Required model files are:
 
@@ -446,12 +451,23 @@ f085f5079e05f039b800aeb542f5253c26a303211b0c6465d0d9387977855a63
 The preceding digest line must be checked against the downloaded file before commit. If the downloaded file does
 not match, stop and re-read the pinned model repository rather than updating the expected value.
 
+The wheelhouse must contain exactly these five files and no NumPy wheel:
+
+```text
+cffi-2.1.1-cp311-cp311-win_amd64.whl
+pycparser-3.0-py3-none-any.whl
+sherpa_onnx-1.13.8-cp311-cp311-win_amd64.whl
+sherpa_onnx_core-1.13.8-py3-none-win_amd64.whl
+sounddevice-0.5.3-py3-none-win_amd64.whl
+```
+
 - [ ] **Step 6: Generate the complete manifest and third-party notices**
 
 Generate `assets/speech/SHA256SUMS` for every model, dictionary, FST, token, lexicon, and wheel file using paths
-relative to the repository root, sorted bytewise. Add the upstream Apache-2.0, MIT, and dependency licenses under
-`third_party/speech/licenses`; list every artifact, version, upstream URL, license, and pinned revision in
-`THIRD_PARTY_NOTICES.md`.
+relative to the repository root, sorted bytewise. Add the upstream Apache-2.0, MIT, MIT-0, and dependency licenses
+under `third_party/speech/licenses`; list every artifact, version, upstream URL, license, and pinned revision in
+`THIRD_PARTY_NOTICES.md`. Include cppjieba 5.0.5 for the bundled dictionary tree and use the CFFI wheel's declared
+MIT-0 license rather than labeling it as plain MIT.
 
 Run:
 
@@ -483,10 +499,13 @@ required = (
     "vendor\\speech\\wheels\\cp311-win_amd64",
     "offline_speech_assets.py",
     "PYTHONPATH",
+    "--no-deps",
 )
 ```
 
 Also assert the script does not contain `https://`, `http://`, `Invoke-WebRequest`, or `Start-BitsTransfer`.
+Assert that the wheel directory contains exactly the five pinned filenames from Step 5, all five pinned package
+requirements appear in the install command, and neither the wheel set nor launcher contains NumPy.
 
 - [ ] **Step 8: Run the launcher contract test and verify failure**
 
@@ -550,18 +569,26 @@ git commit -m "build: bundle verified offline speech runtime"
 - Produces events: `ready`, `started`, `finished`, `cancelled`, and `error`; request-scoped events include
   `request_id`.
 
-- [ ] **Step 1: Write failing worker engine tests with fake TTS and audio**
+- [ ] **Step 1: Write failing worker engine tests with fake TTS and raw audio**
 
 Create `tests/product/test_offline_speech_worker.py` around an `OfflineSpeechEngine` that receives injected
-`tts_factory` and `audio` objects. Add these tests:
+`tts_factory` and `raw_output_stream_factory` callables. The fake raw stream must invoke the supplied callback with
+byte buffers so tests do not import sounddevice or NumPy. Add these tests:
 
 - `test_start_loads_model_once_and_emits_ready` calls start twice and asserts one factory call.
-- `test_speak_emits_started_then_finished_for_request` returns samples and checks request ID 1 on both events.
+- `test_speak_streams_float32_chunks_and_emits_started_then_finished_for_request` returns samples, asserts the raw
+  stream receives the exact `array('f', samples).tobytes()` bytes across multiple callback chunks, and checks
+  request ID 1 on both events.
 - `test_empty_text_emits_error_without_synthesis` asserts no TTS call.
-- `test_cancel_stops_audio_and_emits_cancelled` asserts `audio.stop()` and request ID preservation.
+- `test_cancel_aborts_raw_stream_and_emits_cancelled` asserts the active raw stream is aborted and preserves the
+  request ID.
 - `test_cancelled_synthesis_result_is_discarded` blocks fake generation, cancels request 1, starts request 2,
   releases request 1, and asserts request 1 cannot emit `started` or `finished` afterward.
-- `test_close_stops_audio_and_joins_generation_thread` asserts deterministic shutdown.
+- `test_stale_raw_stream_callback_cannot_finish_newer_request` starts request 2 before invoking request 1's final
+  callback and asserts the old callback cannot complete request 2.
+- `test_close_aborts_raw_stream_and_joins_generation_thread` asserts deterministic shutdown.
+- `test_worker_source_does_not_require_numpy_or_sounddevice_play` asserts the worker uses `RawOutputStream` and
+  does not import NumPy or call `sounddevice.play`.
 
 - [ ] **Step 2: Run worker tests and verify failure**
 
@@ -600,14 +627,29 @@ tts = sherpa_onnx.OfflineTts(config)
 
 Generate with speaker 0 and speed 1.0. Use a generation thread so the command loop can process cancellation while
 inference is running. Tag every generation result with its request ID; discard results that are no longer current.
-Use non-blocking `sounddevice.play`, poll the stream's active state, and emit `finished` only for the current request.
+
+Do not call `sounddevice.play` or use `sounddevice.OutputStream`: those convenience APIs require NumPy, which is not
+part of the verified five-wheel bundle. Convert the generated sample iterable to native float32 PCM bytes with
+standard-library `array('f', samples).tobytes()`. Play those bytes through a non-blocking
+`sounddevice.RawOutputStream` configured with one channel and `dtype="float32"`.
+
+The raw callback must copy at most the requested frame byte count into `outdata`, zero-fill any unused tail, and
+advance a byte cursor. When the cursor reaches the end, signal callback completion using sounddevice's documented
+callback-stop mechanism. Keep the request ID beside the PCM buffer and check it under the engine state lock before
+opening the stream, during every callback, and before emitting completion. Cancellation must invalidate the request
+and abort the active raw stream. A callback or generation result from an invalidated request must not emit `started`
+or `finished` for that request or affect a newer request.
+
+Route callback completion back through a thread-safe event or queue; do not perform blocking joins or protocol
+writes in the real-time audio callback. Emit `finished` only after playback completion is observed for the current
+request.
 
 Keep JSON parsing, engine state, model construction, and `main()` in separate methods or functions under 80 lines.
 Write JSON with `ensure_ascii=False` and flush every event.
 
 - [ ] **Step 4: Run worker tests and verify pass**
 
-Run the command from Step 2. Expected: all six tests pass without importing the real native runtime.
+Run the command from Step 2. Expected: all eight tests pass without importing the real native runtime.
 
 - [ ] **Step 5: Add a subprocess protocol smoke test**
 

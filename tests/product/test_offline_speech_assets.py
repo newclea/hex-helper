@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 
 from offline_speech_assets import (
+    EXPECTED_WHEEL_FILES,
     REQUIRED_MODEL_FILES,
     resolve_offline_speech_paths,
     verify_manifest,
@@ -19,9 +20,24 @@ class OfflineSpeechAssetTests(unittest.TestCase):
             path = model_root / relative
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(relative, encoding="utf-8")
-        (root / "vendor" / "speech" / "wheels" / "cp311-win_amd64").mkdir(
-            parents=True
+        wheel_root = root / "vendor" / "speech" / "wheels" / "cp311-win_amd64"
+        wheel_root.mkdir(parents=True)
+        for filename in EXPECTED_WHEEL_FILES:
+            (wheel_root / filename).write_text(filename, encoding="utf-8")
+
+    def write_manifest(self, root: Path) -> Path:
+        artifact_roots = (
+            root / "assets" / "speech" / "melo-tts-zh_en-int8",
+            root / "vendor" / "speech" / "wheels" / "cp311-win_amd64",
         )
+        files = sorted(path for base in artifact_roots for path in base.rglob("*") if path.is_file())
+        lines = [
+            f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.relative_to(root).as_posix()}"
+            for path in files
+        ]
+        manifest = root / "SHA256SUMS"
+        manifest.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        return manifest
 
     def test_resolve_requires_model_tokens_lexicon_fsts_and_dictionary(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -47,29 +63,47 @@ class OfflineSpeechAssetTests(unittest.TestCase):
     def test_manifest_accepts_matching_sha256(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            payload = root / "payload.txt"
-            payload.write_bytes(b"hello")
-            digest = hashlib.sha256(b"hello").hexdigest()
-            manifest = root / "SHA256SUMS"
-            manifest.write_text(f"{digest}  payload.txt\n", encoding="utf-8")
+            self.make_bundle(root)
+            manifest = self.write_manifest(root)
             self.assertEqual([], verify_manifest(root, manifest))
 
     def test_manifest_rejects_missing_changed_and_parent_paths(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            (root / "changed.txt").write_bytes(b"changed")
-            digest = hashlib.sha256(b"expected").hexdigest()
-            manifest = root / "SHA256SUMS"
-            manifest.write_text(
-                f"{digest}  missing.txt\n"
-                f"{digest}  changed.txt\n"
-                f"{digest}  ../escape\n",
-                encoding="utf-8",
-            )
+            self.make_bundle(root)
+            manifest = self.write_manifest(root)
+            model_root = root / "assets" / "speech" / "melo-tts-zh_en-int8"
+            (model_root / "model.int8.onnx").unlink()
+            (model_root / "tokens.txt").write_text("changed", encoding="utf-8")
+            digest = hashlib.sha256(b"escape").hexdigest()
+            with manifest.open("a", encoding="utf-8") as stream:
+                stream.write(f"{digest}  ../escape\n")
             errors = verify_manifest(root, manifest)
-            self.assertTrue(any("missing.txt" in error for error in errors))
-            self.assertTrue(any("changed.txt" in error for error in errors))
+            self.assertTrue(any("model.int8.onnx" in error for error in errors))
+            self.assertTrue(any("tokens.txt" in error for error in errors))
             self.assertTrue(any("../escape" in error for error in errors))
+
+    def test_manifest_rejects_empty_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.make_bundle(root)
+            manifest = root / "SHA256SUMS"
+            manifest.write_text("", encoding="utf-8")
+            errors = verify_manifest(root, manifest)
+            self.assertTrue(any("missing manifest entry" in error for error in errors))
+
+    def test_manifest_rejects_unlisted_extra_model_and_wheel_files(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.make_bundle(root)
+            manifest = self.write_manifest(root)
+            model_root = root / "assets" / "speech" / "melo-tts-zh_en-int8"
+            wheel_root = root / "vendor" / "speech" / "wheels" / "cp311-win_amd64"
+            (model_root / "unexpected.txt").write_text("extra", encoding="utf-8")
+            (wheel_root / "numpy-extra.whl").write_text("extra", encoding="utf-8")
+            errors = verify_manifest(root, manifest)
+            self.assertTrue(any("unexpected.txt" in error for error in errors))
+            self.assertTrue(any("numpy-extra.whl" in error for error in errors))
 
 
 if __name__ == "__main__":
