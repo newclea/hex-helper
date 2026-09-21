@@ -147,6 +147,24 @@ class BubblePlacementTests(unittest.TestCase):
         self.assertEqual(cat.left - layout.root.left, layout.cat_local.left)
         self.assertEqual(layout.bubble.left - layout.root.left, layout.bubble_local.left)
 
+    def test_tall_bubble_at_left_edge_uses_complete_right_candidate(self) -> None:
+        cat = Rect(0, 328, 112, 452)
+        layout = place_bubble(cat, Size(780, 600), self.work_area)
+        self.assertEqual("right", layout.direction)
+        self.assert_rect_inside(layout.bubble, self.work_area)
+
+    def test_tall_bubble_at_right_edge_uses_complete_left_candidate(self) -> None:
+        cat = Rect(1808, 328, 1920, 452)
+        layout = place_bubble(cat, Size(780, 600), self.work_area)
+        self.assertEqual("left", layout.direction)
+        self.assert_rect_inside(layout.bubble, self.work_area)
+
+    def assert_rect_inside(self, rect: Rect, container: Rect) -> None:
+        self.assertGreaterEqual(rect.left, container.left)
+        self.assertGreaterEqual(rect.top, container.top)
+        self.assertLessEqual(rect.right, container.right)
+        self.assertLessEqual(rect.bottom, container.bottom)
+
 
 if __name__ == "__main__":
     unittest.main()

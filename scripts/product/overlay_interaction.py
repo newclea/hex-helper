@@ -137,15 +137,19 @@ def _bubble_direction(cat: Rect, bubble: Size, work_area: Rect, gap: int) -> str
         "left": cat.left - work_area.left,
         "right": work_area.right - cat.right,
     }
-    vertical = _nearest_blocked_edge(spaces, ("top", "bottom"), bubble.height + gap)
-    horizontal = _nearest_blocked_edge(spaces, ("left", "right"), bubble.width + gap)
+    vertical = _single_blocked_edge(spaces, ("top", "bottom"), bubble.height + gap)
+    horizontal = _single_blocked_edge(spaces, ("left", "right"), bubble.width + gap)
     opposite = {"top": "bottom", "bottom": "top", "left": "right", "right": "left"}
     if vertical and horizontal:
-        return f"{opposite[vertical]}_{opposite[horizontal]}"
-    if vertical:
-        return opposite[vertical]
-    if horizontal:
-        return opposite[horizontal]
+        preferred = f"{opposite[vertical]}_{opposite[horizontal]}"
+    elif vertical:
+        preferred = opposite[vertical]
+    elif horizontal:
+        preferred = opposite[horizontal]
+    else:
+        preferred = None
+    if preferred and _rect_inside(_bubble_rect(cat, bubble, preferred, gap), work_area):
+        return preferred
     requirements = {
         "top": bubble.height + gap,
         "bottom": bubble.height + gap,
@@ -153,14 +157,20 @@ def _bubble_direction(cat: Rect, bubble: Size, work_area: Rect, gap: int) -> str
         "right": bubble.width + gap,
     }
     directions = ("top", "bottom", "left", "right")
-    return max(directions, key=lambda item: (spaces[item] >= requirements[item], spaces[item] - requirements[item]))
+    return max(
+        directions,
+        key=lambda item: (
+            _rect_inside(_bubble_rect(cat, bubble, item, gap), work_area),
+            spaces[item] - requirements[item],
+        ),
+    )
 
 
-def _nearest_blocked_edge(spaces: dict[str, int], edges: tuple[str, str], required: int) -> str | None:
+def _single_blocked_edge(spaces: dict[str, int], edges: tuple[str, str], required: int) -> str | None:
     blocked = tuple(edge for edge in edges if spaces[edge] < required)
-    if not blocked:
+    if len(blocked) != 1:
         return None
-    return min(blocked, key=spaces.__getitem__)
+    return blocked[0]
 
 
 def _bubble_rect(cat: Rect, bubble: Size, direction: str, gap: int) -> Rect:
@@ -187,6 +197,15 @@ def _relative_rect(rect: Rect, root: Rect) -> Rect:
         rect.top - root.top,
         rect.right - root.left,
         rect.bottom - root.top,
+    )
+
+
+def _rect_inside(rect: Rect, container: Rect) -> bool:
+    return (
+        rect.left >= container.left
+        and rect.top >= container.top
+        and rect.right <= container.right
+        and rect.bottom <= container.bottom
     )
 
 
