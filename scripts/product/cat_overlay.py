@@ -502,14 +502,29 @@ class CatOverlayWindow:
             )
         )
 
+    @staticmethod
+    def _native_error_code() -> int:
+        get_last_error = getattr(ctypes, "get_last_error", None)
+        return int(get_last_error()) if get_last_error is not None else 0
+
     def _set_native_bounds(self, bounds: Rect) -> bool:
         if self._root is None:
             return False
         width = bounds.right - bounds.left
         height = bounds.bottom - bounds.top
-        self._root.geometry(f"{width}x{height}")
         if self._native_hwnd is not None:
             moved = self._native_move(self._native_hwnd, bounds.left, bounds.top, width, height)
+            if not moved:
+                LOGGER.error(
+                    "native window move failed left=%d top=%d width=%d height=%d error=%d",
+                    bounds.left,
+                    bounds.top,
+                    width,
+                    height,
+                    self._native_error_code(),
+                )
+                return False
+            self._root.geometry(f"{width}x{height}")
         else:
             self._root.geometry(f"{width}x{height}{bounds.left:+d}{bounds.top:+d}")
             moved = True
@@ -680,30 +695,41 @@ class CatOverlayWindow:
         }
 
     def _measure_content(self, model: dict[str, Any]) -> dict[str, Any]:
+        intro_font = ("Microsoft YaHei UI", 10)
         normal_font = ("Microsoft YaHei UI", 11)
         bold_font = ("Microsoft YaHei UI", 11, "bold")
         title_font = ("Microsoft YaHei UI", 10, "bold")
-        paragraphs = list(normalize_blocks(model["blocks"], model["message"]))
-        if model["introduction"]:
-            paragraphs.extend(normalize_blocks(None, model["introduction"]))
-        measure = lambda value, bold: self._text_width(value, bold_font if bold else normal_font)
+        paragraphs = normalize_blocks(model["blocks"], model["message"])
+        body_measure = lambda value, bold: self._text_width(value, bold_font if bold else normal_font)
+        intro_measure = lambda value, _bold: self._text_width(value, intro_font)
         pill_width = max(
             (self._text_width(title, title_font) + 20 for title in model["titles"]),
             default=BUBBLE_MINIMUM_CONTENT_WIDTH,
         )
-        text_width = content_width(
+        minimum_width = min(
+            BUBBLE_MAXIMUM_CONTENT_WIDTH,
+            max(BUBBLE_MINIMUM_CONTENT_WIDTH, pill_width),
+        )
+        body_width = content_width(
             paragraphs,
-            measure,
-            min(BUBBLE_MAXIMUM_CONTENT_WIDTH, max(BUBBLE_MINIMUM_CONTENT_WIDTH, pill_width)),
+            body_measure,
+            minimum_width,
             BUBBLE_MAXIMUM_CONTENT_WIDTH,
         )
+        intro_width = content_width(
+            normalize_blocks(None, model["introduction"]) if model["introduction"] else (),
+            intro_measure,
+            minimum_width,
+            BUBBLE_MAXIMUM_CONTENT_WIDTH,
+        )
+        text_width = max(body_width, intro_width)
         model.update(
             {
+                "intro_font": intro_font,
                 "normal_font": normal_font,
                 "bold_font": bold_font,
                 "title_font": title_font,
                 "text_width": text_width,
-                "paragraphs": tuple(paragraphs),
             }
         )
         return model
@@ -735,7 +761,7 @@ class CatOverlayWindow:
     def _bubble_model(self) -> dict[str, Any]:
         model = self._measure_content(self._content_model())
         text_width = int(model["text_width"])
-        intro_font = ("Microsoft YaHei UI", 10)
+        intro_font = model["intro_font"]
         intro = model["introduction"]
         intro_text = self._wrap_text(intro, text_width, intro_font) if intro else ""
         intro_height = self._text_height(intro_text, text_width, intro_font)

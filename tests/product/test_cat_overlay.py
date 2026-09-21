@@ -186,10 +186,27 @@ class CatOverlayInteractionTests(unittest.TestCase):
         window = make_window()
         before = Rect(1000, 64, 1118, 188)
         window._cat_screen_rect = before
+        window._cat_local_rect = Rect(20, 30, 138, 154)
+        window._click_regions = [(1, 2, 3, 4, "old")]
+        before_local = window._cat_local_rect
+        before_regions = list(window._click_regions)
         window._native_hwnd = 7
         window._native_move = Mock(return_value=False)
-        self.assertFalse(window._move_cat_to(Rect(1200, 64, 1318, 188)))
+        with self.assertLogs("cat_overlay", level="ERROR"):
+            self.assertFalse(window._move_cat_to(Rect(1200, 64, 1318, 188)))
         self.assertEqual(before, window._cat_screen_rect)
+        self.assertEqual(before_local, window._cat_local_rect)
+        self.assertEqual(before_regions, window._click_regions)
+        self.assertEqual([], window._root.geometries)
+
+    def test_native_move_failure_logs_target_and_system_error(self) -> None:
+        window = make_window()
+        window._native_hwnd = 7
+        window._native_move = Mock(return_value=False)
+        window._native_error_code = Mock(return_value=123)
+        with self.assertLogs("cat_overlay", level="ERROR") as captured:
+            self.assertFalse(window._set_native_bounds(Rect(-900, 40, -100, 340)))
+        self.assertIn("left=-900 top=40 width=800 height=300 error=123", captured.output[0])
 
     def test_reflow_keeps_absolute_cat_rectangle(self) -> None:
         window = make_window()
@@ -220,6 +237,19 @@ class CatOverlayInteractionTests(unittest.TestCase):
             }
         )
         self.assertEqual(300, window._bubble_model()["text_width"])
+
+    def test_introduction_width_uses_its_actual_smaller_font(self) -> None:
+        window = make_window()
+        window._canvas = RecordingCanvas()
+        window._text_width = lambda text, font: len(text) * (10 if font[1] == 10 else 20)
+        window._view.update(
+            {
+                "bubble_visible": True,
+                "introduction": "引导文字共十五字整整整整整整整",
+                "message": "正文六字整整整",
+            }
+        )
+        self.assertEqual(150, window._bubble_model()["text_width"])
 
     def test_drag_selects_monitor_from_candidate_cat_center(self) -> None:
         window = make_window()
