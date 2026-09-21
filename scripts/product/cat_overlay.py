@@ -81,6 +81,7 @@ class CatOverlayWindow:
         on_ready: Callable[[], None] | None = None,
         on_close: Callable[[], None] | None = None,
         on_voice_toggle: Callable[[bool], None] | None = None,
+        on_greeting_start: Callable[[float], None] | None = None,
         voice_enabled: bool = True,
         width: int = 560,
         height: int = 300,
@@ -94,6 +95,7 @@ class CatOverlayWindow:
         self.on_ready = on_ready
         self.on_close = on_close
         self.on_voice_toggle = on_voice_toggle
+        self.on_greeting_start = on_greeting_start
         self._voice_enabled = voice_enabled
         self.width = max(CAT_WIDTH, width)
         self.height = max(CAT_HEIGHT, height)
@@ -113,6 +115,7 @@ class CatOverlayWindow:
         self._cat_item: Any = None
         self._cat_frames: dict[Path, Any] = {}
         self._animation_state = AnimationStateController()
+        self._greeting_started = False
         manifest = load_animation_manifest(animation_root) if animation_root is not None else None
         self._animation_timeline = AnimationTimeline(manifest) if manifest is not None else None
         self._clock = time.monotonic
@@ -638,6 +641,10 @@ class CatOverlayWindow:
             )
 
     def _sync_animation_state(self, now: float) -> None:
+        if not self._greeting_started:
+            self._greeting_started = True
+            if self.on_greeting_start is not None:
+                self.on_greeting_start(now)
         if self._animation_timeline is None:
             return
         state = self._animation_state.update(self._view, now, dragging=self._drag.dragging)

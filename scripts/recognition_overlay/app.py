@@ -133,7 +133,7 @@ class RecognitionApp:
         self._lock = threading.RLock()
         self._stopped = False
         self._clock = time.monotonic
-        self._startup_greeting_until = self._clock() + GREETING_SECONDS
+        self._startup_greeting_until: float | None = None
         voice = load_voice_settings(overlay_config_path(), legacy_overlay_config_path())
         self.speech_policy = CompanionSpeechPolicy()
         self.diagnostics = OcrDiagnostics(ocr_diagnostics_path())
@@ -192,6 +192,7 @@ class RecognitionApp:
 
     def _create_window(self, args: argparse.Namespace, voice: Any) -> Any:
         if args.legacy_ui:
+            self._startup_greeting_until = 0.0
             return OverlayWindow(
                 width=args.width,
                 height=args.height,
@@ -221,6 +222,7 @@ class RecognitionApp:
             on_ready=self._start_workers,
             on_close=self.stop,
             on_voice_toggle=self._on_voice_toggle,
+            on_greeting_start=self._on_greeting_start,
             voice_enabled=voice.enabled,
         )
 
@@ -235,7 +237,9 @@ class RecognitionApp:
         self._publish_speech(self.speech_policy.update(presented, now))
 
     def _startup_presentation(self, view: Mapping[str, Any], now: float) -> Mapping[str, Any]:
-        if now >= self._startup_greeting_until or view.get("state") not in STARTUP_OCR_STATES:
+        if view.get("state") not in STARTUP_OCR_STATES:
+            return view
+        if self._startup_greeting_until is not None and now >= self._startup_greeting_until:
             return view
         return {
             "state": "waiting",
@@ -243,6 +247,9 @@ class RecognitionApp:
             "message": "核宝来了。",
             "options": [],
         }
+
+    def _on_greeting_start(self, now: float) -> None:
+        self._startup_greeting_until = now + GREETING_SECONDS
 
     def _publish_speech(self, messages: tuple[SpeechMessage, ...]) -> None:
         for message in messages:

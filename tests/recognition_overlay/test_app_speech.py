@@ -17,7 +17,7 @@ def make_app() -> RecognitionApp:
     app._lock = threading.RLock()
     app._stopped = False
     app._clock = Mock(return_value=5.0)
-    app._startup_greeting_until = 3.0
+    app._startup_greeting_until = None
     app.model = Mock()
     app.model.snapshot.return_value = {"phase": "GameStart"}
     app.product = Mock()
@@ -75,9 +75,10 @@ class RecognitionAppSpeechTests(unittest.TestCase):
         app.speech_policy.update.assert_called_once_with({"state": "waiting"}, 5.0)
         app.speech.publish.assert_called_once_with("update-message")
 
-    def test_startup_gate_hides_ocr_error_from_window_and_speech(self) -> None:
+    def test_startup_gate_uses_window_greeting_boundary_after_slow_construction(self) -> None:
         app = make_app()
-        app._clock.side_effect = (2.99, 3.0)
+        app._on_greeting_start(100.0)
+        app._clock.side_effect = (102.99, 103.0)
         app.product.present.return_value = {
             "state": "ocr_error",
             "bubble_visible": True,
@@ -95,14 +96,14 @@ class RecognitionAppSpeechTests(unittest.TestCase):
             "options": [],
         }
         app.window.set_view.assert_called_once_with(hidden)
-        app.speech_policy.update.assert_called_once_with(hidden, 2.99)
+        app.speech_policy.update.assert_called_once_with(hidden, 102.99)
         app.speech.publish.assert_not_called()
 
         app._publish()
 
         error = app.product.present.return_value
         self.assertEqual([call(hidden), call(error)], app.window.set_view.call_args_list)
-        self.assertEqual(call(error, 3.0), app.speech_policy.update.call_args)
+        self.assertEqual(call(error, 103.0), app.speech_policy.update.call_args)
         self.assertEqual("ocr_error", app.speech.publish.call_args.args[0].kind)
 
     def test_ui_tick_publishes_delayed_policy_messages(self) -> None:

@@ -146,7 +146,7 @@ def event_at(x, y, *, x_root=None, y_root=None):
 
 def make_window(
     *, on_refresh=None, on_close=None, on_voice_toggle=None,
-    voice_enabled=True, refresh_available=False,
+    on_greeting_start=None, voice_enabled=True, refresh_available=False,
 ):
     window = CatOverlayWindow(
         cat_path=Path("missing.png"),
@@ -154,6 +154,7 @@ def make_window(
         on_refresh=on_refresh,
         on_close=on_close,
         on_voice_toggle=on_voice_toggle,
+        on_greeting_start=on_greeting_start,
         voice_enabled=voice_enabled,
     )
     window._root = FakeRoot()
@@ -163,6 +164,16 @@ def make_window(
 
 
 class CatOverlayInteractionTests(unittest.TestCase):
+    def test_first_animation_sync_reports_exact_greeting_start_once(self) -> None:
+        greeting_start = Mock()
+        window = make_window(on_greeting_start=greeting_start)
+        window._animation_timeline = FakeTimeline()
+
+        window._sync_animation_state(100.0)
+        window._sync_animation_state(101.0)
+
+        greeting_start.assert_called_once_with(100.0)
+
     def test_negative_position_uses_native_move_not_tk_geometry(self) -> None:
         window = make_window()
         window._native_hwnd = 7
