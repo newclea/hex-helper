@@ -1,6 +1,7 @@
 import json
 import queue
 import subprocess
+import threading
 import unittest
 from pathlib import Path
 from unittest.mock import Mock, patch
@@ -11,6 +12,7 @@ from windows_speech import WindowsSpeechAdapter
 class FakeOutput:
     def __init__(self, events=None):
         self._lines = queue.Queue()
+        self._consumed = {}
         for event in events or []:
             self.put(event)
 
@@ -18,7 +20,16 @@ class FakeOutput:
         self._lines.put(json.dumps(event, ensure_ascii=False) + "\n")
 
     def readline(self):
-        return self._lines.get()
+        line = self._lines.get()
+        marker = "eof" if not line else json.loads(line).get("event")
+        if marker in self._consumed:
+            self._consumed[marker].set()
+        return line
+
+    def watch_consumed(self, marker):
+        consumed = threading.Event()
+        self._consumed[marker] = consumed
+        return consumed
 
     def close(self):
         self._lines.put("")
@@ -178,19 +189,29 @@ class WindowsSpeechAdapterTests(unittest.TestCase):
     def test_old_reader_cannot_terminate_or_complete_new_process(self):
         first = FakeProcess([{"event": "ready"}])
         second = FakeProcess([{"event": "ready"}], auto_finish=True)
+        old_finished_consumed = first.stdout.watch_consumed("finished")
+        old_eof_consumed = first.stdout.watch_consumed("eof")
+        new_finished_consumed = second.stdout.watch_consumed("finished")
         factory = Mock(side_effect=[first, second])
         adapter = WindowsSpeechAdapter(process_factory=factory)
         self.addCleanup(adapter.close)
         self.assertTrue(adapter.start())
+        old_reader = adapter._reader
 
         first.returncode = 1
         self.assertTrue(adapter.start())
         first.stdout.put({"event": "finished"})
-        self.assertFalse(adapter.wait_finished(0.01))
         first.stdout.close()
+        self.assertTrue(old_finished_consumed.wait(1.0))
+        self.assertTrue(old_eof_consumed.wait(1.0))
+        old_reader.join(1.0)
+        self.assertFalse(old_reader.is_alive())
 
+        self.assertFalse(adapter.wait_finished(0))
+        self.assertEqual(0, second.terminate_count)
         self.assertTrue(adapter.speak("新进程"))
-        self.assertTrue(adapter.wait_finished(0.2))
+        self.assertTrue(new_finished_consumed.wait(1.0))
+        self.assertTrue(adapter.wait_finished(1.0))
         self.assertEqual(0, second.terminate_count)
         self.assertEqual(2, factory.call_count)
 
@@ -203,13 +224,18 @@ class WindowsSpeechWorkerContractTests(unittest.TestCase):
 
     def command_body(self, command, next_command=None):
         start = self.source.index(f'"{command}" {{')
-        end = self.source.index(f'"{next_command}" {{', start) if next_command else len(self.source)
+        marker = "default {" if next_command == "default" else f'"{next_command}" {{'
+        end = self.source.index(marker, start) if next_command else len(self.source)
         return self.source[start:end]
 
     def test_voice_selection_prefers_configured_then_chinese_female_then_default(self):
         configured = self.source.index("if ($ConfiguredVoice)")
         chinese = self.source.index('$_.VoiceInfo.Culture.Name -eq "zh-CN"')
-        self.assertLess(configured, chinese)
+        configured_select = self.source.index("$Synthesizer.SelectVoice(", configured)
+        configured_return = self.source.index("return", configured_select)
+        self.assertLess(configured, configured_select)
+        self.assertLess(configured_select, configured_return)
+        self.assertLess(configured_return, chinese)
         self.assertEqual(2, self.source.count("$Synthesizer.SelectVoice("))
 
     def test_speak_is_async_without_automatic_cancel(self):
@@ -220,10 +246,12 @@ class WindowsSpeechWorkerContractTests(unittest.TestCase):
     def test_stdout_is_only_written_by_json_event_function(self):
         self.assertEqual(1, self.source.count("[Console]::Out.WriteLine"))
         self.assertGreaterEqual(self.source.count("Write-SpeechJsonEvent"), 4)
+        self.assertIn("ConvertTo-Json -Compress", self.source)
+        self.assertIn("[Console]::Out.Flush()", self.source)
 
     def test_cancel_and_close_contract(self):
         cancel = self.command_body("cancel", "close")
-        close = self.command_body("close")
+        close = self.command_body("close", "default")
         self.assertIn("SpeakAsyncCancelAll", cancel)
         self.assertIn("SpeakAsyncCancelAll", close)
         self.assertIn("Dispose", close)
