@@ -68,7 +68,7 @@ The Windows wheel includes PortAudio binaries. Its bundled attribution is preser
 
 - Version: 3.0
 - Artifact: `pycparser-3.0-py3-none-any.whl`
-- Source: https://github.com/eliben/pycparser/tree/release_v3.0
+- Source: https://github.com/eliben/pycparser/tree/release_v3.00
 - Package source: https://pypi.org/project/pycparser/3.0/
 - License: BSD 3-Clause
 - License file: `licenses/pycparser-BSD-3-Clause.txt`
