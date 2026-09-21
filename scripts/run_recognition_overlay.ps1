@@ -14,6 +14,8 @@ $ErrorActionPreference = 'Stop'
 
 $workspaceRoot = Split-Path -Parent $PSScriptRoot
 $app = Join-Path $workspaceRoot 'scripts\recognition_overlay\app.py'
+$assetVerifier = Join-Path $workspaceRoot 'scripts\product\offline_speech_assets.py'
+$wheelDirectory = Join-Path $workspaceRoot 'vendor\speech\wheels\cp311-win_amd64'
 
 function Resolve-Python {
     $py = Get-Command py -ErrorAction SilentlyContinue
@@ -30,6 +32,58 @@ function Resolve-Python {
 }
 
 $python = Resolve-Python
+
+function Test-SpeechBundle {
+    $verifyArguments = @()
+    $verifyArguments += $python.Prefix
+    $verifyArguments += @($assetVerifier, '--verify', '--bundle-root', $workspaceRoot)
+    & $python.File @verifyArguments
+    return $LASTEXITCODE -eq 0
+}
+
+function Initialize-SpeechRuntime {
+    $runtimeParent = Join-Path $env:LOCALAPPDATA 'LoLRecognitionOverlay\speech-runtime'
+    $runtimeDirectory = Join-Path $runtimeParent '1.13.8-py311'
+    $successStamp = Join-Path $runtimeDirectory '.installed'
+    if (-not (Test-Path -LiteralPath $successStamp -PathType Leaf)) {
+        New-Item -ItemType Directory -Path $runtimeDirectory -Force | Out-Null
+        $installArguments = @()
+        $installArguments += $python.Prefix
+        $installArguments += @(
+            '-m', 'pip', 'install', '--no-index', '--disable-pip-version-check',
+            '--no-deps', '--find-links', $wheelDirectory, '--target', $runtimeDirectory,
+            'sherpa-onnx==1.13.8', 'sherpa-onnx-core==1.13.8',
+            'sounddevice==0.5.3', 'cffi==2.1.1', 'pycparser==3.0'
+        )
+        & $python.File @installArguments | Out-Host
+        if ($LASTEXITCODE -ne 0) {
+            return $null
+        }
+        Set-Content -LiteralPath $successStamp -Value 'verified' -Encoding Ascii
+    }
+    return $runtimeDirectory
+}
+
+$speechRuntime = $null
+try {
+    if (Test-SpeechBundle) {
+        $speechRuntime = Initialize-SpeechRuntime
+    }
+} catch {
+    Write-Warning "Offline speech preparation failed: $($_.Exception.Message)"
+}
+if ($null -eq $speechRuntime) {
+    $env:GAMEBUDDY_OFFLINE_SPEECH_DISABLED = '1'
+    Write-Warning 'Offline speech is unavailable; GameBuddy will continue without speech.'
+} else {
+    $existingPythonPath = $env:PYTHONPATH
+    if ([string]::IsNullOrWhiteSpace($existingPythonPath)) {
+        $env:PYTHONPATH = $speechRuntime
+    } else {
+        $env:PYTHONPATH = "$speechRuntime;$existingPythonPath"
+    }
+}
+
 $arguments = @()
 $arguments += $python.Prefix
 $arguments += $app
