@@ -7,6 +7,7 @@ from unittest.mock import Mock
 
 from cat_overlay import CatOverlayWindow, HTCLIENT, HTTRANSPARENT
 from overlay_interaction import Rect
+from rich_text_layout import LaidOutLine, TextRun
 
 
 class FakeRoot:
@@ -91,6 +92,28 @@ class FakeTimeline:
 
     def set_frozen(self, frozen, _now):
         self.frozen.append(frozen)
+
+
+class RecordingCanvas(FakeCanvas):
+    def __init__(self) -> None:
+        super().__init__()
+        self.items = {}
+        self.next_id = 1
+
+    def create_text(self, *_args, **kwargs):
+        item_id = self.next_id
+        self.next_id += 1
+        self.items[item_id] = kwargs
+        return item_id
+
+    def bbox(self, item_id):
+        item = self.items[item_id]
+        width = len(item.get("text", "")) * 10
+        return (0, 0, width, 16)
+
+    def delete(self, item_id):
+        if item_id != "all":
+            self.items.pop(item_id, None)
 
 
 def event_at(x, y, *, x_root=None, y_root=None):
@@ -209,6 +232,31 @@ class CatOverlayInteractionTests(unittest.TestCase):
         self.assertEqual(["poll-id"], window._root.cancelled)
         self.assertTrue(window._root.destroyed)
         closed.assert_called_once_with()
+
+    def test_draws_label_normal_and_value_bold(self) -> None:
+        window = make_window()
+        window._canvas = RecordingCanvas()
+        normal_font = ("Microsoft YaHei UI", 11)
+        bold_font = ("Microsoft YaHei UI", 11, "bold")
+        lines = (
+            LaidOutLine(
+                (TextRun("所需装备 "), TextRun("无尽之刃", True)),
+                80,
+            ),
+        )
+        bottom = window._draw_rich_page(lines, 10, 20, normal_font, bold_font, 18)
+        drawn = [item for item in window._canvas.items.values() if item.get("tags")]
+        self.assertEqual(normal_font, drawn[0]["font"])
+        self.assertEqual(bold_font, drawn[1]["font"])
+        self.assertEqual("所需装备 ", drawn[0]["text"])
+        self.assertEqual("无尽之刃", drawn[1]["text"])
+        self.assertEqual(38, bottom)
+
+    def test_plain_wrap_avoids_two_character_last_line(self) -> None:
+        window = make_window()
+        window._canvas = RecordingCanvas()
+        wrapped = window._wrap_text("甲乙丙丁戊己庚", 50, ("Microsoft YaHei UI", 11))
+        self.assertEqual("甲乙丙丁\n戊己庚", wrapped)
 
 
 if __name__ == "__main__":

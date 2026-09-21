@@ -17,6 +17,7 @@ from cat_animation import (
     load_animation_manifest,
 )
 from overlay_interaction import LongPressDrag, Point, Rect, clamp_origin
+from rich_text_layout import LaidOutLine, TextRun, normalize_blocks, paginate_lines, wrap_paragraph
 
 
 TRANSPARENT = "#010203"
@@ -147,7 +148,7 @@ class CatOverlayWindow:
         self._native_original_wndproc: int | None = None
         self._detail_key: tuple[Any, ...] | None = None
         self._detail_page = 0
-        self._detail_pages: list[str] = []
+        self._detail_pages: list[tuple[LaidOutLine, ...]] = []
         self._presented_topmost_key: tuple[Any, ...] | None = None
 
     def set_view(self, view: Mapping[str, Any]) -> None:
@@ -594,36 +595,9 @@ class CatOverlayWindow:
         return end
 
     def _wrap_text(self, text: str, width: int, font: tuple[Any, ...]) -> str:
-        """Wrap measured lines without leaving closing punctuation at the start.
-
-        Original paragraph breaks and every source character are retained.
-        Canvas automatic wrapping is disabled for this measured output so it
-        cannot split the protected character/punctuation pair a second time.
-        """
-        lines: list[str] = []
-        for paragraph in text.split("\n"):
-            remaining = paragraph
-            if not remaining:
-                lines.append("")
-            while remaining:
-                low, high = 1, len(remaining)
-                while low < high:
-                    middle = (low + high + 1) // 2
-                    if self._text_width(remaining[:middle], font) <= width:
-                        low = middle
-                    else:
-                        high = middle - 1
-                end = low
-                if end < len(remaining):
-                    # Prefer a nearby space, retaining it rather than changing
-                    # the copy. Chinese lines otherwise wrap by character.
-                    boundary = max(remaining.rfind(mark, end // 2, end) for mark in (" ", "\t"))
-                    if boundary >= 0:
-                        end = boundary + 1
-                    end = self._safe_line_end(remaining, end)
-                lines.append(remaining[:end])
-                remaining = remaining[end:]
-        return "\n".join(lines)
+        measure = lambda value, _bold: self._text_width(value, font)
+        lines = wrap_paragraph((TextRun(text),), width, measure)
+        return "\n".join(line.text for line in lines)
 
     def _paginate_text(
         self, text: str, width: int, font: tuple[Any, ...], height: int,
@@ -659,6 +633,50 @@ class CatOverlayWindow:
         box = self._canvas.bbox(item)
         self._canvas.delete(item)
         return box[2] - box[0] if box else 0
+
+    def _layout_rich_lines(
+        self,
+        blocks: object,
+        fallback: str,
+        width: int,
+        normal_font: tuple[Any, ...],
+        bold_font: tuple[Any, ...],
+    ) -> tuple[LaidOutLine, ...]:
+        measure = lambda value, bold: self._text_width(
+            value,
+            bold_font if bold else normal_font,
+        )
+        lines: list[LaidOutLine] = []
+        for paragraph in normalize_blocks(blocks, fallback):
+            lines.extend(wrap_paragraph(paragraph, width, measure))
+        return tuple(lines)
+
+    def _draw_rich_page(
+        self,
+        lines: tuple[LaidOutLine, ...],
+        x: int,
+        y: int,
+        normal_font: tuple[Any, ...],
+        bold_font: tuple[Any, ...],
+        line_height: int,
+    ) -> int:
+        current_y = y
+        for line in lines:
+            current_x = x
+            for run in line.runs:
+                font = bold_font if run.bold else normal_font
+                self._canvas.create_text(
+                    current_x,
+                    current_y,
+                    anchor="nw",
+                    text=run.text,
+                    fill=INK,
+                    font=font,
+                    tags=("recommendation",),
+                )
+                current_x += self._text_width(run.text, font)
+            current_y += line_height
+        return current_y
 
     def _pill_title(self, text: str, width: int, font: tuple[Any, ...]) -> str:
         if self._text_width(text, font) <= width:
@@ -736,14 +754,8 @@ class CatOverlayWindow:
         text_width = text_right - text_left
         introduction = str(self._view.get("introduction") or "")
         message = str(self._view.get("message") or "")
+        message_blocks = self._view.get("message_blocks")
         active_id = str(self._view.get("active_strategy_id") or "")
-        detail_key = (
-            introduction, message, active_id,
-            tuple((str(item.get("id") or ""), str(item.get("title") or ""), bool(item.get("selected"))) for item in option_rows),
-        )
-        if self._detail_key != detail_key:
-            self._detail_key = detail_key
-            self._detail_page = 0
 
         maximum_height = self._maximum_height()
         introduction_font = ("Microsoft YaHei UI", 10)
@@ -773,24 +785,68 @@ class CatOverlayWindow:
                         line for line in message.splitlines(keepends=True)
                         if line.rstrip("\r\n") != current_plan
                     )
+                    if isinstance(message_blocks, list):
+                        message_blocks = [
+                            block
+                            for block in message_blocks
+                            if not (
+                                isinstance(block, Mapping)
+                                and block.get("label") == "当前玩法"
+                                and block.get("value") == full_title
+                            )
+                        ]
                 elif current_plan not in message.splitlines():
                     # A shortened capsule still needs its full name, once.
                     message = current_plan + "\n" + message
             x += button_width + BUTTON_GAP
+        blocks_key = repr(message_blocks)
+        detail_key = (
+            introduction,
+            message,
+            blocks_key,
+            active_id,
+            tuple(
+                (
+                    str(item.get("id") or ""),
+                    str(item.get("title") or ""),
+                    bool(item.get("selected")),
+                )
+                for item in option_rows
+            ),
+        )
+        if self._detail_key != detail_key:
+            self._detail_key = detail_key
+            self._detail_page = 0
         options_bottom = y + button_height if layouts else options_top
         message_top = options_bottom + 21 if layouts else options_top
         message_budget = max(1, maximum_height - message_top - 40)
         message_font: tuple[Any, ...] = ("Microsoft YaHei UI", 11)
+        message_bold_font: tuple[Any, ...] = ("Microsoft YaHei UI", 11, "bold")
+        rich_lines: tuple[LaidOutLine, ...] = ()
+        line_height = 1
         for size in (11, 10, 9):
             message_font = ("Microsoft YaHei UI", size)
-            if self._text_height(message, text_width, message_font) <= message_budget:
+            message_bold_font = ("Microsoft YaHei UI", size, "bold")
+            rich_lines = self._layout_rich_lines(
+                message_blocks,
+                message,
+                text_width,
+                message_font,
+                message_bold_font,
+            )
+            line_height = max(
+                self._text_height("国", text_width, message_font),
+                self._text_height("国", text_width, message_bold_font),
+            ) + 3
+            if len(rich_lines) * line_height <= message_budget:
                 break
-        needs_pages = self._text_height(message, text_width, message_font) > message_budget
+        needs_pages = len(rich_lines) * line_height > message_budget
         page_controls_height = 28 if needs_pages else 0
-        self._detail_pages = self._paginate_text(
-            message, text_width, message_font,
+        self._detail_pages = list(paginate_lines(
+            rich_lines,
+            line_height,
             max(1, message_budget - page_controls_height),
-        )
+        ))
         self._detail_page = min(self._detail_page, len(self._detail_pages) - 1)
         if introduction:
             canvas.create_text(
@@ -821,13 +877,14 @@ class CatOverlayWindow:
                 text_left, message_top - 10, text_right, message_top - 10,
                 fill=BUBBLE_BORDER, tags=("recommendation-divider",),
             )
-        message_item = canvas.create_text(
-            text_left, message_top, anchor="nw",
-            text=self._wrap_text(self._detail_pages[self._detail_page], text_width, message_font), fill=INK,
-            font=message_font, tags=("recommendation",),
+        message_bottom = self._draw_rich_page(
+            self._detail_pages[self._detail_page],
+            text_left,
+            message_top,
+            message_font,
+            message_bold_font,
+            line_height,
         )
-        message_box = canvas.bbox(message_item)
-        message_bottom = message_box[3] if message_box is not None else message_top
         y = message_bottom + 12
         content_bottom = message_bottom + 18
         if len(self._detail_pages) > 1:
