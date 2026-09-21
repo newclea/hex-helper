@@ -39,7 +39,7 @@ class FakeTts:
 
 
 class FakeRawStream:
-    def __init__(self, callback, finished_callback, frames=(1, 2), **kwargs):
+    def __init__(self, callback, finished_callback, frames=(1024, 1024), **kwargs):
         self.callback = callback
         self.finished_callback = finished_callback
         self.frames = frames
@@ -132,12 +132,16 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
         self.assertEqual([{"event": "ready"}], self.events)
 
     def test_speak_streams_float32_chunks_and_emits_started_then_finished_for_request(self):
+        self.tts.audio = FakeAudio(samples=tuple(index / 2048 for index in range(1025)))
         self.engine.start()
         self.assertTrue(self.engine.speak(1, "推荐选择珠光护手"))
         self.wait_for(lambda: any(item["event"] == "finished" for item in self.events))
 
         expected = array("f", self.tts.audio.samples).tobytes()
-        self.assertEqual(expected, bytes(self.streams[0].received[: len(expected)]))
+        received = bytes(self.streams[0].received)
+        self.assertEqual(8192, len(received))
+        self.assertEqual(expected, received[: len(expected)])
+        self.assertEqual(bytes(8192 - len(expected)), received[len(expected) :])
         scoped = [event for event in self.events if "request_id" in event]
         self.assertEqual(
             [{"event": "started", "request_id": 1}, {"event": "finished", "request_id": 1}],
@@ -203,11 +207,44 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
         self.wait_for(lambda: len(callbacks) == 2)
         old = callbacks[0]
         with self.assertRaises(PlaybackAbort):
-            old.callback(bytearray(64), 16, None, None)
+            old.callback(bytearray(4096), 1024, None, None)
         old.finished_callback()
         time.sleep(0.02)
 
         self.assertNotIn({"event": "finished", "request_id": 2}, self.events)
+
+    def test_cancelled_callback_fills_complete_silent_block_before_abort(self):
+        callbacks = []
+
+        class DeferredStream(FakeRawStream):
+            def start(stream_self):
+                callbacks.append(stream_self)
+                return stream_self
+
+        self.engine.close()
+        self.engine = self.make_engine(self.tts, DeferredStream)
+        self.engine.start()
+        self.engine.speak(1, "取消")
+        self.wait_for(lambda: len(callbacks) == 1)
+        self.engine.cancel(1)
+        output = bytearray(b"\xff" * 4096)
+
+        with self.assertRaises(PlaybackAbort):
+            callbacks[0].callback(output, 1024, None, None)
+
+        self.assertEqual(bytes(4096), bytes(output))
+
+    def test_audio_blocks_are_prebuilt_before_callback(self):
+        from offline_speech_worker import _RequestControl
+
+        callback = self.engine._make_audio_callback(_RequestControl(1), b"\x01" * 4100)
+        closure = dict(zip(callback.__code__.co_freevars, callback.__closure__))
+        blocks = closure["blocks"].cell_contents
+        silent_block = closure["silent_block"].cell_contents
+
+        self.assertEqual((4096, 4096), tuple(len(block) for block in blocks))
+        self.assertEqual(4096, len(silent_block))
+        self.assertEqual(bytes(4092), bytes(blocks[-1][4:]))
 
     def test_close_aborts_raw_stream_and_joins_generation_thread(self):
         blocking = BlockingTts()

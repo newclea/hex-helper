@@ -212,21 +212,17 @@ class OfflineSpeechEngine:
 
     @staticmethod
     def _make_audio_callback(control: _RequestControl, pcm: bytes) -> Callable[..., None]:
-        pcm_view = memoryview(pcm)
-        zero_view = memoryview(bytes(1024 * 4))
-        cursor = 0
+        blocks, silent_block = _prepare_audio_blocks(pcm)
+        block_index = 0
 
         def callback(outdata: Any, frames: int, time_info: Any, status: Any) -> None:
-            nonlocal cursor
+            nonlocal block_index
             if control.cancelled.is_set():
+                outdata[:] = silent_block
                 raise PlaybackAbort()
-            output_size = frames * 4
-            take = min(output_size, len(pcm_view) - cursor)
-            outdata[:take] = pcm_view[cursor : cursor + take]
-            if take < output_size:
-                outdata[take:output_size] = zero_view[: output_size - take]
-            cursor += take
-            if cursor >= len(pcm_view):
+            outdata[:] = blocks[block_index]
+            block_index += 1
+            if block_index == len(blocks):
                 raise PlaybackComplete()
 
         return callback
@@ -292,6 +288,17 @@ class OfflineSpeechEngine:
         if request_id is not None:
             event["request_id"] = request_id
         self._emit(event)
+
+
+def _prepare_audio_blocks(pcm: bytes) -> tuple[tuple[memoryview, ...], memoryview]:
+    block_size = 1024 * 4
+    padding = (-len(pcm)) % block_size
+    padded_view = memoryview(pcm + bytes(padding))
+    blocks = tuple(
+        padded_view[offset : offset + block_size]
+        for offset in range(0, len(padded_view), block_size)
+    )
+    return blocks, memoryview(bytes(block_size))
 
 
 def _write_emitter(output_stream: TextIO) -> Callable[[dict[str, Any]], None]:
