@@ -37,6 +37,7 @@ class OfflineSpeechAdapter:
         self._ready_ok = False
         self._completion_ok = False
         self._closed = False
+        self._unavailable = False
         self._failure_logged = False
         self._generation = 0
         self._request_sequence = 0
@@ -46,12 +47,19 @@ class OfflineSpeechAdapter:
         if os.environ.get("GAMEBUDDY_OFFLINE_SPEECH_DISABLED") == "1":
             return False
         with self._state_lock:
-            if self._closed:
+            if self._closed or self._unavailable:
                 return False
             if not self._is_running() and not self._launch_process():
                 return False
             process = self._process
-        if not self._ready.wait(READY_TIMEOUT_SECONDS) or not self._ready_ok:
+        ready_signalled = self._ready.wait(READY_TIMEOUT_SECONDS)
+        with self._state_lock:
+            if self._closed:
+                return False
+            ready_ok = ready_signalled and self._ready_ok
+            if not ready_ok:
+                self._disable_locked()
+        if not ready_ok:
             self._fail("Offline speech worker did not become ready")
             self._terminate_process(process)
             return False
@@ -83,9 +91,17 @@ class OfflineSpeechAdapter:
         with self._state_lock:
             if self._closed:
                 return
+            was_ready = self._ready_ok
             self._closed = True
+            self._ready_ok = False
+            self._completion_ok = False
+            self._ready.set()
+            self._completion.set()
             process = self._process
         if process is None:
+            return
+        if not was_ready:
+            self._terminate_process(process)
             return
         if self._process_is_running(process):
             self._write({"command": "close"})
@@ -95,6 +111,7 @@ class OfflineSpeechAdapter:
         except (OSError, ValueError, subprocess.TimeoutExpired):
             self._terminate_process(process)
         self._close_output(process)
+        self._join_reader()
 
     def _launch_process(self) -> bool:
         self._ready.clear()
@@ -113,6 +130,7 @@ class OfflineSpeechAdapter:
                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
             )
         except (OSError, ValueError) as error:
+            self._disable_locked()
             self._fail("Unable to start offline speech worker", error)
             return False
         self._generation += 1
@@ -146,32 +164,43 @@ class OfflineSpeechAdapter:
                 if not line:
                     self._protocol_failure(process, generation, "Offline speech worker stdout closed")
                     return
-                self._handle_event(process, generation, line)
+                if not self._handle_event(process, generation, line):
+                    return
         except (json.JSONDecodeError, OSError, TypeError, ValueError) as error:
             self._protocol_failure(process, generation, "Invalid offline speech event", error)
 
-    def _handle_event(self, process: subprocess.Popen, generation: int, line: str) -> None:
+    def _handle_event(self, process: subprocess.Popen, generation: int, line: str) -> bool:
         message = json.loads(line)
         event = message.get("event") if isinstance(message, dict) else None
         if event not in VALID_EVENTS:
             raise ValueError("unknown speech event")
+        failure: str | None = None
         with self._state_lock:
             if self._closed or not self._is_current_generation(process, generation):
-                return
+                return True
             if event == "ready":
                 self._ready_ok = True
                 self._ready.set()
-                return
+                return True
             request_id = message.get("request_id")
-            if event == "error" and request_id is None and not self._ready_ok:
+            if event == "error" and request_id is None:
+                failure = str(message.get("message") or "unknown worker error")
+                self._fail(f"Offline speech worker error: {failure}")
+                self._disable_locked()
                 self._ready.set()
-                return
-            if type(request_id) is not int:
+            elif type(request_id) is not int:
                 raise ValueError("request-scoped event is missing request_id")
-            if request_id != self._current_request_id or event == "started":
-                return
-            self._completion_ok = event == "finished"
-            self._completion.set()
+            elif request_id == self._current_request_id and event == "error":
+                failure = str(message.get("message") or "unknown worker error")
+                self._fail(f"Offline speech worker error: {failure}")
+                self._disable_locked()
+            elif request_id == self._current_request_id and event != "started":
+                self._completion_ok = event == "finished"
+                self._completion.set()
+        if failure is None:
+            return True
+        self._terminate_process(process)
+        return False
 
     def _write(self, message: dict[str, object]) -> bool:
         process = self._process
@@ -185,9 +214,10 @@ class OfflineSpeechAdapter:
                 input_stream.flush()
             return True
         except (OSError, BrokenPipeError, ValueError) as error:
-            self._completion_ok = False
-            self._completion.set()
+            with self._state_lock:
+                self._disable_locked()
             self._fail("Unable to write offline speech command", error)
+            self._terminate_process(process)
             return False
 
     def _protocol_failure(
@@ -200,10 +230,7 @@ class OfflineSpeechAdapter:
         with self._state_lock:
             if self._closed or not self._is_current_generation(process, generation):
                 return
-            self._ready_ok = False
-            self._completion_ok = False
-            self._ready.set()
-            self._completion.set()
+            self._disable_locked()
         self._fail(message, error)
         self._terminate_process(process)
 
@@ -213,11 +240,35 @@ class OfflineSpeechAdapter:
         try:
             if self._process_is_running(process):
                 process.terminate()
-                process.wait(timeout=CLOSE_TIMEOUT_SECONDS)
-        except (OSError, ValueError, subprocess.TimeoutExpired):
-            self._fail("Unable to terminate offline speech worker")
-        self._close_input(process)
-        self._close_output(process)
+            process.wait(timeout=CLOSE_TIMEOUT_SECONDS)
+        except subprocess.TimeoutExpired:
+            self._kill_process(process)
+        except (OSError, ValueError) as error:
+            self._fail("Unable to terminate offline speech worker", error)
+        finally:
+            self._close_input(process)
+            self._close_output(process)
+            self._join_reader()
+
+    def _kill_process(self, process: subprocess.Popen) -> None:
+        try:
+            process.kill()
+            process.wait(timeout=CLOSE_TIMEOUT_SECONDS)
+        except (OSError, ValueError, subprocess.TimeoutExpired) as error:
+            self._fail("Unable to kill offline speech worker", error)
+
+    def _join_reader(self) -> None:
+        reader = self._reader
+        if reader is None or reader is threading.current_thread():
+            return
+        reader.join(timeout=CLOSE_TIMEOUT_SECONDS)
+
+    def _disable_locked(self) -> None:
+        self._unavailable = True
+        self._ready_ok = False
+        self._completion_ok = False
+        self._ready.set()
+        self._completion.set()
 
     @staticmethod
     def _close_input(process: subprocess.Popen) -> None:

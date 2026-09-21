@@ -4,6 +4,8 @@ import json
 import queue
 import subprocess
 import sys
+import threading
+import time
 import unittest
 from pathlib import Path
 from unittest.mock import Mock, patch
@@ -56,21 +58,34 @@ class FakeInput:
 
 
 class FakeProcess:
-    def __init__(self, events=None, wait_timeout=False, broken=False, auto_finish=False):
+    def __init__(
+        self,
+        events=None,
+        wait_timeout=False,
+        broken=False,
+        auto_finish=False,
+        terminate_stuck=False,
+    ):
         self.stdout = FakeOutput(events)
         self.stdin = FakeInput(self, broken)
         self.writes = []
         self.raw_lines = []
         self.wait_timeout = wait_timeout
         self.auto_finish = auto_finish
+        self.terminate_stuck = terminate_stuck
         self.returncode = None
         self.terminate_count = 0
+        self.kill_count = 0
+        self.wait_count = 0
 
     def poll(self):
         return self.returncode
 
     def wait(self, timeout=None):
+        self.wait_count += 1
         if self.wait_timeout and self.returncode is None:
+            raise subprocess.TimeoutExpired("offline-worker", timeout)
+        if self.terminate_stuck and self.terminate_count and not self.kill_count:
             raise subprocess.TimeoutExpired("offline-worker", timeout)
         self.returncode = 0 if self.returncode is None else self.returncode
         self.stdout.close()
@@ -78,7 +93,13 @@ class FakeProcess:
 
     def terminate(self):
         self.terminate_count += 1
-        self.returncode = -15
+        if not self.terminate_stuck:
+            self.returncode = -15
+            self.stdout.close()
+
+    def kill(self):
+        self.kill_count += 1
+        self.returncode = -9
         self.stdout.close()
 
 
@@ -122,8 +143,49 @@ class OfflineSpeechAdapterTests(unittest.TestCase):
         self.assertTrue(adapter.speak("失败"))
         process.stdout.put({"event": "error", "request_id": 2, "message": "failed"})
         self.assertFalse(adapter.wait_finished(0.2))
+        self.assertFalse(adapter.speak("会话已停用"))
+
+    def test_worker_error_logs_cause_and_disables_session(self):
+        process = FakeProcess([{"event": "ready"}])
+        adapter, factory = self.make_adapter(process)
+        self.assertTrue(adapter.speak("失败"))
+
+        with self.assertLogs("offline_speech", level="WARNING") as captured:
+            process.stdout.put({
+                "event": "error",
+                "request_id": 1,
+                "message": "audio device unavailable",
+            })
+            self.assertFalse(adapter.wait_finished(0.2))
+
+        self.assertIn("audio device unavailable", "\n".join(captured.output))
+        deadline = time.monotonic() + 0.5
+        while process.terminate_count == 0 and time.monotonic() < deadline:
+            time.sleep(0.005)
+        self.assertEqual(1, process.terminate_count)
+        self.assertFalse(adapter.speak("不应重试"))
+        factory.assert_called_once()
+
+    def test_startup_error_logs_cause_and_disables_session(self):
+        process = FakeProcess([{
+            "event": "error",
+            "message": "model file is missing",
+        }])
+        adapter, factory = self.make_adapter(process)
+
+        with self.assertLogs("offline_speech", level="WARNING") as captured:
+            self.assertFalse(adapter.start())
+
+        self.assertIn("model file is missing", "\n".join(captured.output))
+        self.assertFalse(adapter.start())
+        factory.assert_called_once()
+
+    def test_cancelled_event_returns_false(self):
+        process = FakeProcess([{"event": "ready"}])
+        adapter, _ = self.make_adapter(process)
+        self.addCleanup(adapter.close)
         self.assertTrue(adapter.speak("取消"))
-        process.stdout.put({"event": "cancelled", "request_id": 3})
+        process.stdout.put({"event": "cancelled", "request_id": 1})
         self.assertFalse(adapter.wait_finished(0.2))
 
     def test_cancel_is_request_scoped_and_stale_finish_is_ignored(self):
@@ -145,6 +207,39 @@ class OfflineSpeechAdapterTests(unittest.TestCase):
         with patch("offline_speech.READY_TIMEOUT_SECONDS", 0.01):
             self.assertFalse(adapter.start())
         self.assertEqual(1, process.terminate_count)
+
+    def test_close_wakes_start_waiter_without_ready_timeout_delay(self):
+        process = FakeProcess()
+        adapter, factory = self.make_adapter(process)
+        result = []
+        thread = threading.Thread(target=lambda: result.append(adapter.start()))
+        started_at = time.monotonic()
+        thread.start()
+        deadline = started_at + 0.5
+        while factory.call_count == 0 and time.monotonic() < deadline:
+            time.sleep(0.005)
+
+        adapter.close()
+        thread.join(0.5)
+
+        self.assertFalse(thread.is_alive())
+        self.assertEqual([False], result)
+        self.assertEqual(1, process.terminate_count)
+        self.assertLess(time.monotonic() - started_at, 1.0)
+
+    def test_close_wakes_completion_waiter(self):
+        process = FakeProcess([{"event": "ready"}])
+        adapter, _ = self.make_adapter(process)
+        self.assertTrue(adapter.speak("等待关闭"))
+        result = []
+        thread = threading.Thread(target=lambda: result.append(adapter.wait_finished()))
+        thread.start()
+
+        adapter.close()
+        thread.join(0.5)
+
+        self.assertFalse(thread.is_alive())
+        self.assertEqual([False], result)
 
     def test_disabled_environment_does_not_spawn(self):
         factory = Mock()
@@ -174,13 +269,20 @@ class OfflineSpeechAdapterTests(unittest.TestCase):
                 adapter.close()
 
     def test_close_is_idempotent_and_terminates_stuck_worker(self):
-        process = FakeProcess([{"event": "ready"}], wait_timeout=True)
+        process = FakeProcess(
+            [{"event": "ready"}],
+            wait_timeout=True,
+            terminate_stuck=True,
+        )
         adapter, _ = self.make_adapter(process)
         self.assertTrue(adapter.start())
         adapter.close()
         adapter.close()
         self.assertEqual(1, process.writes.count({"command": "close"}))
         self.assertEqual(1, process.terminate_count)
+        self.assertEqual(1, process.kill_count)
+        self.assertGreaterEqual(process.wait_count, 3)
+        self.assertTrue(process.stdin.closed)
 
 
 if __name__ == "__main__":
