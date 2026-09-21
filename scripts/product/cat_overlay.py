@@ -220,9 +220,11 @@ class CatOverlayWindow:
 
     def _target_at(self, local_x: int, local_y: int) -> str | None:
         action = self._action_at(local_x, local_y)
-        if action is not None:
+        if action is not None and action != "__refresh__":
             return action
-        return "__cat__" if self._cat_bounds().contains(Point(local_x, local_y)) else None
+        if self._cat_bounds().contains(Point(local_x, local_y)):
+            return "__cat__"
+        return action
 
     def _native_hit_result(
         self,
@@ -745,6 +747,10 @@ class CatOverlayWindow:
             item for item in options
             if isinstance(item, Mapping) and item.get("available") is True and item.get("id")
         ][:3] if isinstance(options, list) else []
+        refresh_available = (
+            self.on_refresh is not None
+            and self._view.get("refresh_available") is True
+        )
         # Narrow screens place the cat above the bubble instead of reserving
         # another 130 horizontal pixels beside it. Only the safe strip is used.
         bubble_left = 8 if self._stacked_layout else 16
@@ -918,6 +924,11 @@ class CatOverlayWindow:
         canvas.tag_lower(background)
         canvas.tag_lower(tail)
         self._draw_cat()
+        if self._cat_item is not None and refresh_available:
+            bounds = self._cat_bounds()
+            self._click_regions.append(
+                (bounds.left, bounds.top, bounds.right, bounds.bottom, "__refresh__")
+            )
         self._update_pointer_passthrough()
         self._raise_for_visible_change()
 

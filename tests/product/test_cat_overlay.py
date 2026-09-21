@@ -173,6 +173,16 @@ class CatOverlayInteractionTests(unittest.TestCase):
         window._on_left_press(event_at(20, 20))
         self.assertFalse(window._drag.active)
 
+    def test_refresh_action_stays_available_without_stealing_cat_target(self) -> None:
+        window = make_window(on_refresh=Mock(), refresh_available=True)
+        bounds = window._cat_bounds()
+        window._click_regions = [
+            (bounds.left, bounds.top, bounds.right, bounds.bottom, "__refresh__")
+        ]
+        self.assertEqual("__cat__", window._target_at(window.width - 72, 74))
+        window._invoke_action("__refresh__")
+        window.on_refresh.assert_called_once_with()
+
     def test_drag_freezes_then_release_resumes_animation(self) -> None:
         window = make_window()
         timeline = FakeTimeline()
