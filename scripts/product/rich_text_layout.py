@@ -25,6 +25,26 @@ class LaidOutLine:
         return "".join(run.text for run in self.runs)
 
 
+def content_width(
+    paragraphs: Sequence[Sequence[TextRun]],
+    measure: Callable[[str, bool], int],
+    minimum_width: int,
+    maximum_width: int,
+) -> int:
+    """Choose the measured content width, capped without forcing short copy wide."""
+
+    measured = 0
+    for paragraph in paragraphs:
+        line_widths = [0]
+        for run in paragraph:
+            parts = run.text.split("\n")
+            line_widths[-1] += measure(parts[0], run.bold)
+            for part in parts[1:]:
+                line_widths.append(measure(part, run.bold))
+        measured = max(measured, *line_widths)
+    return min(maximum_width, max(minimum_width, measured))
+
+
 def normalize_blocks(
     blocks: object,
     fallback: str,

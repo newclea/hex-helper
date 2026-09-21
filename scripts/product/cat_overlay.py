@@ -16,38 +16,25 @@ from cat_animation import (
     AnimationTimeline,
     load_animation_manifest,
 )
-from overlay_interaction import LongPressDrag, Point, Rect, clamp_origin
-from rich_text_layout import LaidOutLine, TextRun, normalize_blocks, paginate_lines, wrap_paragraph
+from overlay_interaction import BubbleLayout, LongPressDrag, Point, Rect, Size, clamp_rect, place_bubble
+from rich_text_layout import LaidOutLine, TextRun, content_width, normalize_blocks, wrap_paragraph
 
 
 TRANSPARENT = "#010203"
 BUBBLE = "#FFF2CE"
 BUBBLE_BORDER = "#D9B85E"
 INK = "#302817"
-MUTED = "#7E6B42"
 BUTTON = "#F4E3B7"
 BUTTON_SELECTED = "#E8CC84"
 BUTTON_SELECTED_BORDER = "#967026"
-MINIMUM_HEIGHT = 340
-# Long recommendations grow downwards within the available screen height.
-MAXIMUM_HEIGHT = 720
+CAT_WIDTH = 118
+CAT_HEIGHT = 124
+BUBBLE_MINIMUM_CONTENT_WIDTH = 120
+BUBBLE_MAXIMUM_CONTENT_WIDTH = 780
+BUBBLE_PADDING = 12
 BUTTON_GAP = 6
 BUTTON_MINIMUM_HEIGHT = 30
-# Leave the game's top-right score, clock and performance counters readable.
 TOP_MARGIN = 64
-# The built-in measured layouts end at x <= 0.811 of a full-screen frame.
-# Reserve the first 82% for the offer, allowing a little calibration movement.
-# Custom ROI layouts and games on another monitor require their actual bounds.
-OFFER_RIGHT_BOUNDARY = 0.82
-# The measured 1920x1080 champion-select client has its WeGame panel below
-# y=278 and hero cards below y=335. Keep this phase's copy in the top band.
-# Other screen sizes retain the conservative right-side layout until measured.
-CHAMPION_BAND_WIDTH = 560
-CHAMPION_BAND_HEIGHT = 206
-# Chinese closing punctuation, including ASCII variants used by the copy.
-# Automatic line/page breaks must carry the preceding character with these.
-LINE_END_PUNCTUATION = frozenset("，。！？；：、）》】〕〉」』”’…％,.;:!?)]}>%~～")
-
 # Win32 extended-window/message constants.  Keep the overlay non-activating so
 # choosing a strategy never takes keyboard focus away from the game.  Button
 # hit-testing is handled synchronously through WM_NCHITTEST; cursor polling is
@@ -104,17 +91,11 @@ class CatOverlayWindow:
         self.on_tick = on_tick
         self.on_ready = on_ready
         self.on_close = on_close
-        self._preferred_width = max(420, min(560, width))
-        self.width = self._preferred_width
-        self._stacked_layout = False
-        self._champion_band = False
-        self._screen_width: int | None = None
-        self._window_left: int | None = None
-        self._window_top = TOP_MARGIN
-        self._user_positioned = False
-        # The window grows downwards for wrapped pills and recommendation text.
-        self._base_height = max(MINIMUM_HEIGHT, min(MAXIMUM_HEIGHT, height))
-        self.height = self._base_height
+        self.width = max(CAT_WIDTH, width)
+        self.height = max(CAT_HEIGHT, height)
+        self._cat_screen_rect = Rect(0, TOP_MARGIN, CAT_WIDTH, TOP_MARGIN + CAT_HEIGHT)
+        self._cat_local_rect = Rect(self.width - CAT_WIDTH, 0, self.width, CAT_HEIGHT)
+        self._last_work_area: Rect | None = None
         self._updates: queue.SimpleQueue[dict[str, Any]] = queue.SimpleQueue()
         self._view: dict[str, Any] = {
             "state": "waiting",
@@ -146,9 +127,8 @@ class CatOverlayWindow:
         self._native_wndproc_type: Any = None
         self._native_wndproc_callback: Any = None
         self._native_original_wndproc: int | None = None
+        self._native_move: Callable[[Any, int, int, int, int], bool] = self._move_native_window
         self._detail_key: tuple[Any, ...] | None = None
-        self._detail_page = 0
-        self._detail_pages: list[tuple[LaidOutLine, ...]] = []
         self._presented_topmost_key: tuple[Any, ...] | None = None
 
     def set_view(self, view: Mapping[str, Any]) -> None:
@@ -216,7 +196,7 @@ class CatOverlayWindow:
         return None
 
     def _cat_bounds(self) -> Rect:
-        return Rect(self.width - 130, 16, self.width - 12, 140)
+        return self._cat_local_rect
 
     def _target_at(self, local_x: int, local_y: int) -> str | None:
         action = self._action_at(local_x, local_y)
@@ -432,8 +412,7 @@ class CatOverlayWindow:
         if self._view.get("bubble_visible") is False:
             self._presented_topmost_key = None
             return
-        key = (self._view.get("state"), self._detail_key, self._detail_page,
-               self.width, self._stacked_layout)
+        key = (self._view.get("state"), self._detail_key, self.width, self.height)
         if key == self._presented_topmost_key:
             return
         if self._native_hwnd is None or self._native_user32 is None:
@@ -501,57 +480,44 @@ class CatOverlayWindow:
                 | SWP_FRAMECHANGED,
             )
 
-    def _maximum_height(self) -> int:
-        maximum_height = CHAMPION_BAND_HEIGHT if self._champion_band else MAXIMUM_HEIGHT
-        if self._root is not None:
-            screen_height = int(self._root.winfo_screenheight())
-            top = max(0, int(self._root.winfo_y()))
-            maximum_height = min(
-                maximum_height,
-                max(1, screen_height - top - 12),
-            )
-        return maximum_height
-
-    @staticmethod
-    def _screen_layout(screen_width: int, preferred_width: int) -> tuple[int, int, bool]:
-        """Return width/left/stacked for the clear right side of measured cards."""
-        right_margin = 12
-        safe_left = math.ceil(screen_width * OFFER_RIGHT_BOUNDARY) + 4
-        available = max(1, screen_width - right_margin - safe_left)
-        width = min(preferred_width, available)
-        return width, max(0, screen_width - width - right_margin), width < preferred_width
-
     def _fit_to_screen(self, screen_width: int) -> None:
-        self._champion_band = self._uses_champion_band(screen_width)
-        if self._champion_band:
-            self.width, left, self._stacked_layout = CHAMPION_BAND_WIDTH, screen_width - CHAMPION_BAND_WIDTH - 12, False
-        else:
-            self.width, left, self._stacked_layout = self._screen_layout(screen_width, self._preferred_width)
-        self._screen_width = screen_width
-        if not self._user_positioned:
-            self._window_left = left
-            self._window_top = TOP_MARGIN
-        if self._canvas is not None:
-            self._canvas.configure(width=self.width)
-        self._apply_geometry()
+        screen_height = int(self._root.winfo_screenheight()) if self._root is not None else self.height
+        work = self._monitor_work_area(Point(screen_width // 2, screen_height // 2))
+        left = max(work.left, work.right - CAT_WIDTH - 12)
+        top = min(max(TOP_MARGIN, work.top), work.bottom - CAT_HEIGHT)
+        self._cat_screen_rect = Rect(left, top, left + CAT_WIDTH, top + CAT_HEIGHT)
 
-    def _apply_geometry(self) -> None:
-        if self._root is None:
-            return
-        bounds = f"{self.width}x{self.height}"
-        if self._window_left is not None:
-            # A height-only request in the same event turn must retain the
-            # pending target position, not the previous native window position.
-            bounds += f"{self._window_left:+d}{self._window_top:+d}"
-        self._root.geometry(bounds)
-
-    def _uses_champion_band(self, screen_width: int) -> bool:
-        return (
-            self._view.get("state") == "champ_select"
-            and screen_width == 1920
-            and self._root is not None
-            and int(self._root.winfo_screenheight()) == 1080
+    def _move_native_window(self, hwnd: Any, left: int, top: int, width: int, height: int) -> bool:
+        if self._native_user32 is None:
+            return False
+        return bool(
+            self._native_user32.SetWindowPos(
+                hwnd,
+                None,
+                left,
+                top,
+                width,
+                height,
+                SWP_NOACTIVATE | SWP_NOZORDER,
+            )
         )
+
+    def _set_native_bounds(self, bounds: Rect) -> bool:
+        if self._root is None:
+            return False
+        width = bounds.right - bounds.left
+        height = bounds.bottom - bounds.top
+        self._root.geometry(f"{width}x{height}")
+        if self._native_hwnd is not None:
+            moved = self._native_move(self._native_hwnd, bounds.left, bounds.top, width, height)
+        else:
+            self._root.geometry(f"{width}x{height}{bounds.left:+d}{bounds.top:+d}")
+            moved = True
+        if moved:
+            self.width, self.height = width, height
+            if self._canvas is not None:
+                self._canvas.configure(width=width, height=height)
+        return moved
 
     @staticmethod
     def _enable_dpi_awareness() -> None:
@@ -568,18 +534,6 @@ class CatOverlayWindow:
         except AttributeError:
             user32.SetProcessDPIAware()
 
-    def _resize_height(self, required_height: int) -> None:
-        target = min(
-            self._maximum_height(),
-            max(self._base_height, int(required_height)),
-        )
-        if target == self.height:
-            return
-        self.height = target
-        if self._canvas is not None:
-            self._canvas.configure(height=target)
-        self._apply_geometry()
-
     def _text_height(self, text: str, width: int, font: tuple[Any, ...]) -> int:
         if not text:
             return 0
@@ -590,45 +544,10 @@ class CatOverlayWindow:
         self._canvas.delete(item)
         return box[3] - box[1] if box else 0
 
-    @staticmethod
-    def _safe_line_end(text: str, end: int) -> int:
-        while end > 1 and text[end:].lstrip(" \t")[:1] in LINE_END_PUNCTUATION:
-            end -= 1
-        return end
-
     def _wrap_text(self, text: str, width: int, font: tuple[Any, ...]) -> str:
         measure = lambda value, _bold: self._text_width(value, font)
         lines = wrap_paragraph((TextRun(text),), width, measure)
         return "\n".join(line.text for line in lines)
-
-    def _paginate_text(
-        self, text: str, width: int, font: tuple[Any, ...], height: int,
-    ) -> list[str]:
-        """Keep long reasons readable without pushing strategy buttons offscreen."""
-        pages: list[str] = []
-        remaining = text
-        while remaining:
-            low, high = 1, len(remaining)
-            while low < high:
-                middle = (low + high + 1) // 2
-                if self._text_height(remaining[:middle], width, font) <= height:
-                    low = middle
-                else:
-                    high = middle - 1
-            end = low
-            if end < len(remaining):
-                # Prefer a sentence boundary near the page end, retaining every
-                # character so the user can read the complete explanation.
-                boundary = max(
-                    remaining.rfind(mark, end // 2, end)
-                    for mark in ("\n", "。", "；", "！", "？")
-                )
-                if boundary >= 0:
-                    end = boundary + 1
-                end = self._safe_line_end(remaining, end)
-            pages.append(remaining[:end])
-            remaining = remaining[end:]
-        return pages or [""]
 
     def _text_width(self, text: str, font: tuple[Any, ...]) -> int:
         item = self._canvas.create_text(0, 0, anchor="nw", text=text, font=font)
@@ -680,18 +599,6 @@ class CatOverlayWindow:
             current_y += line_height
         return current_y
 
-    def _pill_title(self, text: str, width: int, font: tuple[Any, ...]) -> str:
-        if self._text_width(text, font) <= width:
-            return text
-        low, high = 0, len(text)
-        while low < high:
-            middle = (low + high + 1) // 2
-            if self._text_width(text[:middle].rstrip() + "…", font) <= width:
-                low = middle
-            else:
-                high = middle - 1
-        return text[:low].rstrip() + "…"
-
     def _current_cat_image(self) -> Any:
         if self._animation_timeline is None:
             return self._cat
@@ -702,9 +609,10 @@ class CatOverlayWindow:
         image = self._current_cat_image()
         self._cat_item = None
         if image is not None:
+            bounds = self._cat_bounds()
             self._cat_item = self._canvas.create_image(
-                self.width - 72,
-                74,
+                (bounds.left + bounds.right) / 2,
+                (bounds.top + bounds.bottom) / 2,
                 image=image,
                 anchor="center",
                 tags=("cat",),
@@ -728,215 +636,279 @@ class CatOverlayWindow:
                 LOGGER.exception("animation update failed; keeping last frame")
                 self._animation_timeline = None
 
-    def _draw(self) -> None:
-        if self._screen_width is not None and self._champion_band != self._uses_champion_band(self._screen_width):
-            # Phase changes need a reflow even if the display size is unchanged.
-            self._fit_to_screen(self._screen_width)
-        canvas = self._canvas
-        canvas.delete("all")
-        self._click_regions = []
-        self._pill_regions = {}
-        if self._view.get("bubble_visible") is False:
-            self._presented_topmost_key = None
-            self._resize_height(self._base_height)
-            self._draw_cat()
-            self._set_click_through(True)
-            return
+    def _visible_options(self) -> list[Mapping[str, Any]]:
         options = self._view.get("options")
-        option_rows = [
-            item for item in options
+        if not isinstance(options, list):
+            return []
+        return [
+            item
+            for item in options
             if isinstance(item, Mapping) and item.get("available") is True and item.get("id")
-        ][:3] if isinstance(options, list) else []
-        refresh_available = (
-            self.on_refresh is not None
-            and self._view.get("refresh_available") is True
-        )
-        # Narrow screens place the cat above the bubble instead of reserving
-        # another 130 horizontal pixels beside it. Only the safe strip is used.
-        bubble_left = 8 if self._stacked_layout else 16
-        bubble_top = 156 if self._stacked_layout else 12
-        bubble_right = self.width - (8 if self._stacked_layout else 130)
-        text_left, text_right = bubble_left + 12, bubble_right - 12
-        text_width = text_right - text_left
+        ][:3]
+
+    def _content_model(self) -> dict[str, Any]:
         introduction = str(self._view.get("introduction") or "")
         message = str(self._view.get("message") or "")
-        message_blocks = self._view.get("message_blocks")
+        blocks = self._view.get("message_blocks")
+        options = self._visible_options()
         active_id = str(self._view.get("active_strategy_id") or "")
-
-        maximum_height = self._maximum_height()
-        introduction_font = ("Microsoft YaHei UI", 10)
-        title_font = ("Microsoft YaHei UI", 10, "bold")
-        introduction_height = self._text_height(introduction, text_width, introduction_font)
-        introduction_top = bubble_top + 14
-        options_top = introduction_top + introduction_height + (12 if introduction else 0)
-        button_height = max(BUTTON_MINIMUM_HEIGHT, self._text_height("国", text_width, title_font) + 10)
-        layouts: list[dict[str, Any]] = []
-        x, y = text_left, options_top
-        for option in option_rows:
-            option_id = str(option["id"])
-            selected = option_id == active_id if active_id else option.get("selected") is True
-            full_title = " ".join(str(option.get("title") or "").split())
-            title = self._pill_title(full_title, text_width - 20, title_font)
-            button_width = max(button_height, min(text_width, self._text_width(title, title_font) + 20))
-            if x > text_left and x + button_width > text_right:
-                x, y = text_left, y + button_height + BUTTON_GAP
-            box = (x, y, x + button_width, y + button_height)
-            layouts.append({"id": option_id, "selected": selected, "title": title, "box": box})
+        titles = [" ".join(str(item.get("title") or "").split()) for item in options]
+        for item, title in zip(options, titles):
+            selected = str(item["id"]) == active_id if active_id else item.get("selected") is True
             if selected:
-                current_plan = "当前玩法 " + full_title
-                if title == full_title:
-                    # The active capsule already shows the complete name.
-                    # Keep the body for the recommendation and requirements.
-                    message = "".join(
-                        line for line in message.splitlines(keepends=True)
-                        if line.rstrip("\r\n") != current_plan
-                    )
-                    if isinstance(message_blocks, list):
-                        message_blocks = [
-                            block
-                            for block in message_blocks
-                            if not (
-                                isinstance(block, Mapping)
-                                and block.get("label") == "当前玩法"
-                                and block.get("value") == full_title
-                            )
-                        ]
-                elif current_plan not in message.splitlines():
-                    # A shortened capsule still needs its full name, once.
-                    message = current_plan + "\n" + message
-            x += button_width + BUTTON_GAP
-        blocks_key = repr(message_blocks)
-        detail_key = (
-            introduction,
-            message,
-            blocks_key,
-            active_id,
-            tuple(
-                (
-                    str(item.get("id") or ""),
-                    str(item.get("title") or ""),
-                    bool(item.get("selected")),
+                current_plan = "当前玩法 " + title
+                message = "".join(
+                    line for line in message.splitlines(keepends=True)
+                    if line.rstrip("\r\n") != current_plan
                 )
-                for item in option_rows
-            ),
+                if isinstance(blocks, list):
+                    blocks = [
+                        block for block in blocks
+                        if not (
+                            isinstance(block, Mapping)
+                            and block.get("label") == "当前玩法"
+                            and block.get("value") == title
+                        )
+                    ]
+        return {
+            "introduction": introduction,
+            "message": message,
+            "blocks": blocks,
+            "options": options,
+            "titles": titles,
+            "active_id": active_id,
+        }
+
+    def _measure_content(self, model: dict[str, Any]) -> dict[str, Any]:
+        normal_font = ("Microsoft YaHei UI", 11)
+        bold_font = ("Microsoft YaHei UI", 11, "bold")
+        title_font = ("Microsoft YaHei UI", 10, "bold")
+        paragraphs = list(normalize_blocks(model["blocks"], model["message"]))
+        if model["introduction"]:
+            paragraphs.extend(normalize_blocks(None, model["introduction"]))
+        measure = lambda value, bold: self._text_width(value, bold_font if bold else normal_font)
+        pill_width = max(
+            (self._text_width(title, title_font) + 20 for title in model["titles"]),
+            default=BUBBLE_MINIMUM_CONTENT_WIDTH,
         )
-        if self._detail_key != detail_key:
-            self._detail_key = detail_key
-            self._detail_page = 0
-        options_bottom = y + button_height if layouts else options_top
-        message_top = options_bottom + 21 if layouts else options_top
-        message_budget = max(1, maximum_height - message_top - 40)
-        message_font: tuple[Any, ...] = ("Microsoft YaHei UI", 11)
-        message_bold_font: tuple[Any, ...] = ("Microsoft YaHei UI", 11, "bold")
-        rich_lines: tuple[LaidOutLine, ...] = ()
-        line_height = 1
-        for size in (11, 10, 9):
-            message_font = ("Microsoft YaHei UI", size)
-            message_bold_font = ("Microsoft YaHei UI", size, "bold")
-            rich_lines = self._layout_rich_lines(
-                message_blocks,
-                message,
-                text_width,
-                message_font,
-                message_bold_font,
+        text_width = content_width(
+            paragraphs,
+            measure,
+            min(BUBBLE_MAXIMUM_CONTENT_WIDTH, max(BUBBLE_MINIMUM_CONTENT_WIDTH, pill_width)),
+            BUBBLE_MAXIMUM_CONTENT_WIDTH,
+        )
+        model.update(
+            {
+                "normal_font": normal_font,
+                "bold_font": bold_font,
+                "title_font": title_font,
+                "text_width": text_width,
+                "paragraphs": tuple(paragraphs),
+            }
+        )
+        return model
+
+    def _layout_options(self, model: dict[str, Any], start_y: int) -> tuple[list[dict[str, Any]], int]:
+        text_width = int(model["text_width"])
+        title_font = model["title_font"]
+        layouts: list[dict[str, Any]] = []
+        x, y, row_height = 0, start_y, 0
+        for option, title in zip(model["options"], model["titles"]):
+            button_width = min(text_width, max(BUTTON_MINIMUM_HEIGHT, self._text_width(title, title_font) + 20))
+            wrapped = self._wrap_text(title, max(1, button_width - 20), title_font)
+            button_height = max(BUTTON_MINIMUM_HEIGHT, self._text_height(wrapped, button_width - 20, title_font) + 10)
+            if x and x + button_width > text_width:
+                x, y, row_height = 0, y + row_height + BUTTON_GAP, 0
+            selected = str(option["id"]) == model["active_id"] if model["active_id"] else option.get("selected") is True
+            layouts.append(
+                {
+                    "id": str(option["id"]),
+                    "selected": selected,
+                    "title": wrapped,
+                    "box": (x, y, x + button_width, y + button_height),
+                }
             )
-            line_height = max(
-                self._text_height("国", text_width, message_font),
-                self._text_height("国", text_width, message_bold_font),
-            ) + 3
-            if len(rich_lines) * line_height <= message_budget:
-                break
-        needs_pages = len(rich_lines) * line_height > message_budget
-        page_controls_height = 28 if needs_pages else 0
-        self._detail_pages = list(paginate_lines(
-            rich_lines,
-            line_height,
-            max(1, message_budget - page_controls_height),
-        ))
-        self._detail_page = min(self._detail_page, len(self._detail_pages) - 1)
-        if introduction:
-            canvas.create_text(
-                text_left, introduction_top, anchor="nw",
-                text=self._wrap_text(introduction, text_width, introduction_font), fill=INK, font=introduction_font,
-                tags=("introduction",),
-            )
-        for option in layouts:
-            option_id = option["id"]
-            selected = option["selected"]
+            x += button_width + BUTTON_GAP
+            row_height = max(row_height, button_height)
+        return layouts, y + row_height if layouts else start_y
+
+    def _bubble_model(self) -> dict[str, Any]:
+        model = self._measure_content(self._content_model())
+        text_width = int(model["text_width"])
+        intro_font = ("Microsoft YaHei UI", 10)
+        intro = model["introduction"]
+        intro_text = self._wrap_text(intro, text_width, intro_font) if intro else ""
+        intro_height = self._text_height(intro_text, text_width, intro_font)
+        options_top = 14 + intro_height + (12 if intro else 0)
+        option_layouts, options_bottom = self._layout_options(model, options_top)
+        message_top = options_bottom + 21 if option_layouts else options_top
+        lines = self._layout_rich_lines(
+            model["blocks"],
+            model["message"],
+            text_width,
+            model["normal_font"],
+            model["bold_font"],
+        )
+        line_height = max(
+            self._text_height("国", text_width, model["normal_font"]),
+            self._text_height("国", text_width, model["bold_font"]),
+        ) + 3
+        content_bottom = max(88, message_top + len(lines) * line_height + 18)
+        model.update(
+            {
+                "intro_font": intro_font,
+                "intro_text": intro_text,
+                "options_top": options_top,
+                "option_layouts": option_layouts,
+                "message_top": message_top,
+                "lines": lines,
+                "line_height": line_height,
+                "bubble_size": Size(text_width + BUBBLE_PADDING * 2, content_bottom),
+            }
+        )
+        return model
+
+    @staticmethod
+    def _tail_points(direction: str, bubble: Rect, cat: Rect) -> tuple[int, ...]:
+        cat_x = (cat.left + cat.right) // 2
+        cat_y = (cat.top + cat.bottom) // 2
+        if "left" in direction or direction == "left":
+            center = min(max(cat_y, bubble.top + 18), bubble.bottom - 18)
+            return bubble.right, center - 10, cat.left, cat_y, bubble.right, center + 10
+        if "right" in direction or direction == "right":
+            center = min(max(cat_y, bubble.top + 18), bubble.bottom - 18)
+            return bubble.left, center - 10, cat.right, cat_y, bubble.left, center + 10
+        if "top" in direction or direction == "top":
+            center = min(max(cat_x, bubble.left + 18), bubble.right - 18)
+            return center - 10, bubble.bottom, cat_x, cat.top, center + 10, bubble.bottom
+        center = min(max(cat_x, bubble.left + 18), bubble.right - 18)
+        return center - 10, bubble.top, cat_x, cat.bottom, center + 10, bubble.top
+
+    def _draw_options(self, model: dict[str, Any], bubble: Rect) -> None:
+        for option in model["option_layouts"]:
             left, top, right, bottom = option["box"]
+            box = (left + bubble.left, top + bubble.top, right + bubble.left, bottom + bubble.top)
+            option_id = option["id"]
             self._capsule(
-                canvas, option["box"],
-                fill=BUTTON_SELECTED if selected else BUTTON,
-                outline=BUTTON_SELECTED_BORDER if selected else BUBBLE_BORDER,
-                width=2 if selected else 1,
+                self._canvas,
+                box,
+                fill=BUTTON_SELECTED if option["selected"] else BUTTON,
+                outline=BUTTON_SELECTED_BORDER if option["selected"] else BUBBLE_BORDER,
+                width=2 if option["selected"] else 1,
                 tags=(f"option-button:{option_id}",),
             )
-            canvas.create_text(
-                (left + right) / 2, (top + bottom) / 2,
-                anchor="center", text=option["title"], fill=INK,
-                font=title_font, tags=(f"option-title:{option_id}",),
+            self._canvas.create_text(
+                (box[0] + box[2]) / 2,
+                (box[1] + box[3]) / 2,
+                anchor="center",
+                text=option["title"],
+                fill=INK,
+                font=model["title_font"],
+                tags=(f"option-title:{option_id}",),
             )
-            self._click_regions.append((left, top, right, bottom, option_id))
-            self._pill_regions[option_id] = option["box"]
-        if layouts:
-            canvas.create_line(
-                text_left, message_top - 10, text_right, message_top - 10,
-                fill=BUBBLE_BORDER, tags=("recommendation-divider",),
-            )
-        message_bottom = self._draw_rich_page(
-            self._detail_pages[self._detail_page],
-            text_left,
-            message_top,
-            message_font,
-            message_bold_font,
-            line_height,
-        )
-        y = message_bottom + 12
-        content_bottom = message_bottom + 18
-        if len(self._detail_pages) > 1:
-            for left, right, label, action, enabled in (
-                (text_left, text_left + 32, "‹", "__detail_previous__", self._detail_page > 0),
-                (text_right - 32, text_right, "›", "__detail_next__", self._detail_page + 1 < len(self._detail_pages)),
-            ):
-                canvas.create_text((left + right) // 2, y + 9, text=label, fill=INK if enabled else MUTED, font=("Microsoft YaHei UI", 12, "bold"))
-                if enabled:
-                    self._click_regions.append((left, y - 3, right, y + 23, action))
-            canvas.create_text(
-                (text_left + text_right) // 2, y + 9,
-                text=f"说明 {self._detail_page + 1}/{len(self._detail_pages)}",
-                fill=MUTED, font=("Microsoft YaHei UI", 8),
-            )
-            content_bottom = y + page_controls_height + 8
-        desired_bubble_bottom = max(bubble_top + 88, content_bottom)
-        self._resize_height(desired_bubble_bottom + 18)
-        bubble_bottom = min(self.height - 18, desired_bubble_bottom)
+            self._click_regions.append((*box, option_id))
+            self._pill_regions[option_id] = box
+
+    def _paint_bubble(self, model: dict[str, Any], layout: Any) -> None:
+        bubble = layout.bubble_local
         background = self._rounded_rectangle(
-            canvas, (bubble_left, bubble_top, bubble_right, bubble_bottom), 14,
-            fill=BUBBLE, outline=BUBBLE_BORDER, width=2,
+            self._canvas,
+            (bubble.left, bubble.top, bubble.right, bubble.bottom),
+            14,
+            fill=BUBBLE,
+            outline=BUBBLE_BORDER,
+            width=2,
             tags=("bubble-background",),
         )
-        tail_points = (
-            (self.width - 94, bubble_top + 2, self.width - 72, bubble_top - 18, self.width - 50, bubble_top + 2)
-            if self._stacked_layout else
-            (bubble_right - 2, 48, bubble_right + 22, 60, bubble_right - 2, 72)
+        tail = self._canvas.create_polygon(
+            *self._tail_points(layout.direction, bubble, layout.cat_local),
+            fill=BUBBLE,
+            outline=BUBBLE_BORDER,
         )
-        tail = canvas.create_polygon(*tail_points, fill=BUBBLE, outline=BUBBLE_BORDER)
-        canvas.tag_lower(background)
-        canvas.tag_lower(tail)
-        self._draw_cat()
-        if self._cat_item is not None and refresh_available:
-            bounds = self._cat_bounds()
-            self._click_regions.append(
-                (bounds.left, bounds.top, bounds.right, bounds.bottom, "__refresh__")
+        text_left = bubble.left + BUBBLE_PADDING
+        if model["intro_text"]:
+            self._canvas.create_text(
+                text_left,
+                bubble.top + 14,
+                anchor="nw",
+                text=model["intro_text"],
+                fill=INK,
+                font=model["intro_font"],
+                tags=("introduction",),
             )
+        self._draw_options(model, Rect(text_left, bubble.top, bubble.right, bubble.bottom))
+        if model["option_layouts"]:
+            y = bubble.top + model["message_top"] - 10
+            self._canvas.create_line(
+                text_left,
+                y,
+                bubble.right - BUBBLE_PADDING,
+                y,
+                fill=BUBBLE_BORDER,
+                tags=("recommendation-divider",),
+            )
+        self._draw_rich_page(
+            model["lines"],
+            text_left,
+            bubble.top + model["message_top"],
+            model["normal_font"],
+            model["bold_font"],
+            model["line_height"],
+        )
+        self._canvas.tag_lower(background)
+        self._canvas.tag_lower(tail)
+
+    def _layout_for_cat(self, cat: Rect) -> tuple[Any, dict[str, Any] | None]:
+        center = Point((cat.left + cat.right) // 2, (cat.top + cat.bottom) // 2)
+        work = self._monitor_work_area(center)
+        if self._view.get("bubble_visible") is False:
+            layout = BubbleLayout(
+                "none",
+                cat,
+                cat,
+                Rect(0, 0, CAT_WIDTH, CAT_HEIGHT),
+                Rect(0, 0, 0, 0),
+            )
+            return layout, None
+        model = self._bubble_model()
+        return place_bubble(cat, model["bubble_size"], work), model
+
+    def _move_cat_to(self, candidate: Rect) -> bool:
+        layout, model = self._layout_for_cat(candidate)
+        if not self._set_native_bounds(layout.root):
+            return False
+        self._cat_screen_rect = candidate
+        self._cat_local_rect = layout.cat_local
+        self._canvas.delete("all")
+        self._click_regions = []
+        self._pill_regions = {}
+        if model is not None:
+            self._paint_bubble(model, layout)
+        else:
+            self._presented_topmost_key = None
+        self._draw_cat()
+        if self._cat_item is not None and self.on_refresh is not None:
+            if self._view.get("refresh_available") is True:
+                bounds = self._cat_bounds()
+                self._click_regions.append(
+                    (bounds.left, bounds.top, bounds.right, bounds.bottom, "__refresh__")
+                )
         self._update_pointer_passthrough()
         self._raise_for_visible_change()
+        return True
 
-    def _monitor_work_area(self, point: Point) -> Rect:
+    def _draw(self) -> None:
+        self._detail_key = (
+            self._view.get("introduction"),
+            self._view.get("message"),
+            repr(self._view.get("message_blocks")),
+            repr(self._view.get("options")),
+        )
+        self._move_cat_to(self._cat_screen_rect)
+
+    def _query_native_work_area(self, point: Point) -> Rect | None:
         if os.name != "nt":
-            width = int(self._root.winfo_screenwidth()) if self._root is not None else self.width
-            height = int(self._root.winfo_screenheight()) if self._root is not None else self.height
-            return Rect(0, 0, width, height)
+            return None
         from ctypes import wintypes
 
         class MonitorInfo(ctypes.Structure):
@@ -958,7 +930,18 @@ class CatOverlayWindow:
         if monitor and user32.GetMonitorInfoW(monitor, ctypes.byref(info)):
             work = info.rcWork
             return Rect(int(work.left), int(work.top), int(work.right), int(work.bottom))
-        return Rect(0, 0, int(self._root.winfo_screenwidth()), int(self._root.winfo_screenheight()))
+        return None
+
+    def _monitor_work_area(self, point: Point) -> Rect:
+        work = self._query_native_work_area(point)
+        if work is not None:
+            self._last_work_area = work
+            return work
+        if self._last_work_area is not None:
+            return self._last_work_area
+        width = int(self._root.winfo_screenwidth()) if self._root is not None else self.width
+        height = int(self._root.winfo_screenheight()) if self._root is not None else self.height
+        return Rect(0, 0, width, height)
 
     def _cancel_long_press_timer(self) -> None:
         if self._root is not None and self._long_press_after_id is not None:
@@ -990,10 +973,7 @@ class CatOverlayWindow:
             self._pressed_action = target
             return
         self._pressed_action = None
-        origin = Point(
-            self._window_left if self._window_left is not None else int(self._root.winfo_x()),
-            self._window_top,
-        )
+        origin = Point(self._cat_screen_rect.left, self._cat_screen_rect.top)
         self._drag.press(Point(int(event.x_root), int(event.y_root)), origin, self._clock())
         if self._canvas is not None:
             try:
@@ -1010,16 +990,15 @@ class CatOverlayWindow:
             return
         if self._animation_timeline is not None:
             self._animation_timeline.set_frozen(True, now)
-        work_area = self._monitor_work_area(Point(int(event.x_root), int(event.y_root)))
-        origin = clamp_origin(
-            result.requested_origin,
-            Point(self.width, self.height),
-            self._cat_bounds(),
-            work_area,
+        candidate = Rect(
+            result.requested_origin.x,
+            result.requested_origin.y,
+            result.requested_origin.x + CAT_WIDTH,
+            result.requested_origin.y + CAT_HEIGHT,
         )
-        self._window_left, self._window_top = origin.x, origin.y
-        self._user_positioned = True
-        self._apply_geometry()
+        center = Point((candidate.left + candidate.right) // 2, (candidate.top + candidate.bottom) // 2)
+        final_cat = clamp_rect(candidate, self._monitor_work_area(center))
+        self._move_cat_to(final_cat)
 
     def _on_left_release(self, event: Any) -> None:
         self._cancel_long_press_timer()
@@ -1100,11 +1079,7 @@ class CatOverlayWindow:
         return menu
 
     def _invoke_action(self, option_id: str) -> None:
-        if option_id in {"__detail_previous__", "__detail_next__"}:
-            step = 1 if option_id == "__detail_next__" else -1
-            self._detail_page = max(0, min(len(self._detail_pages) - 1, self._detail_page + step))
-            self._draw()
-        elif option_id == "__refresh__" and self.on_refresh is not None:
+        if option_id == "__refresh__" and self.on_refresh is not None:
             self.on_refresh()
         else:
             self.on_strategy(option_id)
@@ -1117,11 +1092,6 @@ class CatOverlayWindow:
             self._next_tick_at = now + 0.25
             self.on_tick()
         changed = False
-        if self._root is not None and self._screen_width is not None:
-            screen_width = int(self._root.winfo_screenwidth())
-            if screen_width != self._screen_width:
-                self._fit_to_screen(screen_width)
-                changed = True
         while True:
             try:
                 self._view = self._updates.get_nowait()

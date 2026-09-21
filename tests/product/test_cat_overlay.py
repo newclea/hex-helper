@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import Mock
 
 from cat_overlay import CatOverlayWindow, HTCLIENT, HTTRANSPARENT
-from overlay_interaction import Rect
+from overlay_interaction import Point, Rect
 from rich_text_layout import LaidOutLine, TextRun
 
 
@@ -37,7 +37,6 @@ class FakeRoot:
     def winfo_screenheight(self):
         return 1080
 
-
 class FakeCanvas:
     def __init__(self) -> None:
         self.grabbed = False
@@ -47,6 +46,9 @@ class FakeCanvas:
 
     def grab_release(self):
         self.grabbed = False
+
+    def configure(self, **_kwargs):
+        return None
 
 
 class FakeMenu:
@@ -112,8 +114,22 @@ class RecordingCanvas(FakeCanvas):
         return (0, 0, width, 16)
 
     def delete(self, item_id):
-        if item_id != "all":
+        if item_id == "all":
+            self.items.clear()
+        else:
             self.items.pop(item_id, None)
+
+    def create_polygon(self, *_args, **kwargs):
+        return self.create_text(**kwargs)
+
+    def create_line(self, *_args, **kwargs):
+        return self.create_text(**kwargs)
+
+    def create_image(self, *_args, **kwargs):
+        return self.create_text(**kwargs)
+
+    def tag_lower(self, _item_id):
+        return None
 
 
 def event_at(x, y, *, x_root=None, y_root=None):
@@ -139,6 +155,97 @@ def make_window(*, on_refresh=None, on_close=None, refresh_available=False):
 
 
 class CatOverlayInteractionTests(unittest.TestCase):
+    def test_negative_position_uses_native_move_not_tk_geometry(self) -> None:
+        window = make_window()
+        window._native_hwnd = 7
+        window._native_move = Mock(return_value=True)
+        self.assertTrue(window._set_native_bounds(Rect(-900, 40, -100, 340)))
+        window._native_move.assert_called_once_with(7, -900, 40, 800, 300)
+        self.assertEqual("800x300", window._root.geometries[-1])
+
+    def test_monitor_failure_reuses_last_valid_work_area(self) -> None:
+        window = make_window()
+        expected = Rect(-1920, 0, 0, 1040)
+        window._last_work_area = expected
+        window._query_native_work_area = Mock(return_value=None)
+        self.assertEqual(expected, window._monitor_work_area(SimpleNamespace(x=-200, y=100)))
+
+    def test_monitor_failure_without_history_uses_tk_screen(self) -> None:
+        window = make_window()
+        window._query_native_work_area = Mock(return_value=None)
+        self.assertEqual(Rect(0, 0, 1920, 1080), window._monitor_work_area(SimpleNamespace(x=2, y=3)))
+
+    def test_successful_monitor_query_updates_fallback(self) -> None:
+        window = make_window()
+        expected = Rect(1920, 0, 3840, 1040)
+        window._query_native_work_area = Mock(return_value=expected)
+        self.assertEqual(expected, window._monitor_work_area(SimpleNamespace(x=2000, y=100)))
+        self.assertEqual(expected, window._last_work_area)
+
+    def test_root_move_failure_keeps_absolute_cat_rectangle(self) -> None:
+        window = make_window()
+        before = Rect(1000, 64, 1118, 188)
+        window._cat_screen_rect = before
+        window._native_hwnd = 7
+        window._native_move = Mock(return_value=False)
+        self.assertFalse(window._move_cat_to(Rect(1200, 64, 1318, 188)))
+        self.assertEqual(before, window._cat_screen_rect)
+
+    def test_reflow_keeps_absolute_cat_rectangle(self) -> None:
+        window = make_window()
+        window._canvas = RecordingCanvas()
+        before = Rect(1000, 64, 1118, 188)
+        window._cat_screen_rect = before
+        window._native_hwnd = 7
+        window._native_move = Mock(return_value=True)
+        window._monitor_work_area = Mock(return_value=Rect(0, 0, 1920, 1040))
+        window._view.update(
+            {
+                "state": "recommendation",
+                "bubble_visible": True,
+                "message": "很长的内容" * 20,
+            }
+        )
+        window._draw()
+        self.assertEqual(before, window._cat_screen_rect)
+
+    def test_wide_option_pill_sets_content_width(self) -> None:
+        window = make_window()
+        window._canvas = RecordingCanvas()
+        window._view.update(
+            {
+                "bubble_visible": True,
+                "message": "短",
+                "options": [{"id": "wide", "title": "甲" * 28, "available": True}],
+            }
+        )
+        self.assertEqual(300, window._bubble_model()["text_width"])
+
+    def test_drag_selects_monitor_from_candidate_cat_center(self) -> None:
+        window = make_window()
+        window._cat_screen_rect = Rect(-300, 40, -182, 164)
+        window._drag.press(Point(0, 0), Point(-300, 40), 1.0)
+        window._clock = lambda: 1.5
+        window._monitor_work_area = Mock(return_value=Rect(-1920, 0, 0, 1040))
+        window._move_cat_to = Mock(return_value=True)
+        window._on_left_motion(event_at(0, 0, x_root=40, y_root=20))
+        window._monitor_work_area.assert_called_once_with(Point(-201, 122))
+
+    def test_long_message_draws_once_without_page_actions(self) -> None:
+        window = make_window()
+        window._canvas = RecordingCanvas()
+        message = "甲乙丙丁戊己庚辛" * 30
+        window._view.update({"bubble_visible": True, "message": message})
+        window._monitor_work_area = Mock(return_value=Rect(0, 0, 1920, 1040))
+        window._draw()
+        runs = [
+            item.get("text", "")
+            for item in window._canvas.items.values()
+            if item.get("tags") == ("recommendation",)
+        ]
+        self.assertEqual(message, "".join(runs))
+        self.assertFalse(any(region[4].startswith("__detail_") for region in window._click_regions))
+
     def test_hit_test_accepts_cat_not_transparent_corner(self) -> None:
         window = make_window()
         self.assertEqual("__cat__", window._target_at(window.width - 72, 74))

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from rich_text_layout import TextRun, normalize_blocks, paginate_lines, wrap_paragraph
+from rich_text_layout import TextRun, content_width, normalize_blocks, paginate_lines, wrap_paragraph
 
 
 def measure(text: str, bold: bool) -> int:
@@ -10,6 +10,40 @@ def measure(text: str, bold: bool) -> int:
 
 
 class RichTextLayoutTests(unittest.TestCase):
+    def test_short_text_uses_measured_width(self) -> None:
+        paragraphs = ((TextRun("推荐：巨人杀手"),),)
+        width = content_width(
+            paragraphs,
+            lambda text, _bold: len(text) * 20,
+            minimum_width=120,
+            maximum_width=780,
+        )
+        self.assertEqual(140, width)
+
+    def test_long_text_stops_at_double_width_cap(self) -> None:
+        paragraphs = ((TextRun("甲" * 100),),)
+        width = content_width(paragraphs, measure, minimum_width=120, maximum_width=780)
+        self.assertEqual(780, width)
+
+    def test_wide_control_sets_the_minimum_content_width(self) -> None:
+        paragraphs = ((TextRun("短"),),)
+        width = content_width(paragraphs, measure, minimum_width=260, maximum_width=780)
+        self.assertEqual(260, width)
+
+    def test_explicit_newline_uses_the_widest_line(self) -> None:
+        paragraphs = ((TextRun("第一行\n第二行更长"),),)
+        width = content_width(paragraphs, measure, minimum_width=20, maximum_width=780)
+        self.assertEqual(50, width)
+
+    def test_mixed_runs_are_measured_together(self) -> None:
+        paragraphs = ((TextRun("标题 "), TextRun("加粗", True)),)
+        width = content_width(paragraphs, measure, minimum_width=20, maximum_width=780)
+        self.assertEqual(52, width)
+
+    def test_empty_paragraphs_use_minimum_width(self) -> None:
+        width = content_width((), measure, minimum_width=120, maximum_width=780)
+        self.assertEqual(120, width)
+
     def test_rebalances_two_character_orphan(self) -> None:
         lines = wrap_paragraph((TextRun("甲乙丙丁戊己庚"),), 50, measure)
         self.assertEqual(["甲乙丙丁", "戊己庚"], [line.text for line in lines])
