@@ -9,12 +9,15 @@ import unittest
 from array import array
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from offline_speech_assets import OfflineSpeechPaths
 from offline_speech_worker import (
     OfflineSpeechEngine,
     PlaybackAbort,
     PlaybackComplete,
+    build_sherpa_tts,
     run_protocol,
 )
 
@@ -163,6 +166,7 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
 
         self.engine.cancel(1)
 
+        self.wait_for(lambda: self.streams[0].aborted)
         self.assertTrue(self.streams[0].aborted)
         self.assertIn({"event": "cancelled", "request_id": 1}, self.events)
 
@@ -217,6 +221,95 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
         self.engine.close()
 
         self.assertFalse(any(thread.is_alive() for thread in self.engine._generation_threads))
+
+    def test_stream_owner_serializes_abort_and_close(self):
+        abort_entered = threading.Event()
+        release_abort = threading.Event()
+
+        class GuardedStream(FakeRawStream):
+            def __init__(stream_self, **kwargs):
+                super().__init__(**kwargs)
+                stream_self.abort_count = 0
+                stream_self.close_count = 0
+                stream_self.in_abort = False
+                stream_self.concurrent_close = False
+
+            def start(stream_self):
+                return stream_self
+
+            def abort(stream_self):
+                stream_self.abort_count += 1
+                stream_self.in_abort = True
+                abort_entered.set()
+                release_abort.wait(1.0)
+                stream_self.in_abort = False
+
+            def close(stream_self):
+                stream_self.close_count += 1
+                stream_self.concurrent_close |= stream_self.in_abort
+
+        self.engine.close()
+        self.engine = self.make_engine(self.tts, GuardedStream)
+        self.engine.start()
+        self.engine.speak(1, "播放")
+        self.wait_for(lambda: bool(self.streams))
+        self.engine.cancel(1)
+        self.assertTrue(abort_entered.wait(1.0))
+        close_thread = threading.Thread(target=self.engine.close)
+        close_thread.start()
+        time.sleep(0.02)
+        release_abort.set()
+        close_thread.join(1.0)
+
+        stream = self.streams[0]
+        self.assertEqual(1, stream.abort_count)
+        self.assertEqual(1, stream.close_count)
+        self.assertFalse(stream.concurrent_close)
+
+    def test_build_sherpa_tts_validates_config_without_vits_data_dir(self):
+        calls = {}
+
+        class Config:
+            def __init__(self, **kwargs):
+                calls["config"] = kwargs
+
+            def validate(self):
+                calls["validated"] = True
+                return True
+
+        module = SimpleNamespace(
+            OfflineTtsVitsModelConfig=lambda **kwargs: calls.setdefault("vits", kwargs),
+            OfflineTtsModelConfig=lambda **kwargs: calls.setdefault("model", kwargs),
+            OfflineTtsConfig=Config,
+            OfflineTts=lambda config: ("tts", config),
+        )
+        with patch.dict("sys.modules", {"sherpa_onnx": module}):
+            result = build_sherpa_tts(fake_paths(Path(self.temp.name)))
+
+        self.assertEqual("tts", result[0])
+        self.assertTrue(calls["validated"])
+        self.assertNotIn("data_dir", calls["vits"])
+
+    def test_build_sherpa_tts_rejects_invalid_config(self):
+        class Config:
+            def __init__(self, **kwargs):
+                pass
+
+            def validate(self):
+                return False
+
+        constructed = []
+        module = SimpleNamespace(
+            OfflineTtsVitsModelConfig=lambda **kwargs: kwargs,
+            OfflineTtsModelConfig=lambda **kwargs: kwargs,
+            OfflineTtsConfig=Config,
+            OfflineTts=lambda config: constructed.append(config),
+        )
+        with patch.dict("sys.modules", {"sherpa_onnx": module}):
+            with self.assertRaisesRegex(ValueError, "configuration is invalid"):
+                build_sherpa_tts(fake_paths(Path(self.temp.name)))
+
+        self.assertEqual([], constructed)
 
     def test_worker_source_does_not_require_numpy_or_sounddevice_play(self):
         import offline_speech_worker

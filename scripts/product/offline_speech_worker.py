@@ -5,6 +5,7 @@ import json
 import sys
 import threading
 from array import array
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, TextIO
 
@@ -26,7 +27,6 @@ def build_sherpa_tts(paths: OfflineSpeechPaths) -> Any:
         model=str(paths.model),
         lexicon=str(paths.lexicon),
         tokens=str(paths.tokens),
-        data_dir=str(paths.data_dir),
     )
     model = sherpa_onnx.OfflineTtsModelConfig(
         vits=vits,
@@ -38,6 +38,8 @@ def build_sherpa_tts(paths: OfflineSpeechPaths) -> Any:
         model=model,
         rule_fsts=",".join(str(path) for path in paths.rule_fsts),
     )
+    if not config.validate():
+        raise ValueError("offline speech configuration is invalid")
     return sherpa_onnx.OfflineTts(config)
 
 
@@ -57,6 +59,12 @@ def create_raw_output_stream(**kwargs: Any) -> Any:
     return sounddevice.RawOutputStream(callback=sounddevice_callback, **kwargs)
 
 
+@dataclass
+class _RequestControl:
+    request_id: int
+    cancelled: threading.Event = field(default_factory=threading.Event)
+
+
 class OfflineSpeechEngine:
     def __init__(
         self,
@@ -72,9 +80,7 @@ class OfflineSpeechEngine:
         self._lock = threading.RLock()
         self._synthesis_lock = threading.Lock()
         self._tts: Any = None
-        self._current_request_id: int | None = None
-        self._stream: Any = None
-        self._playback_events: dict[int, threading.Event] = {}
+        self._current: _RequestControl | None = None
         self._playback_threads: set[threading.Thread] = set()
         self._generation_threads: set[threading.Thread] = set()
         self._closed = False
@@ -105,25 +111,26 @@ class OfflineSpeechEngine:
             if self._closed or self._tts is None:
                 self._emit_error(request_id, "offline speech engine is not ready")
                 return False
-            old_stream = self._invalidate_current_locked()
-            self._current_request_id = request_id
+            old_control = self._invalidate_current_locked()
+            control = _RequestControl(request_id)
+            self._current = control
             thread = threading.Thread(
                 target=self._generate,
-                args=(request_id, text.strip()),
+                args=(control, text.strip()),
                 name=f"offline-speech-generate-{request_id}",
                 daemon=True,
             )
             self._generation_threads.add(thread)
-        self._abort_stream(old_stream)
+        self._request_cancel(old_control)
         thread.start()
         return True
 
     def cancel(self, request_id: int) -> None:
         with self._lock:
-            if request_id != self._current_request_id:
+            if self._current is None or request_id != self._current.request_id:
                 return
-            stream = self._invalidate_current_locked()
-        self._abort_stream(stream)
+            control = self._invalidate_current_locked()
+        self._request_cancel(control)
         self._emit({"event": "cancelled", "request_id": request_id})
 
     def close(self) -> None:
@@ -131,120 +138,154 @@ class OfflineSpeechEngine:
             if self._closed:
                 return
             self._closed = True
-            stream = self._invalidate_current_locked()
+            control = self._invalidate_current_locked()
             threads = tuple(self._generation_threads | self._playback_threads)
-        self._abort_stream(stream)
+        self._request_cancel(control)
         for thread in threads:
             if thread is not threading.current_thread():
                 thread.join(2.0)
 
-    def _generate(self, request_id: int, text: str) -> None:
+    def _generate(self, control: _RequestControl, text: str) -> None:
         try:
             with self._synthesis_lock:
                 audio = self._tts.generate(text, sid=0, speed=1.0)
             pcm = array("f", audio.samples).tobytes()
             if not pcm:
                 raise ValueError("speech synthesis returned no samples")
-            self._begin_playback(request_id, pcm, int(audio.sample_rate))
+            self._begin_playback(control, pcm, int(audio.sample_rate))
         except Exception as error:
-            if self._is_current(request_id):
-                self._emit_error(request_id, f"offline speech failed: {error}")
-                self._clear_request(request_id)
+            if self._is_current(control):
+                self._emit_error(control.request_id, f"offline speech failed: {error}")
+                self._clear_request(control)
         finally:
             with self._lock:
                 self._generation_threads.discard(threading.current_thread())
 
-    def _begin_playback(self, request_id: int, pcm: bytes, sample_rate: int) -> None:
-        cursor = 0
+    def _begin_playback(self, control: _RequestControl, pcm: bytes, sample_rate: int) -> None:
+        with self._lock:
+            if not self._is_current_locked(control):
+                return
+            owner = threading.Thread(
+                target=self._playback_owner,
+                args=(control, pcm, sample_rate),
+                name=f"offline-speech-playback-{control.request_id}",
+                daemon=True,
+            )
+            self._playback_threads.add(owner)
+            owner.start()
+
+    def _playback_owner(self, control: _RequestControl, pcm: bytes, sample_rate: int) -> None:
+        stream = None
+        if not self._is_current(control):
+            self._discard_playback_thread()
+            return
         playback_done = threading.Event()
+        callback = self._make_audio_callback(control, pcm)
+        try:
+            stream = self._create_stream(sample_rate, callback, playback_done)
+            if not self._start_stream(control, stream):
+                return
+            self._wait_for_playback(control, stream, playback_done)
+        except Exception as error:
+            if self._is_current(control):
+                self._emit_error(control.request_id, f"offline speech failed: {error}")
+                self._clear_request(control)
+        finally:
+            if stream is not None:
+                self._close_stream(stream)
+            self._discard_playback_thread()
 
-        def callback(outdata: Any, frames: int, time_info: Any, status: Any) -> None:
-            nonlocal cursor
-            with self._lock:
-                if request_id != self._current_request_id or self._closed:
-                    outdata[:] = bytes(len(outdata))
-                    raise PlaybackAbort()
-                take = min(frames * 4, len(pcm) - cursor)
-                outdata[:take] = pcm[cursor : cursor + take]
-                outdata[take:] = bytes(len(outdata) - take)
-                cursor += take
-                if cursor >= len(pcm):
-                    raise PlaybackComplete()
-
-        stream = self._raw_output_stream_factory(
+    def _create_stream(
+        self,
+        sample_rate: int,
+        callback: Callable[..., None],
+        playback_done: threading.Event,
+    ) -> Any:
+        return self._raw_output_stream_factory(
             samplerate=sample_rate,
             channels=1,
             dtype="float32",
+            blocksize=1024,
             callback=callback,
             finished_callback=playback_done.set,
         )
-        monitor = threading.Thread(
-            target=self._finish_playback,
-            args=(request_id, stream, playback_done),
-            name=f"offline-speech-playback-{request_id}",
-            daemon=True,
-        )
-        with self._lock:
-            if request_id != self._current_request_id or self._closed:
-                self._abort_stream(stream)
-                return
-            self._stream = stream
-            self._playback_events[request_id] = playback_done
-            self._emit({"event": "started", "request_id": request_id})
-            try:
-                stream.start()
-            except Exception:
-                self._playback_events.pop(request_id, None)
-                self._stream = None
-                playback_done.set()
-                raise
-            self._playback_threads.add(monitor)
-            monitor.start()
-
-    def _finish_playback(self, request_id: int, stream: Any, playback_done: threading.Event) -> None:
-        playback_done.wait()
-        try:
-            stream.close()
-        except Exception:
-            pass
-        with self._lock:
-            self._playback_events.pop(request_id, None)
-            self._playback_threads.discard(threading.current_thread())
-            if request_id != self._current_request_id or self._closed:
-                return
-            self._current_request_id = None
-            self._stream = None
-        self._emit({"event": "finished", "request_id": request_id})
-
-    def _is_current(self, request_id: int) -> bool:
-        with self._lock:
-            return request_id == self._current_request_id and not self._closed
-
-    def _clear_request(self, request_id: int) -> None:
-        with self._lock:
-            if request_id == self._current_request_id:
-                self._current_request_id = None
-                self._stream = None
-
-    def _invalidate_current_locked(self) -> Any:
-        request_id = self._current_request_id
-        stream = self._stream
-        self._current_request_id = None
-        self._stream = None
-        playback_done = self._playback_events.pop(request_id, None)
-        if playback_done is not None:
-            playback_done.set()
-        return stream
 
     @staticmethod
-    def _abort_stream(stream: Any) -> None:
-        if stream is None:
-            return
+    def _make_audio_callback(control: _RequestControl, pcm: bytes) -> Callable[..., None]:
+        pcm_view = memoryview(pcm)
+        zero_view = memoryview(bytes(1024 * 4))
+        cursor = 0
+
+        def callback(outdata: Any, frames: int, time_info: Any, status: Any) -> None:
+            nonlocal cursor
+            if control.cancelled.is_set():
+                raise PlaybackAbort()
+            output_size = frames * 4
+            take = min(output_size, len(pcm_view) - cursor)
+            outdata[:take] = pcm_view[cursor : cursor + take]
+            if take < output_size:
+                outdata[take:output_size] = zero_view[: output_size - take]
+            cursor += take
+            if cursor >= len(pcm_view):
+                raise PlaybackComplete()
+
+        return callback
+
+    def _start_stream(self, control: _RequestControl, stream: Any) -> bool:
+        with self._lock:
+            if not self._is_current_locked(control):
+                return False
+            self._emit({"event": "started", "request_id": control.request_id})
+            stream.start()
+            return True
+
+    def _wait_for_playback(
+        self,
+        control: _RequestControl,
+        stream: Any,
+        playback_done: threading.Event,
+    ) -> None:
+        while not playback_done.wait(0.02):
+            if control.cancelled.is_set():
+                stream.abort()
+                return
+        if self._clear_request(control):
+            self._emit({"event": "finished", "request_id": control.request_id})
+
+    def _is_current(self, control: _RequestControl) -> bool:
+        with self._lock:
+            return self._is_current_locked(control)
+
+    def _is_current_locked(self, control: _RequestControl) -> bool:
+        return self._current is control and not self._closed and not control.cancelled.is_set()
+
+    def _clear_request(self, control: _RequestControl) -> bool:
+        with self._lock:
+            if self._current is not control or control.cancelled.is_set():
+                return False
+            self._current = None
+            return True
+
+    @staticmethod
+    def _request_cancel(control: _RequestControl | None) -> None:
+        if control is not None:
+            control.cancelled.set()
+
+    def _invalidate_current_locked(self) -> _RequestControl | None:
+        control = self._current
+        self._current = None
+        return control
+
+    @staticmethod
+    def _close_stream(stream: Any) -> None:
         try:
-            stream.abort()
             stream.close()
         except Exception:
             pass
+
+    def _discard_playback_thread(self) -> None:
+        with self._lock:
+            self._playback_threads.discard(threading.current_thread())
 
     def _emit_error(self, request_id: int | None, message: str) -> None:
         event: dict[str, Any] = {"event": "error", "message": message}
