@@ -58,9 +58,9 @@ class WindowsSpeechAdapter:
         self._finished.clear()
         return self._write({"command": "speak", "text": text})
 
-    def wait_finished(self, timeout: float | None = None) -> bool:
+    def wait_finished(self, timeout: float | None = None) -> bool | None:
         if not self._finished.wait(timeout):
-            return False
+            return None
         return self._finished_ok
 
     def cancel(self) -> None:

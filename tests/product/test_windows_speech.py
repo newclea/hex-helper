@@ -119,8 +119,12 @@ class WindowsSpeechAdapterTests(unittest.TestCase):
         self.assertTrue(adapter.wait_finished(0.2))
         process.auto_finish = False
         self.assertTrue(adapter.speak("失败"))
+        self.assertIsNone(adapter.wait_finished(0))
         process.stdout.put({"event": "error", "message": "speech failed"})
         self.assertFalse(adapter.wait_finished(0.2))
+        process.auto_finish = True
+        self.assertTrue(adapter.speak("恢复"))
+        self.assertTrue(adapter.wait_finished(0.2))
 
     def test_cancel_sends_command_without_closing_process(self):
         process = FakeProcess([{"event": "ready"}])
@@ -207,7 +211,7 @@ class WindowsSpeechAdapterTests(unittest.TestCase):
         old_reader.join(1.0)
         self.assertFalse(old_reader.is_alive())
 
-        self.assertFalse(adapter.wait_finished(0))
+        self.assertIsNone(adapter.wait_finished(0))
         self.assertEqual(0, second.terminate_count)
         self.assertTrue(adapter.speak("新进程"))
         self.assertTrue(new_finished_consumed.wait(1.0))

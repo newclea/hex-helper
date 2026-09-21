@@ -147,8 +147,8 @@ class FakeAdapter:
         self.spoken.append(text)
         return True
 
-    def wait_finished(self, timeout=None) -> bool:
-        return self.finished.wait(timeout)
+    def wait_finished(self, timeout=None) -> bool | None:
+        return True if self.finished.wait(timeout) else None
 
     def cancel(self) -> None:
         self.cancelled += 1
@@ -202,7 +202,52 @@ class BlockingSpeakAdapter(FakeAdapter):
         self.finished.set()
 
 
+class CompletionSequenceAdapter(FakeAdapter):
+    def __init__(self, outcomes) -> None:
+        super().__init__()
+        threading = __import__("threading")
+        self.outcomes = list(outcomes)
+        self.wait_calls = 0
+        self.outcomes_consumed = threading.Event()
+
+    def wait_finished(self, timeout=None) -> bool | None:
+        self.wait_calls += 1
+        outcome = self.outcomes.pop(0) if self.outcomes else None
+        if not self.outcomes:
+            self.outcomes_consumed.set()
+        return outcome
+
+
 class SpeechServiceTests(unittest.TestCase):
+    def test_terminal_error_clears_current_and_dispatches_next(self) -> None:
+        import time
+
+        adapter = CompletionSequenceAdapter([False, True])
+        service = SpeechService(adapter, clock=time.monotonic)
+        now = time.monotonic()
+        service.publish(message("first", expires_at=now + 10.0))
+        service.publish(message("second", expires_at=now + 10.0))
+        self.assertTrue(adapter.outcomes_consumed.wait(1.0))
+        deadline = time.monotonic() + 1.0
+        while service._current is not None and time.monotonic() < deadline:
+            time.sleep(0.01)
+        service.close()
+        self.assertEqual(["first", "second"], adapter.spoken)
+        self.assertEqual(2, adapter.wait_calls)
+        self.assertIsNone(service._current)
+
+    def test_completion_timeout_keeps_waiting_for_terminal_result(self) -> None:
+        import time
+
+        adapter = CompletionSequenceAdapter([None, True])
+        service = SpeechService(adapter, clock=time.monotonic)
+        now = time.monotonic()
+        service.publish(message("one", expires_at=now + 10.0))
+        self.assertTrue(adapter.outcomes_consumed.wait(1.0))
+        service.close()
+        self.assertEqual(["one"], adapter.spoken)
+        self.assertEqual(2, adapter.wait_calls)
+
     def test_adapter_starts_lazily_and_failure_does_not_raise(self) -> None:
         import time
 

@@ -39,7 +39,7 @@ class SpeechAdapter(Protocol):
     def speak(self, text: str) -> bool:
         ...
 
-    def wait_finished(self, timeout: float | None = None) -> bool:
+    def wait_finished(self, timeout: float | None = None) -> bool | None:
         ...
 
     def cancel(self) -> None:
@@ -213,7 +213,7 @@ class SpeechService:
         return self._adapter_available
 
     def _wait_for_speech(self) -> None:
-        while not self._speech_finished():
+        while self._speech_completion() is None:
             with self._condition:
                 if self._closed:
                     return
@@ -229,12 +229,12 @@ class SpeechService:
             LOGGER.exception("speech adapter playback failed")
             return False
 
-    def _speech_finished(self) -> bool:
+    def _speech_completion(self) -> bool | None:
         try:
             return self._adapter.wait_finished(timeout=0.1)
         except Exception:
             LOGGER.exception("speech adapter wait failed")
-            return True
+            return False
 
     def _cancel_adapter(self) -> None:
         try:
