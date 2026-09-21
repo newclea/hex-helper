@@ -146,6 +146,30 @@ class ProductController:
             view["refresh_available"] = False
         return view
 
+    @staticmethod
+    def _message_blocks(recommendation: Any, plan: Any, rows: list[str]) -> list[dict[str, str]]:
+        blocks = [
+            {
+                "label": "当前推荐",
+                "value": f"{recommendation.augment}（{recommendation.position}）",
+            },
+            {"label": "当前玩法", "value": plan.name if plan is not None else "胜率优先"},
+            {
+                "label": "所需海克斯",
+                "value": "、".join(plan.augments) if plan is not None else "无固定组合",
+            },
+            {
+                "label": "所需装备",
+                "value": (
+                    "、".join(plan.equipment) or "无固定出装要求"
+                    if plan is not None else "无固定出装要求"
+                ),
+            },
+        ]
+        prefixes = ("当前推荐 ", "当前玩法 ", "所需海克斯 ", "所需装备 ")
+        blocks.extend({"text": row} for row in rows if not row.startswith(prefixes))
+        return blocks
+
     def _present(self, snapshot: Mapping[str, Any]) -> dict[str, Any]:
         phase = str(snapshot.get("phase") or "").strip()
         if phase == "ChampSelect":
@@ -211,9 +235,12 @@ class ProductController:
             rows += ["所需海克斯 无固定组合", "所需装备 无固定出装要求"]
             rows.append(f"该海克斯胜率 {recommendation.win_rate:g}%" if recommendation.win_rate is not None
                         else "本轮三张暂无胜率资料；当前仅为备选。")
+        message_blocks = self._message_blocks(recommendation, plan, rows)
         message = "\n".join(rows)
         if self.last_selection_result and self.last_selection_result.get("reason") == "selected_not_saved":
-            message += "\n已切换推荐，但未能保存浏览偏好。"
+            warning = "已切换推荐，但未能保存浏览偏好。"
+            message += "\n" + warning
+            message_blocks.append({"text": warning})
         log_key = (
             self._match_id, snapshot.get("offer_round"), self._hero,
             tuple((card["slot"], card["name"]) for card in choices),
@@ -231,6 +258,7 @@ class ProductController:
             self._last_recommendation_key = log_key
         return {
             "state": "recommendation", "message": message,
+            "message_blocks": message_blocks,
             "introduction": f"针对{self.engine.hero_display_name(self._hero)}，有下面几套玩法可供选择哟~",
             "recommendation": recommendation.as_dict(), "refresh_available": False,
             "options": tabs, "active_strategy_id": self._strategy_id,
