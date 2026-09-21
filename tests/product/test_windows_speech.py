@@ -247,6 +247,11 @@ class WindowsSpeechWorkerContractTests(unittest.TestCase):
         self.assertIn("SpeakAsync(", speak)
         self.assertNotIn("SpeakAsyncCancelAll", speak)
 
+    def test_worker_pumps_speech_events_while_waiting_for_commands(self):
+        self.assertIn("[Console]::In.ReadLineAsync()", self.source)
+        self.assertIn("Get-Event", self.source)
+        self.assertNotIn("[Console]::In.ReadLine())", self.source)
+
     def test_stdout_is_only_written_by_json_event_function(self):
         self.assertEqual(1, self.source.count("[Console]::Out.WriteLine"))
         self.assertGreaterEqual(self.source.count("Write-SpeechJsonEvent"), 4)
@@ -258,7 +263,8 @@ class WindowsSpeechWorkerContractTests(unittest.TestCase):
         close = self.command_body("close", "default")
         self.assertIn("SpeakAsyncCancelAll", cancel)
         self.assertIn("SpeakAsyncCancelAll", close)
-        self.assertIn("Dispose", close)
+        self.assertIn("$running = $false", close)
+        self.assertIn("$synth.Dispose()", self.source)
 
 
 if __name__ == "__main__":

@@ -44,24 +44,58 @@ function Select-SpeechVoice {
     }
 }
 
+function Publish-PendingSpeechEvents {
+    param(
+        [string]$StartedIdentifier,
+        [string]$CompletedIdentifier
+    )
+    foreach ($speechEvent in @(Get-Event)) {
+        try {
+            if ($speechEvent.SourceIdentifier -eq $StartedIdentifier) {
+                Write-SpeechJsonEvent -EventName "started"
+            }
+            elseif ($speechEvent.SourceIdentifier -eq $CompletedIdentifier) {
+                $eventArgs = $speechEvent.SourceEventArgs
+                if ($eventArgs.Error) {
+                    Write-SpeechJsonEvent -EventName "error" -Message $eventArgs.Error.Message
+                }
+                else {
+                    Write-SpeechJsonEvent -EventName "finished"
+                }
+            }
+        }
+        finally {
+            Remove-Event -EventIdentifier $speechEvent.EventIdentifier -ErrorAction SilentlyContinue
+        }
+    }
+}
+
 try {
     Add-Type -AssemblyName System.Speech
     $synth = New-Object System.Speech.Synthesis.SpeechSynthesizer
     Select-SpeechVoice -Synthesizer $synth -ConfiguredVoice $VoiceName
-    Register-ObjectEvent -InputObject $synth -EventName SpeakStarted -Action {
-        Write-SpeechJsonEvent -EventName "started"
-    } | Out-Null
-    Register-ObjectEvent -InputObject $synth -EventName SpeakCompleted -Action {
-        if ($EventArgs.Error) {
-            Write-SpeechJsonEvent -EventName "error" -Message $EventArgs.Error.Message
-        }
-        else {
-            Write-SpeechJsonEvent -EventName "finished"
-        }
-    } | Out-Null
+    $startedIdentifier = "GameBuddy.Speech.Started"
+    $completedIdentifier = "GameBuddy.Speech.Completed"
+    Register-ObjectEvent -InputObject $synth -EventName SpeakStarted `
+        -SourceIdentifier $startedIdentifier | Out-Null
+    Register-ObjectEvent -InputObject $synth -EventName SpeakCompleted `
+        -SourceIdentifier $completedIdentifier | Out-Null
     Write-SpeechJsonEvent -EventName "ready"
 
-    while (($line = [Console]::In.ReadLine()) -ne $null) {
+    $running = $true
+    $readTask = [Console]::In.ReadLineAsync()
+    while ($running) {
+        Publish-PendingSpeechEvents `
+            -StartedIdentifier $startedIdentifier `
+            -CompletedIdentifier $completedIdentifier
+        if (-not $readTask.IsCompleted) {
+            Start-Sleep -Milliseconds 20
+            continue
+        }
+        $line = $readTask.GetAwaiter().GetResult()
+        if ($null -eq $line) {
+            break
+        }
         try {
             $message = $line | ConvertFrom-Json
             switch ([string]$message.command) {
@@ -73,8 +107,7 @@ try {
                 }
                 "close" {
                     $synth.SpeakAsyncCancelAll()
-                    $synth.Dispose()
-                    exit 0
+                    $running = $false
                 }
                 default {
                     Write-SpeechJsonEvent -EventName "error" -Message "Unknown command"
@@ -84,7 +117,12 @@ try {
         catch {
             Write-SpeechJsonEvent -EventName "error" -Message $_.Exception.Message
         }
+        if ($running) {
+            $readTask = [Console]::In.ReadLineAsync()
+        }
     }
+    Unregister-Event -SourceIdentifier $startedIdentifier -ErrorAction SilentlyContinue
+    Unregister-Event -SourceIdentifier $completedIdentifier -ErrorAction SilentlyContinue
     $synth.SpeakAsyncCancelAll()
     $synth.Dispose()
 }

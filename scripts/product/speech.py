@@ -12,6 +12,8 @@ from typing import Callable, Protocol
 
 
 LOGGER = logging.getLogger(__name__)
+DEFAULT_PLAYBACK_TIMEOUT_SECONDS = 15.0
+PLAYBACK_POLL_SECONDS = 0.1
 
 
 class SpeechPriority(IntEnum):
@@ -116,6 +118,7 @@ class SpeechService:
         adapter: SpeechAdapter,
         enabled: bool = True,
         clock: Callable[[], float] = time.monotonic,
+        playback_timeout_seconds: float = DEFAULT_PLAYBACK_TIMEOUT_SECONDS,
     ) -> None:
         self._adapter = adapter
         self._clock = clock
@@ -124,6 +127,7 @@ class SpeechService:
         self._current: SpeechMessage | None = None
         self._closed = False
         self._enabled = enabled
+        self._playback_timeout_seconds = max(0.01, playback_timeout_seconds)
         self._dispatch_generation = 0
         self._adapter_available: bool | None = None
         if not enabled:
@@ -139,6 +143,12 @@ class SpeechService:
                     self._dispatch_generation += 1
                     self._cancel_adapter()
             if accepted:
+                LOGGER.info(
+                    "speech queued id=%s kind=%s priority=%s",
+                    message.message_id,
+                    message.kind,
+                    message.priority.name,
+                )
                 self._condition.notify()
             return accepted
 
@@ -177,11 +187,13 @@ class SpeechService:
             if not self._speak(message.summary):
                 self._clear_current()
                 continue
+            LOGGER.info("speech started id=%s kind=%s", message.message_id, message.kind)
             if not self._dispatch_is_valid(message, generation):
                 self._cancel_adapter()
                 self._clear_current()
                 continue
-            self._wait_for_speech()
+            if self._wait_for_speech(message):
+                LOGGER.info("speech finished id=%s kind=%s", message.message_id, message.kind)
             self._clear_current()
 
     def _next_message(self) -> tuple[SpeechMessage, int] | None:
@@ -212,11 +224,22 @@ class SpeechService:
                 self._adapter_available = False
         return self._adapter_available
 
-    def _wait_for_speech(self) -> None:
-        while self._speech_completion() is None:
+    def _wait_for_speech(self, message: SpeechMessage) -> bool:
+        deadline = time.monotonic() + self._playback_timeout_seconds
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                LOGGER.warning("speech timed out id=%s kind=%s", message.message_id, message.kind)
+                self._cancel_adapter()
+                return False
+            completion = self._speech_completion(min(PLAYBACK_POLL_SECONDS, remaining))
+            if completion is not None:
+                if not completion:
+                    LOGGER.warning("speech failed id=%s kind=%s", message.message_id, message.kind)
+                return completion
             with self._condition:
                 if self._closed:
-                    return
+                    return False
 
     def _clear_current(self) -> None:
         with self._condition:
@@ -229,9 +252,9 @@ class SpeechService:
             LOGGER.exception("speech adapter playback failed")
             return False
 
-    def _speech_completion(self) -> bool | None:
+    def _speech_completion(self, timeout: float) -> bool | None:
         try:
-            return self._adapter.wait_finished(timeout=0.1)
+            return self._adapter.wait_finished(timeout=timeout)
         except Exception:
             LOGGER.exception("speech adapter wait failed")
             return False

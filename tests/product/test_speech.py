@@ -248,6 +248,27 @@ class SpeechServiceTests(unittest.TestCase):
         self.assertEqual(["one"], adapter.spoken)
         self.assertEqual(2, adapter.wait_calls)
 
+    def test_missing_completion_event_times_out_and_dispatches_next(self) -> None:
+        import time
+
+        adapter = CompletionSequenceAdapter([])
+        service = SpeechService(
+            adapter,
+            clock=time.monotonic,
+            playback_timeout_seconds=0.03,
+        )
+        now = time.monotonic()
+        with self.assertLogs("speech", level="WARNING"):
+            service.publish(message("first", expires_at=now + 10.0))
+            service.publish(message("second", expires_at=now + 10.0))
+            deadline = time.monotonic() + 1.0
+            while adapter.spoken != ["first", "second"] and time.monotonic() < deadline:
+                time.sleep(0.01)
+        service.close()
+
+        self.assertEqual(["first", "second"], adapter.spoken)
+        self.assertGreaterEqual(adapter.cancelled, 1)
+
     def test_adapter_starts_lazily_and_failure_does_not_raise(self) -> None:
         import time
 
