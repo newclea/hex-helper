@@ -1,8 +1,7 @@
 """Display estimates and OCR timing, kept separate from recorded pick progress.
 
-Every death is a detection opportunity, regardless of level or recorded round.
-Level estimates describe pending offers; they must never suppress a real offer.
-Missing Live Client data fails open, and accepted offers remain observable.
+Death scanning depends on the level captured at the death edge and confirmed
+pick count. A real offer remains observable regardless of that decision.
 """
 
 from __future__ import annotations
@@ -36,6 +35,18 @@ def pending_offer_count(level: int | None, completed: int) -> int:
         return 0
     pending = eligible_offer_count(level) - completed
     return pending if pending > 0 else 0
+
+
+def death_ocr_allowed(level: int | None, confirmed_count: int) -> bool:
+    if type(level) is not int or type(confirmed_count) is not int or confirmed_count < 0:
+        return False
+    if level < 7:
+        return False
+    if level < 11:
+        return confirmed_count < 2
+    if level < 15:
+        return confirmed_count < 3
+    return confirmed_count < 4
 
 
 def in_hexcore_fountain(
@@ -83,19 +94,26 @@ def hexcore_ocr_open(
     round_closed: bool,
     offer_visible: bool = False,
     seconds_since_respawn: float | None = None,
+    death_scan_allowed: bool = False,
 ) -> bool:
     if type(completed) is not int or completed < 0:
         return False
     if offer_visible and not round_closed:
         return True
-    if is_dead is True or is_dead is None or type(level) is not int:
-        return True
+    if is_dead is True:
+        return death_scan_allowed
     if (
         seconds_since_respawn is not None
         and 0.0 <= seconds_since_respawn <= RESPAWN_FOUNTAIN_SECONDS
     ):
-        return True
+        return death_scan_allowed
     # The initial offer can appear while alive. Subsequent empty-death probes
     # end with the respawn window; an already accepted offer is kept open by
     # offer_visible above, including when its selection is delayed.
-    return not round_closed and completed == 0 and level >= HEXCORE_LEVELS[0]
+    return (
+        not round_closed
+        and completed == 0
+        and type(level) is int
+        and level >= HEXCORE_LEVELS[0]
+        and is_dead is not True
+    )

@@ -16,6 +16,7 @@ from augment_catalog import AugmentCatalog
 from choice_semantics import is_stat_shard_choice
 from hexcore_gate import (
     PICK_PROBE_SECONDS,
+    death_ocr_allowed,
     eligible_offer_count,
     hexcore_ocr_open,
 )
@@ -251,6 +252,8 @@ class RecognitionViewModel:
         self._respawned_at: float | None = None
         self._death_sequence = 0
         self._closed_death_sequence = 0
+        self._latest_death_level: int | None = None
+        self._death_ocr_allowed = False
         self._post_pick_scan_until: float | None = None
         self._probe_until: float | None = None
         self._probe_key: tuple[int, int] | None = None
@@ -795,13 +798,26 @@ class RecognitionViewModel:
             is_dead = bool(player.get("isDead"))
             if self.live_is_dead is True and is_dead is False:
                 self._respawned_at = time.monotonic()
-                self._extend_pick_probe(PICK_PROBE_SECONDS)
+                if self._death_ocr_allowed:
+                    self._extend_pick_probe(PICK_PROBE_SECONDS)
             elif self.live_is_dead is not True and is_dead is True:
                 self._death_sequence += 1
+                self._latest_death_level = level
+                confirmed = self.confirmed_count()
+                self._death_ocr_allowed = death_ocr_allowed(level, confirmed)
+                logging.info(
+                    "death OCR decision match_id=%s sequence=%s level=%s confirmed=%s allowed=%s",
+                    self.match_id,
+                    self._death_sequence,
+                    level,
+                    confirmed,
+                    self._death_ocr_allowed,
+                )
             self.live_is_dead = is_dead
             if is_dead:
                 self._respawned_at = None
-                self._extend_pick_probe(PICK_PROBE_SECONDS)
+                if self._death_ocr_allowed:
+                    self._extend_pick_probe(PICK_PROBE_SECONDS)
         raw_name = _text(player.get("championName"), limit=64)
         if raw_name:
             self._set_live_champion(raw_name)
@@ -866,14 +882,20 @@ class RecognitionViewModel:
             self._probe_until = until
 
     def _arm_pick_probe(self) -> None:
-        initial = self.completed_stage() == 0 and self.live_level is not None and self.live_level >= 3
-        if not initial and self.live_is_dead is not True:
+        initial = (
+            self.completed_stage() == 0
+            and self.live_level is not None
+            and self.live_level >= 3
+            and self.live_is_dead is not True
+        )
+        death_probe = self.live_is_dead is True and self._death_ocr_allowed
+        if not initial and not death_probe:
             return
         key = (self._death_sequence, self.completed_stage())
         if self._probe_key != key:
             self._probe_key = key
             self._extend_pick_probe(PICK_PROBE_SECONDS)
-        elif self.live_is_dead is True:
+        elif death_probe:
             self._extend_pick_probe(15.0)
 
     def _in_live_match(self) -> bool:
@@ -973,6 +995,7 @@ class RecognitionViewModel:
             round_closed=self._round_ocr_closed,
             offer_visible=bool(self.offer) and not self._round_ocr_closed,
             seconds_since_respawn=self.seconds_since_respawn(),
+            death_scan_allowed=self._death_ocr_allowed,
         )
 
     def mark_left_click(self) -> None:
@@ -1862,6 +1885,8 @@ class RecognitionViewModel:
         self._respawned_at = None
         self._death_sequence = 0
         self._closed_death_sequence = 0
+        self._latest_death_level = None
+        self._death_ocr_allowed = False
         self._probe_until = None
         self._post_pick_scan_until = None
         self._probe_key = None
