@@ -123,6 +123,8 @@ class SpeechService:
         self._condition = threading.Condition()
         self._current: SpeechMessage | None = None
         self._closed = False
+        self._enabled = enabled
+        self._dispatch_generation = 0
         self._adapter_available: bool | None = None
         if not enabled:
             self._queue.mute()
@@ -134,6 +136,7 @@ class SpeechService:
             accepted = self._queue.publish(message, self._clock())
             if accepted and self._current is not None:
                 if should_interrupt(self._current, message):
+                    self._dispatch_generation += 1
                     self._cancel_adapter()
             if accepted:
                 self._condition.notify()
@@ -142,8 +145,11 @@ class SpeechService:
     def set_enabled(self, enabled: bool) -> None:
         with self._condition:
             if enabled:
+                self._enabled = True
                 self._queue.unmute()
             else:
+                self._enabled = False
+                self._dispatch_generation += 1
                 self._queue.mute()
                 self._cancel_adapter()
             self._condition.notify_all()
@@ -153,6 +159,7 @@ class SpeechService:
             if self._closed:
                 return
             self._closed = True
+            self._dispatch_generation += 1
             self._cancel_adapter()
             self._condition.notify_all()
         self._thread.join(timeout=2.0)
@@ -160,24 +167,37 @@ class SpeechService:
 
     def _run(self) -> None:
         while True:
-            message = self._next_message()
-            if message is None:
+            dispatch = self._next_message()
+            if dispatch is None:
                 return
-            if not self._ensure_adapter() or not self._speak(message.summary):
+            message, generation = dispatch
+            if not self._ensure_adapter() or not self._dispatch_is_valid(message, generation):
+                self._clear_current()
+                continue
+            if not self._speak(message.summary):
                 self._clear_current()
                 continue
             self._wait_for_speech()
             self._clear_current()
 
-    def _next_message(self) -> SpeechMessage | None:
+    def _next_message(self) -> tuple[SpeechMessage, int] | None:
         with self._condition:
             while not self._closed:
                 message = self._queue.next(self._clock())
                 if message is not None:
                     self._current = message
-                    return message
+                    return message, self._dispatch_generation
                 self._condition.wait(timeout=0.25)
             return None
+
+    def _dispatch_is_valid(self, message: SpeechMessage, generation: int) -> bool:
+        with self._condition:
+            return (
+                not self._closed
+                and self._enabled
+                and self._current is message
+                and self._dispatch_generation == generation
+            )
 
     def _ensure_adapter(self) -> bool:
         if self._adapter_available is None:

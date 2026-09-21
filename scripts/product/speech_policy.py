@@ -41,6 +41,7 @@ class CompanionSpeechPolicy:
         state = str(view.get("state") or "")
         if view.get("bubble_visible") is False:
             state = ""
+            self._last_key = None
         self._update_ocr_state(state, now)
         summary, priority, semantic = self._describe(view, state)
         if summary is None or semantic == self._last_key:
@@ -51,7 +52,7 @@ class CompanionSpeechPolicy:
     def tick(self, now: float) -> tuple[SpeechMessage, ...]:
         if self._ocr_started_at is None or self._ocr_announced:
             return ()
-        if now - self._ocr_started_at < 2.0:
+        if now - self._ocr_started_at <= 2.0:
             return ()
         self._ocr_announced = True
         message = self._message(

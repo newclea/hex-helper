@@ -38,7 +38,8 @@ class CompanionSpeechPolicyTests(unittest.TestCase):
         policy = CompanionSpeechPolicy()
         policy.update({"state": "ocr_reading"}, 10.0)
         self.assertEqual((), policy.tick(11.99))
-        self.assertEqual("正在识别海克斯，请稍候。", policy.tick(12.0)[0].summary)
+        self.assertEqual((), policy.tick(12.0))
+        self.assertEqual("正在识别海克斯，请稍候。", policy.tick(12.001)[0].summary)
         self.assertEqual((), policy.tick(13.0))
 
     def test_leaving_ocr_cancels_delayed_progress(self) -> None:
@@ -63,6 +64,22 @@ class CompanionSpeechPolicyTests(unittest.TestCase):
         policy = CompanionSpeechPolicy()
         view = {"state": "waiting", "bubble_visible": False, "message": "等待"}
         self.assertEqual((), policy.update(view, 1.0))
+
+    def test_recommendation_can_repeat_after_hidden_epoch(self) -> None:
+        policy = CompanionSpeechPolicy()
+        view = {
+            "state": "recommendation",
+            "bubble_visible": True,
+            "message_blocks": [
+                {"label": "当前推荐", "value": "巨人杀手（CENTER）"},
+                {"label": "当前玩法", "value": "胜率优先"},
+            ],
+        }
+        self.assertEqual(1, len(policy.update(view, 1.0)))
+        self.assertEqual((), policy.update(view, 1.1))
+        policy.update({"state": "waiting", "bubble_visible": False}, 2.0)
+        self.assertEqual(1, len(policy.update(view, 32.0)))
+        self.assertEqual((), policy.update(view, 32.1))
 
 
 if __name__ == "__main__":
