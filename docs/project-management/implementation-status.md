@@ -4,14 +4,14 @@
 
 ## 状态矩阵
 
-| 范围 | 需求 ID | 代码完成 | 自动化通过 | Windows 实机 | 已推送发布 |
+| 范围 | 需求 ID | 代码完成 | 自动化通过 | Windows 实机 | 代码已推送 |
 | --- | --- | --- | --- | --- | --- |
-| 右键菜单与 500ms 拖动 | REQ-UI-001～002 | 是 | 是 | 待实机 | 否 |
-| 多屏坐标与动态气泡 | REQ-UI-003～007 | 是 | 是 | 待实机 | 否 |
-| 五姿态与动画 | REQ-ANI-001～004 | 是 | 是 | 待实机 | 否 |
-| 语音配置、队列与策略 | REQ-VOICE-001、004～009 | 是 | 是 | 待实机 | 否 |
-| Windows `System.Speech` | REQ-VOICE-002～003 | 是 | 契约测试通过 | 待实机 | 否 |
-| 启动、双远端与范围隔离 | REQ-REL-001～003 | 代码已保留 | 是 | 待实机 | 否 |
+| 右键菜单与 500ms 拖动 | REQ-UI-001～002 | 是 | 是 | 待实机 | 是 |
+| 多屏坐标与动态气泡 | REQ-UI-003～007 | 是 | 是 | 待实机 | 是 |
+| 五姿态与动画 | REQ-ANI-001～004 | 是 | 是 | 待实机 | 是 |
+| 语音配置、队列与策略 | REQ-VOICE-001、004～009 | 是 | 是 | 待实机 | 是 |
+| Windows `System.Speech` | REQ-VOICE-002～003 | 是 | 契约测试通过 | 待实机 | 是 |
+| 启动、双远端与范围隔离 | REQ-REL-001～003 | 代码已保留 | 是 | 待实机 | 是 |
 
 “待实机”表示没有真实 Windows 验收结果，不能据此声明功能发布完成。
 
@@ -42,7 +42,7 @@
   `scripts/product/windows_speech.py`、`scripts/product/windows_speech_worker.ps1`、
   `scripts/recognition_overlay/overlay_config.py`、`scripts/recognition_overlay/app.py`。
 - 主要提交：`47064ed`、`2504901`、`77ae559`、`4c9a586`、`610b865`、
-  `23d561b`、`600864b`、`e885e84`。
+  `23d561b`、`600864b`、`e885e84`、`3a18926`。
 - 已实现：配置保留、动态语音菜单、消息队列、摘要策略、OCR 延时提示、
   持久 PowerShell worker、打断、静音、关闭和失败隔离。
 - 已预留：`SpeechMessage.source` 支持未来远端消息，但首版未接远端服务。
@@ -53,7 +53,7 @@
 
 ## 自动化快照
 
-- 提交：`e885e848bce7dd2b8e206757c36573c6e00052c6`。
+- 提交：`3a189260c985ab6ccbf7b94cdb8c342fcf226db0`。
 - 日期：2026-09-21。
 - 命令：
 
@@ -62,14 +62,14 @@ PYTHONPATH=scripts/product:scripts/recognition_overlay \
   python3 -m unittest discover -s tests -v
 ```
 
-- 结果：132 项通过，0 项失败，耗时约 0.96 秒。
+- 结果：134 项通过，0 项失败。
 - 边界：该结果来自 macOS 上的单元和协议测试，不等于 Windows 实机或真实语音播放验收。
 
-后续代码变更必须产生新的测试快照；本节的 132 项仅代表上述提交。
+后续代码变更必须产生新的测试快照；本节的 134 项仅代表上述代码提交。
 
-## 发布快照
+## 代码推送基线
 
-- 文档创建时本地代码提交：`e885e848bce7dd2b8e206757c36573c6e00052c6`。
-- 文档创建时 Woa Git `feature/cat-ui-recommendation`：`60111f4e0abe3ef7b68954cc3041ca7971e5033a`。
-- 文档创建时 GitHub `main`：`60111f4e0abe3ef7b68954cc3041ca7971e5033a`。
-- 结论：本轮 Overlay、动画和语音提交在该快照时尚未推送。
+- Woa Git `feature/cat-ui-recommendation` 已包含 `d45e2ad2e8c62f16da02983283573818d3b9919f`。
+- GitHub `main` 已包含 `d45e2ad2e8c62f16da02983283573818d3b9919f`。
+- 结论：两个远端已包含同一份 Overlay、动画和语音代码基线。
+- 边界：Windows 多屏和真实语音仍待验收，代码推送不等于实机发布通过。
