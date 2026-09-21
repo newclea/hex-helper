@@ -33,26 +33,38 @@ Windows 实机验收步骤见 `docs/windows-gamebuddy-acceptance.md`。
 
 ## 语音陪伴
 
-- Windows 内置 `System.Speech` 会播报适合听取的简短摘要，不会逐字朗读整段气泡。
+- 项目内置 sherpa-onnx 与 MeloTTS Chinese 离线语音，不使用 Windows `System.Speech`
+  或电脑上已安装的语音。
+- 首次启动会校验内置资源，并从本地 wheelhouse 准备专用运行目录；整个过程不访问网络。
+- 第一次实际播报需要加载本地模型，可能比后续播报等待更久。
+- 语音播报适合听取的简短摘要，不会逐字朗读整段气泡。
 - 推荐和关键错误使用高优先级；高优先级消息可以打断正在播放的低优先级陪伴消息。
 - OCR 持续时间严格超过 2 秒时播报一次识别进度；低优先级陪伴消息至少间隔 60 秒。
 - 重复或过期消息不会播报。
-- 语音组件不可用时会静默停用，不影响启动、识别、推荐和退出。
-- 退出 GameBuddy 时会停止播报并关闭常驻语音进程，不应遗留 PowerShell worker。
+- 语音资源、模型或音频设备不可用时会静默停用语音，不影响启动、识别、
+  推荐和退出。
+- 退出 GameBuddy 时会停止播报并关闭常驻 Python 语音 worker。
 
 可在 `%LOCALAPPDATA%\LoLRecognitionOverlay\overlay.json` 中配置语音：
 
 ```json
 {
   "league_root": "E:\\WeGameApps\\英雄联盟（含经典模式）",
-  "voice_enabled": true,
-  "voice_name": "Microsoft Xiaoxiao Online (Natural) - Chinese (Mainland)"
+  "voice_enabled": true
 }
 ```
 
-`voice_enabled` 控制是否启用语音，缺省为 `true`；`voice_name` 可指定已安装的 Windows 语音。
-程序依次选择指定语音、已安装的 `zh-CN` 女声、Windows 默认语音。
-更新语音设置不会删除 `league_root`。
+`voice_enabled` 控制是否启用语音，缺省为 `true`。旧配置中的 `voice_name`
+会被保留但不再使用；更新语音设置不会删除 `league_root`。
+
+## 海克斯 OCR 时机
+
+- 保留 3 级首轮海克斯判断。
+- 每次从存活转为死亡时记录当时等级，并使用已实际确认的选择数决定是否扫描。
+- 死亡等级低于 7 不扫描；7–10 级已选 2 次、11–14 级已选 3 次、
+  15 级及以上已选 4 次时不再扫描。
+- 死亡数据没有有效等级时本次不扫描；已真实检测到的三选一仍会完成 OCR。
+- 应用刚启动的挥手阶段不显示失败姿态、OCR 错误气泡或错误语音。
 
 ## 诊断
 

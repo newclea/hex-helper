@@ -1,6 +1,6 @@
 # 实现状态
 
-更新时间：2026-09-21
+更新时间：2026-09-22
 
 ## 状态矩阵
 
@@ -10,7 +10,8 @@
 | 多屏坐标与动态气泡 | REQ-UI-003～007 | 是 | 是 | 待实机 | 是 |
 | 五姿态与动画 | REQ-ANI-001～004 | 是 | 是 | 待实机 | 是 |
 | 语音配置、队列与策略 | REQ-VOICE-001、004～009 | 是 | 是 | 待实机 | 是 |
-| Windows `System.Speech` | REQ-VOICE-002～003 | 是 | 契约测试通过 | 待实机 | 是 |
+| 离线中文语音 | REQ-VOICE-002～003 | 是 | 是 | 未执行 | 否（待本轮推送） |
+| 启动展示与死亡 OCR 门控 | 本轮规格 | 是 | 是 | 未执行 | 否（待本轮推送） |
 | 启动、双远端与范围隔离 | REQ-REL-001～003 | 代码已保留 | 是 | 待实机 | 是 |
 
 “待实机”表示没有真实 Windows 验收结果，不能据此声明功能发布完成。
@@ -36,22 +37,37 @@
 - 自动化覆盖：清单完整性、状态映射、拖动覆盖与恢复、眨眼周期、素材缺失回退。
 - 未验证：Windows 透明窗口中的实际观感、动作自然度和不同缩放比例下的显示。
 
-## 语音陪伴
+## 离线语音陪伴
 
 - 主要文件：`scripts/product/speech.py`、`scripts/product/speech_policy.py`、
-  `scripts/product/windows_speech.py`、`scripts/product/windows_speech_worker.ps1`、
+  `scripts/product/offline_speech.py`、`scripts/product/offline_speech_worker.py`、
+  `scripts/product/offline_speech_assets.py`、
   `scripts/recognition_overlay/overlay_config.py`、`scripts/recognition_overlay/app.py`。
-- 主要提交：`47064ed`、`2504901`、`77ae559`、`4c9a586`、`610b865`、
-  `23d561b`、`600864b`、`e885e84`、`3a18926`。
+- 本轮主要提交：`6b43075`、`f376d9f`、`167c8ad`、`7f427a7`、`b8483fc`、
+  `50c05d5`、`26dc873`。
 - 已实现：配置保留、动态语音菜单、消息队列、摘要策略、OCR 延时提示、
-  持久 PowerShell worker、打断、静音、关闭和失败隔离。
+  常驻 Python worker、打断、静音、关闭和失败隔离。
+- 固定版本：sherpa-onnx `1.13.8`、sherpa-onnx-core `1.13.8`、sounddevice `0.5.3`；
+  MeloTTS Chinese 修订为 `a0d5c6a264c0ef92d70d8661d8cc502d79627cd6`。
+- 已内置 Windows x64 / CPython 3.11 的五个 wheel、INT8 模型、词典、FST、
+  SHA-256 清单和第三方许可说明。启动安装使用 `--no-index`。
 - 已预留：`SpeechMessage.source` 支持未来远端消息，但首版未接远端服务。
 - 自动化覆盖：优先级、去重、过期、60 秒节流、并发失效、进程代际、
-  worker 协议、配置持久化和应用生命周期。
-- 未验证：真实 Windows `System.Speech` 初始化、中文女性语音选择、听感、
-  播放中静音，以及退出后无残留 PowerShell 进程。
+  worker 协议、请求编号、资源校验、本地安装参数、配置持久化和应用生命周期。
+- 未验证：Windows x64 断网首次安装、真实中文合成与播放、音频设备降级、
+  播放中静音，以及退出后无残留 Python 语音 worker。
 
-## 自动化快照
+## 启动展示与死亡 OCR 时机
+
+- 主要文件：`scripts/product/cat_animation.py`、`scripts/recognition_overlay/hexcore_gate.py`、
+  `scripts/recognition_overlay/view_model.py`。
+- 主要提交：`a1d1666`、`0844ba6`、`4505359`、`9f2b1fe`、`29cf10e`。
+- 已实现：启动 3 秒挥手阶段优先于失败展示；死亡边沿记录瞬时等级，
+  按 `confirmed_count` 和 7、11、15 级边界决定死亡/复活 OCR；缺少等级不开放 OCR。
+- 保留：3 级首轮规则、真实三选一优先级和选择后确认扫描。
+- 未验证：Windows 真实对局中的启动观感、死亡等级边界和重复死亡帧。
+
+## 历史自动化快照
 
 - 提交：`3a189260c985ab6ccbf7b94cdb8c342fcf226db0`。
 - 日期：2026-09-21。
@@ -67,9 +83,21 @@ PYTHONPATH=scripts/product:scripts/recognition_overlay \
 
 后续代码变更必须产生新的测试快照；本节的 134 项仅代表上述代码提交。
 
+## 2026-09-22 自动化快照
+
+- 受测代码提交：`0994f93d74548517eef5f636297f6919d49bd1fb`。
+- 结果：173 项通过，0 项失败；`compileall`、动画 JSON、`git diff --check`
+  和离线资源 SHA-256 校验通过。
+- 离线包大小：93,088 KiB（约 90.9 MiB）；最大文件为 53,517,430 字节的
+  `assets/speech/melo-tts-zh_en-int8/model.int8.onnx`。
+- 边界：macOS 自动化只验证逻辑与协议，不等于 Windows x64 离线安装、
+  真实音频播放或进程清理验收。
+
 ## 代码推送基线
 
 - Woa Git `feature/cat-ui-recommendation` 已包含 `d45e2ad2e8c62f16da02983283573818d3b9919f`。
 - GitHub `main` 已包含 `d45e2ad2e8c62f16da02983283573818d3b9919f`。
 - 结论：两个远端已包含同一份 Overlay、动画和语音代码基线。
 - 边界：Windows 多屏和真实语音仍待验收，代码推送不等于实机发布通过。
+
+本轮离线语音和死亡 OCR 改动尚未推送；推送后需另行记录两个远端完整 SHA。

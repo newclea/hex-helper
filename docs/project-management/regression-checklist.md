@@ -1,23 +1,31 @@
 # 回归清单
 
-更新时间：2026-09-21
+更新时间：2026-09-22
 
 勾选项必须基于本轮提交重新执行。自动化通过不能代替 Windows 实机检查。
 
 ## 1. 自动化与静态检查
 
-- [ ] 记录待发布的完整提交号，并确认工作树没有未预期变更。
-- [ ] 执行全部 Python 测试并记录运行数量、失败数量和命令。
-- [ ] 执行 Python 编译检查，确认新模块可以导入。
-- [ ] 解析 `assets/gamebuddy/animations.json`，确认引用的 PNG 全部存在。
-- [ ] 检查所有变更行不超过 120 个字符，后端单个方法不超过 80 行。
-- [ ] 检查差异中没有 OCR、推荐、LCU、Live Client 或 C++ 视觉引擎的需求外变更。
+- [x] 记录受测代码提交 `0994f93d74548517eef5f636297f6919d49bd1fb`；
+  工作树只有本任务批准的文档更新。
+- [x] 执行全部 Python 测试：173 项通过，0 项失败。
+- [x] 执行 Python `compileall`，命令成功。
+- [x] 解析 `assets/gamebuddy/animations.json`，并由动画清单测试核对 PNG。
+- [x] 检查本轮变更行不超过 120 个字符，本轮修改的方法不超过 80 行。
+- [x] 检查差异中没有推荐算法、LCU 协议或 C++ 视觉引擎的需求外变更。
+
+2026-09-22 长度审计：本轮修改的 `RecognitionViewModel.__init__` 已收敛为 79 行；
+其他新增或修改方法也不超过 80 行。指定五个源文件的全文检查仍报告
+`view_model.py` 中 9 条超过 120 字符的历史行，均来自本轮基线之前的 `581e5910`；
+`70f9dff..0994f93` 新增行中没有超过 120 字符的行。
 
 建议命令：
 
 ```bash
-PYTHONPATH=scripts/product:scripts/recognition_overlay \
-  python3 -m unittest discover -s tests -v
+PYTHONPATH=scripts/product:scripts/recognition_overlay:scripts/phase4 \
+  python3 -m unittest discover -s tests -p 'test_*.py' -v
+python3 -m compileall -q scripts tests
+python3 -m json.tool assets/gamebuddy/animations.json >/dev/null
 git diff --check HEAD^
 git status --short
 ```
@@ -27,7 +35,8 @@ git status --short
 - [ ] 双击 `一键启动小猫.cmd`，确认 Overlay 正常出现且不修改全局执行策略。
 - [ ] 确认 LCU、Live Client、OCR、推荐和玩法按钮仍按原链路工作。
 - [ ] 在可重试状态短按小猫，确认 500ms 内松开会重试且窗口不移动。
-- [ ] 退出后确认 Overlay、视觉子进程和语音 PowerShell worker 都已结束。
+- [ ] 播报期间确认没有语音 PowerShell worker；退出后 Overlay、视觉子进程和
+  Python 离线语音 worker 都已结束。
 
 ## 3. 右键菜单
 
@@ -69,18 +78,35 @@ git status --short
 ## 7. 语音陪伴
 
 - [ ] 首次启动未配置时语音默认开启，右键关闭后重启仍保持关闭。
-- [ ] 配置指定可用语音后，确认优先使用该语音。
-- [ ] 未指定语音时，确认优先选中文女性语音；不可用时回退默认语音。
+- [ ] 在未安装 sherpa-onnx 的 Windows x64 / Python 3.11 环境中，启动前禁用网络。
+- [ ] 首次启动只从内置 wheelhouse 安装；pip 命令含 `--no-index` 且未联网。
+- [ ] 旧 `voice_name` 字段被保留但不影响内置 MeloTTS 音色。
 - [ ] 推荐、未识别和普通气泡播报简短口语摘要，不逐字朗读长文本或按钮。
+- [ ] 完成四轮推荐，确认每轮都播报，包括连续两轮内容相同的摘要。
+- [ ] 确认推荐装备和其他已有业务陪伴消息也能播报。
 - [ ] OCR 在 2 秒内完成时不播报进度；超过 2 秒时只播报一次。
 - [ ] 连续重复相同事件不重复播报；过期消息不播报。
 - [ ] 低优先级陪伴消息间隔不少于 60 秒。
 - [ ] 播放低优先级消息时触发关键推荐或错误，确认高优先级消息可以打断。
 - [ ] 播放中关闭语音，确认当前播放停止且低优先级队列被清理。
-- [ ] 缺少 PowerShell 或 `System.Speech` 时，确认 UI、OCR 和推荐继续运行。
-- [ ] 退出应用后检查没有残留 PowerShell 语音进程。
+- [ ] 临时移走模型后确认日志指出资源错误，UI、OCR 和推荐继续运行。
+- [ ] 禁用音频设备后确认日志指出播放错误，UI、OCR 和推荐继续运行。
+- [ ] 任务管理器确认播报期间没有 PowerShell 语音 worker。
+- [ ] 退出应用后检查没有残留 Python 离线语音 worker。
 
-## 8. 打包与双远端
+## 8. 启动展示与死亡 OCR 时机
+
+- [ ] 未进入游戏时启动，确认 3 秒挥手期间无失败姿态、OCR 错误气泡或错误语音。
+- [ ] 确认 3 级首轮海克斯规则仍然开放 OCR。
+- [ ] 死亡等级低于 7 时不开放 OCR。
+- [ ] 7–10 级只在 `confirmed_count < 2` 时开放死亡及复活 OCR。
+- [ ] 11–14 级只在 `confirmed_count < 3` 时开放死亡及复活 OCR。
+- [ ] 15 级及以上只在 `confirmed_count < 4` 时开放死亡及复活 OCR。
+- [ ] 死亡帧缺少等级时本次死亡不开放 OCR，后续补到等级也不重算。
+- [ ] 连续收到 `isDead=true` 时不增加死亡序号、不重算资格。
+- [ ] 已真实显示的三选一和选择后确认扫描不被死亡门控中断。
+
+## 9. 打包与双远端
 
 - [ ] 从待发布提交生成新的 Windows 候选包，并记录文件名、SHA-256 和架构。
 - [ ] 在解压后的独立目录使用候选包完成本清单，不依赖源码工作树文件。
