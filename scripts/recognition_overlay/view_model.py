@@ -805,13 +805,23 @@ class RecognitionViewModel:
                 self._latest_death_level = level
                 confirmed = self.confirmed_count()
                 self._death_ocr_allowed = death_ocr_allowed(level, confirmed)
+                if level is None:
+                    decision_reason = "missing_level"
+                elif level < 7:
+                    decision_reason = "level_below_7"
+                elif self._death_ocr_allowed:
+                    decision_reason = "confirmed_pick_pending"
+                else:
+                    decision_reason = "confirmed_limit_reached"
                 logging.info(
-                    "death OCR decision match_id=%s sequence=%s level=%s confirmed=%s allowed=%s",
+                    "death OCR decision match_id=%s sequence=%s level=%s "
+                    "confirmed=%s allowed=%s reason=%s",
                     self.match_id,
                     self._death_sequence,
                     level,
                     confirmed,
                     self._death_ocr_allowed,
+                    decision_reason,
                 )
             self.live_is_dead = is_dead
             if is_dead:
@@ -993,7 +1003,7 @@ class RecognitionViewModel:
             level=self.live_level,
             is_dead=self.live_is_dead,
             round_closed=self._round_ocr_closed,
-            offer_visible=bool(self.offer) and not self._round_ocr_closed,
+            offer_visible=self.offer_visible and not self._round_ocr_closed,
             seconds_since_respawn=self.seconds_since_respawn(),
             death_scan_allowed=self._death_ocr_allowed,
         )

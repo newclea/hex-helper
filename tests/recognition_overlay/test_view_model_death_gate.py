@@ -57,10 +57,12 @@ class ViewModelDeathGateTests(unittest.TestCase):
     def test_missing_level_on_death_does_not_reuse_cached_level(self) -> None:
         self.model.selected = [confirmed(1), confirmed(2)]
         self.model._apply_live_player(player(11, False))
-        self.model._apply_live_player(player(None, True))
+        with self.assertLogs(level="INFO") as captured:
+            self.model._apply_live_player(player(None, True))
 
         self.assertIsNone(self.model._latest_death_level)
         self.assertFalse(self.model.vision_allowed())
+        self.assertIn("reason=missing_level", captured.output[0])
 
     def test_repeated_dead_payload_does_not_recompute_eligibility(self) -> None:
         self.model.selected = [confirmed(1), confirmed(2)]
@@ -91,8 +93,37 @@ class ViewModelDeathGateTests(unittest.TestCase):
             {"slot": "CENTER", "name": "海克斯二"},
             {"slot": "RIGHT", "name": "海克斯三"},
         ]
+        self.model.offer_visible = True
 
         self.assertTrue(self.model.vision_allowed())
+
+    def test_raw_detector_visibility_overrides_ineligible_death(self) -> None:
+        self.model.selected = [confirmed(1), confirmed(2)]
+        self.model._apply_live_player(player(8, True))
+        self.assertEqual([], self.model.offer)
+        self.assertFalse(self.model.vision_allowed())
+
+        self.model.apply_frame_result({
+            "reason": "recognition_unknown",
+            "raw_detector": {"visible": True, "reason": "three_cards"},
+            "recognition_debug": {"cards": []},
+        })
+
+        self.assertTrue(self.model.offer_visible)
+        self.assertEqual([], self.model.offer)
+        self.assertTrue(self.model.vision_allowed())
+
+    def test_stale_cards_without_detector_visibility_do_not_override_gate(self) -> None:
+        self.model.selected = [confirmed(1), confirmed(2)]
+        self.model._apply_live_player(player(8, True))
+        self.model.offer = [
+            {"slot": "LEFT", "name": "旧海克斯一"},
+            {"slot": "CENTER", "name": "旧海克斯二"},
+            {"slot": "RIGHT", "name": "旧海克斯三"},
+        ]
+        self.model.offer_visible = False
+
+        self.assertFalse(self.model.vision_allowed())
 
 
 if __name__ == "__main__":
