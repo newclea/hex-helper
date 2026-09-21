@@ -33,6 +33,7 @@ class CompanionMessageSource(Protocol):
 class CompanionSpeechPolicy:
     def __init__(self) -> None:
         self._last_key: str | None = None
+        self._recommendation_active = False
         self._ocr_started_at: float | None = None
         self._ocr_announced = False
         self._sequence = 0
@@ -44,10 +45,16 @@ class CompanionSpeechPolicy:
             self._last_key = None
         self._update_ocr_state(state, now)
         summary, priority, semantic = self._describe(view, state)
-        if summary is None or semantic == self._last_key:
+        is_recommendation = state == "recommendation" and summary is not None
+        starts_recommendation = is_recommendation and not self._recommendation_active
+        self._recommendation_active = is_recommendation
+        if summary is None or (semantic == self._last_key and not starts_recommendation):
             return ()
         self._last_key = semantic
-        return (self._message(state, summary, priority, semantic, now),)
+        dedupe_key = semantic
+        if is_recommendation:
+            dedupe_key = f"{semantic}:occurrence:{self._sequence + 1}"
+        return (self._message(state, summary, priority, dedupe_key, now),)
 
     def tick(self, now: float) -> tuple[SpeechMessage, ...]:
         if self._ocr_started_at is None or self._ocr_announced:

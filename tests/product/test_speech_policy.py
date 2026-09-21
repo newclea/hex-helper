@@ -34,6 +34,23 @@ class CompanionSpeechPolicyTests(unittest.TestCase):
         ]}
         self.assertEqual("推荐选择珠光护手，当前玩法胜率优先。", policy.update(changed, 2.0)[0].summary)
 
+    def test_same_recommendation_is_announced_again_in_a_new_round(self) -> None:
+        policy = CompanionSpeechPolicy()
+        view = {
+            "state": "recommendation",
+            "message_blocks": [
+                {"label": "当前推荐", "value": "巨人杀手（CENTER）"},
+                {"label": "当前玩法", "value": "胜率优先"},
+            ],
+        }
+        first = policy.update(view, 1.0)
+        self.assertEqual((), policy.update(view, 1.1))
+        policy.update({"state": "ocr_reading"}, 2.0)
+        second = policy.update(view, 3.0)
+
+        self.assertEqual("推荐选择巨人杀手，当前玩法胜率优先。", second[0].summary)
+        self.assertNotEqual(first[0].dedupe_key, second[0].dedupe_key)
+
     def test_ocr_progress_waits_two_seconds_and_fires_once(self) -> None:
         policy = CompanionSpeechPolicy()
         policy.update({"state": "ocr_reading"}, 10.0)
