@@ -152,6 +152,7 @@ class RecognitionApp:
                 width=args.width,
                 height=min(args.height, 340),
                 cat_path=repository_root / "assets" / "gamebuddy-cat.png",
+                animation_root=repository_root / "assets" / "gamebuddy",
                 on_strategy=self._on_strategy,
                 on_refresh=self._on_manual_refresh,
                 on_tick=self._on_ui_tick,

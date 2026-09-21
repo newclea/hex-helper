@@ -3,12 +3,20 @@
 from __future__ import annotations
 
 import ctypes
+import logging
 import math
 import os
 from pathlib import Path
 import queue
 import time
 from typing import Any, Callable, Mapping
+
+from cat_animation import (
+    AnimationStateController,
+    AnimationTimeline,
+    load_animation_manifest,
+)
+from overlay_interaction import LongPressDrag, Point, Rect, clamp_origin
 
 
 TRANSPARENT = "#010203"
@@ -64,6 +72,11 @@ SWP_NOZORDER = 0x0004
 SWP_NOACTIVATE = 0x0010
 SWP_FRAMECHANGED = 0x0020
 HWND_TOPMOST = -1
+MONITOR_DEFAULTTONEAREST = 2
+WM_CAPTURECHANGED = 0x0215
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class CatOverlayWindow:
@@ -73,6 +86,7 @@ class CatOverlayWindow:
         self,
         *,
         cat_path: Path,
+        animation_root: Path | None = None,
         on_strategy: Callable[[str], None],
         on_refresh: Callable[[], None] | None = None,
         on_tick: Callable[[], None] | None = None,
@@ -83,6 +97,7 @@ class CatOverlayWindow:
         **_: Any,
     ) -> None:
         self.cat_path = cat_path
+        self.animation_root = animation_root
         self.on_strategy = on_strategy
         self.on_refresh = on_refresh
         self.on_tick = on_tick
@@ -94,6 +109,8 @@ class CatOverlayWindow:
         self._champion_band = False
         self._screen_width: int | None = None
         self._window_left: int | None = None
+        self._window_top = TOP_MARGIN
+        self._user_positioned = False
         # The window grows downwards for wrapped pills and recommendation text.
         self._base_height = max(MINIMUM_HEIGHT, min(MAXIMUM_HEIGHT, height))
         self.height = self._base_height
@@ -107,6 +124,19 @@ class CatOverlayWindow:
         self._root: Any = None
         self._canvas: Any = None
         self._cat: Any = None
+        self._cat_item: Any = None
+        self._cat_frames: dict[Path, Any] = {}
+        self._animation_state = AnimationStateController()
+        manifest = load_animation_manifest(animation_root) if animation_root is not None else None
+        self._animation_timeline = AnimationTimeline(manifest) if manifest is not None else None
+        self._clock = time.monotonic
+        self._drag = LongPressDrag()
+        self._pressed_action: str | None = None
+        self._long_press_after_id: Any = None
+        self._poll_after_id: Any = None
+        self._exit_menu: Any = None
+        self._menu_posted = False
+        self._closed = False
         self._click_regions: list[tuple[int, int, int, int, str]] = []
         self._pill_regions: dict[str, tuple[int, int, int, int]] = {}
         self._next_tick_at = 0.0
@@ -168,7 +198,7 @@ class CatOverlayWindow:
             return False
         local_x = point.x - self._root.winfo_rootx()
         local_y = point.y - self._root.winfo_rooty()
-        return self._action_at(local_x, local_y) is not None
+        return self._target_at(local_x, local_y) is not None
 
     def _action_at(self, local_x: int, local_y: int) -> str | None:
         """Use the drawn pill outline, leaving its transparent corners to League."""
@@ -184,6 +214,15 @@ class CatOverlayWindow:
                 return option_id
         return None
 
+    def _cat_bounds(self) -> Rect:
+        return Rect(self.width - 130, 16, self.width - 12, 140)
+
+    def _target_at(self, local_x: int, local_y: int) -> str | None:
+        action = self._action_at(local_x, local_y)
+        if action is not None:
+            return action
+        return "__cat__" if self._cat_bounds().contains(Point(local_x, local_y)) else None
+
     def _native_hit_result(
         self,
         *,
@@ -194,7 +233,7 @@ class CatOverlayWindow:
     ) -> int:
         """Compute WM_NCHITTEST without relying on an earlier cursor poll."""
 
-        option_id = self._action_at(
+        option_id = self._target_at(
             screen_x - window_left,
             screen_y - window_top,
         )
@@ -238,6 +277,10 @@ class CatOverlayWindow:
                 return HTTRANSPARENT
             if message == WM_MOUSEACTIVATE:
                 return MA_NOACTIVATE
+            if message == WM_CAPTURECHANGED:
+                if self._root is not None:
+                    self._root.after(0, self._cancel_pointer)
+                return 0
             if message == WM_APP_INVOKE_ACTION:
                 action_ids = [region[4] for region in self._click_regions]
                 action_index = int(wparam) - 1
@@ -482,7 +525,9 @@ class CatOverlayWindow:
         else:
             self.width, left, self._stacked_layout = self._screen_layout(screen_width, self._preferred_width)
         self._screen_width = screen_width
-        self._window_left = left
+        if not self._user_positioned:
+            self._window_left = left
+            self._window_top = TOP_MARGIN
         if self._canvas is not None:
             self._canvas.configure(width=self.width)
         self._apply_geometry()
@@ -494,7 +539,7 @@ class CatOverlayWindow:
         if self._window_left is not None:
             # A height-only request in the same event turn must retain the
             # pending target position, not the previous native window position.
-            bounds += f"+{self._window_left}+{TOP_MARGIN}"
+            bounds += f"{self._window_left:+d}{self._window_top:+d}"
         self._root.geometry(bounds)
 
     def _uses_champion_band(self, screen_width: int) -> bool:
@@ -627,6 +672,42 @@ class CatOverlayWindow:
                 high = middle - 1
         return text[:low].rstrip() + "…"
 
+    def _current_cat_image(self) -> Any:
+        if self._animation_timeline is None:
+            return self._cat
+        path = self._animation_timeline.frame_path(self._clock())
+        return self._cat_frames.get(path, self._cat)
+
+    def _draw_cat(self) -> None:
+        image = self._current_cat_image()
+        self._cat_item = None
+        if image is not None:
+            self._cat_item = self._canvas.create_image(
+                self.width - 72,
+                74,
+                image=image,
+                anchor="center",
+                tags=("cat",),
+            )
+
+    def _sync_animation_state(self, now: float) -> None:
+        if self._animation_timeline is None:
+            return
+        state = self._animation_state.update(self._view, now)
+        self._animation_timeline.set_state(state, now)
+
+    def _advance_animation(self, now: float) -> None:
+        if self._animation_timeline is None or self._cat_item is None:
+            return
+        path = self._animation_timeline.frame_path(now)
+        image = self._cat_frames.get(path)
+        if image is not None:
+            try:
+                self._canvas.itemconfigure(self._cat_item, image=image)
+            except Exception:
+                LOGGER.exception("animation update failed; keeping last frame")
+                self._animation_timeline = None
+
     def _draw(self) -> None:
         if self._screen_width is not None and self._champion_band != self._uses_champion_band(self._screen_width):
             # Phase changes need a reflow even if the display size is unchanged.
@@ -638,8 +719,7 @@ class CatOverlayWindow:
         if self._view.get("bubble_visible") is False:
             self._presented_topmost_key = None
             self._resize_height(self._base_height)
-            if self._cat is not None:
-                canvas.create_image(self.width - 72, 74, image=self._cat, anchor="center")
+            self._draw_cat()
             self._set_click_through(True)
             return
         options = self._view.get("options")
@@ -647,10 +727,6 @@ class CatOverlayWindow:
             item for item in options
             if isinstance(item, Mapping) and item.get("available") is True and item.get("id")
         ][:3] if isinstance(options, list) else []
-        refresh_available = (
-            self.on_refresh is not None
-            and self._view.get("refresh_available") is True
-        )
         # Narrow screens place the cat above the bubble instead of reserving
         # another 130 horizontal pixels beside it. Only the safe strip is used.
         bubble_left = 8 if self._stacked_layout else 16
@@ -784,20 +860,176 @@ class CatOverlayWindow:
         tail = canvas.create_polygon(*tail_points, fill=BUBBLE, outline=BUBBLE_BORDER)
         canvas.tag_lower(background)
         canvas.tag_lower(tail)
-        if self._cat is not None:
-            canvas.create_image(self.width - 72, 74, image=self._cat, anchor="center")
-            if refresh_available:
-                self._click_regions.append(
-                    (self.width - 130, 16, self.width - 12, 140, "__refresh__")
-                )
+        self._draw_cat()
         self._update_pointer_passthrough()
         self._raise_for_visible_change()
 
-    def _on_click(self, event: Any) -> None:
-        option_id = self._action_at(int(event.x), int(event.y))
-        if option_id is None:
+    def _monitor_work_area(self, point: Point) -> Rect:
+        if os.name != "nt":
+            width = int(self._root.winfo_screenwidth()) if self._root is not None else self.width
+            height = int(self._root.winfo_screenheight()) if self._root is not None else self.height
+            return Rect(0, 0, width, height)
+        from ctypes import wintypes
+
+        class MonitorInfo(ctypes.Structure):
+            _fields_ = [
+                ("cbSize", wintypes.DWORD),
+                ("rcMonitor", wintypes.RECT),
+                ("rcWork", wintypes.RECT),
+                ("dwFlags", wintypes.DWORD),
+            ]
+
+        user32 = ctypes.WinDLL("user32", use_last_error=True)
+        native_point = wintypes.POINT(point.x, point.y)
+        user32.MonitorFromPoint.argtypes = [wintypes.POINT, wintypes.DWORD]
+        user32.MonitorFromPoint.restype = wintypes.HANDLE
+        user32.GetMonitorInfoW.argtypes = [wintypes.HANDLE, ctypes.POINTER(MonitorInfo)]
+        user32.GetMonitorInfoW.restype = wintypes.BOOL
+        monitor = user32.MonitorFromPoint(native_point, MONITOR_DEFAULTTONEAREST)
+        info = MonitorInfo(cbSize=ctypes.sizeof(MonitorInfo))
+        if monitor and user32.GetMonitorInfoW(monitor, ctypes.byref(info)):
+            work = info.rcWork
+            return Rect(int(work.left), int(work.top), int(work.right), int(work.bottom))
+        return Rect(0, 0, int(self._root.winfo_screenwidth()), int(self._root.winfo_screenheight()))
+
+    def _cancel_long_press_timer(self) -> None:
+        if self._root is not None and self._long_press_after_id is not None:
+            try:
+                self._root.after_cancel(self._long_press_after_id)
+            except Exception:
+                LOGGER.debug("long-press timer was already released", exc_info=True)
+        self._long_press_after_id = None
+
+    def _release_pointer_capture(self) -> None:
+        if self._canvas is None:
             return
-        self._invoke_action(option_id)
+        try:
+            self._canvas.grab_release()
+        except Exception:
+            LOGGER.debug("pointer capture was already released", exc_info=True)
+
+    def _activate_long_press(self) -> None:
+        self._long_press_after_id = None
+        now = self._clock()
+        if not self._drag.activate(now):
+            return
+        if self._animation_timeline is not None:
+            self._animation_timeline.set_frozen(True, now)
+
+    def _on_left_press(self, event: Any) -> None:
+        target = self._target_at(int(event.x), int(event.y))
+        if target != "__cat__":
+            self._pressed_action = target
+            return
+        self._pressed_action = None
+        origin = Point(
+            self._window_left if self._window_left is not None else int(self._root.winfo_x()),
+            self._window_top,
+        )
+        self._drag.press(Point(int(event.x_root), int(event.y_root)), origin, self._clock())
+        if self._canvas is not None:
+            try:
+                self._canvas.grab_set()
+            except Exception:
+                LOGGER.exception("pointer capture failed")
+        if self._root is not None:
+            self._long_press_after_id = self._root.after(500, self._activate_long_press)
+
+    def _on_left_motion(self, event: Any) -> None:
+        now = self._clock()
+        result = self._drag.move(Point(int(event.x_root), int(event.y_root)), now)
+        if not result.dragging or result.requested_origin is None:
+            return
+        if self._animation_timeline is not None:
+            self._animation_timeline.set_frozen(True, now)
+        work_area = self._monitor_work_area(Point(int(event.x_root), int(event.y_root)))
+        origin = clamp_origin(
+            result.requested_origin,
+            Point(self.width, self.height),
+            self._cat_bounds(),
+            work_area,
+        )
+        self._window_left, self._window_top = origin.x, origin.y
+        self._user_positioned = True
+        self._apply_geometry()
+
+    def _on_left_release(self, event: Any) -> None:
+        self._cancel_long_press_timer()
+        self._release_pointer_capture()
+        target = self._target_at(int(event.x), int(event.y))
+        if self._pressed_action is not None:
+            pressed = self._pressed_action
+            self._pressed_action = None
+            if target == pressed:
+                self._invoke_action(pressed)
+            return
+        now = self._clock()
+        result = self._drag.release(
+            Point(int(event.x_root), int(event.y_root)),
+            now,
+            inside_cat=target == "__cat__",
+        )
+        if self._animation_timeline is not None:
+            self._animation_timeline.set_frozen(False, now)
+        if result == "click" and self._view.get("refresh_available") is True:
+            if self.on_refresh is not None:
+                self.on_refresh()
+
+    def _cancel_pointer(self) -> None:
+        was_dragging = self._drag.dragging
+        self._cancel_long_press_timer()
+        self._release_pointer_capture()
+        self._drag.cancel()
+        self._pressed_action = None
+        if was_dragging and self._animation_timeline is not None:
+            self._animation_timeline.set_frozen(False, self._clock())
+
+    def _dismiss_menu(self) -> None:
+        if self._exit_menu is not None and self._menu_posted:
+            try:
+                self._exit_menu.unpost()
+            except Exception:
+                LOGGER.debug("exit menu was already dismissed", exc_info=True)
+        self._menu_posted = False
+
+    def _on_right_click(self, event: Any) -> None:
+        if self._target_at(int(event.x), int(event.y)) != "__cat__":
+            return
+        if self._menu_posted:
+            self._dismiss_menu()
+            return
+        self._cancel_pointer()
+        if self._exit_menu is None:
+            return
+        self._exit_menu.update_idletasks()
+        work = self._monitor_work_area(Point(int(event.x_root), int(event.y_root)))
+        maximum_left = max(work.left, work.right - self._exit_menu.winfo_reqwidth())
+        maximum_top = max(work.top, work.bottom - self._exit_menu.winfo_reqheight())
+        left = min(max(int(event.x_root), work.left), maximum_left)
+        top = min(max(int(event.y_root), work.top), maximum_top)
+        self._menu_posted = True
+        try:
+            self._exit_menu.tk_popup(left, top)
+        except Exception:
+            LOGGER.exception("exit menu popup failed")
+            self._menu_posted = False
+        finally:
+            try:
+                self._exit_menu.grab_release()
+            except Exception:
+                LOGGER.debug("exit menu grab was already released", exc_info=True)
+
+    def _on_escape(self, _event: Any) -> None:
+        if self._menu_posted:
+            self._dismiss_menu()
+        else:
+            self._close()
+
+    def _create_exit_menu(self, tk: Any) -> Any:
+        menu = tk.Menu(self._root, tearoff=False)
+        menu.add_command(label="退出", command=self._close)
+        menu.bind("<Unmap>", lambda _event: setattr(self, "_menu_posted", False))
+        return menu
 
     def _invoke_action(self, option_id: str) -> None:
         if option_id in {"__detail_previous__", "__detail_next__"}:
@@ -810,7 +1042,9 @@ class CatOverlayWindow:
             self.on_strategy(option_id)
 
     def _poll(self) -> None:
-        now = time.monotonic()
+        if self._closed:
+            return
+        now = self._clock()
         if self.on_tick is not None and now >= self._next_tick_at:
             self._next_tick_at = now + 0.25
             self.on_tick()
@@ -826,19 +1060,57 @@ class CatOverlayWindow:
                 changed = True
             except queue.Empty:
                 break
+        self._sync_animation_state(now)
         if changed:
             self._draw()
         else:
+            self._advance_animation(now)
             self._update_pointer_passthrough()
         if self._root is not None:
-            self._root.after(50, self._poll)
+            self._poll_after_id = self._root.after(50, self._poll)
 
     def _close(self) -> None:
-        if self.on_close is not None:
-            self.on_close()
-        if self._root is not None:
-            self._restore_native_hit_test()
-            self._root.destroy()
+        if self._closed:
+            return
+        self._closed = True
+        self._dismiss_menu()
+        self._cancel_pointer()
+        if self._root is not None and self._poll_after_id is not None:
+            try:
+                self._root.after_cancel(self._poll_after_id)
+            except Exception:
+                LOGGER.debug("poll timer was already released", exc_info=True)
+        self._poll_after_id = None
+        try:
+            if self.on_close is not None:
+                self.on_close()
+        finally:
+            if self._root is not None:
+                self._restore_native_hit_test()
+                self._root.destroy()
+
+    def _load_cat_images(self, tk: Any) -> None:
+        image = tk.PhotoImage(file=str(self.cat_path))
+        factor = max(1, image.width() // 112)
+        self._cat = image.subsample(factor, factor)
+        if self._animation_timeline is None:
+            return
+        try:
+            paths = {
+                path
+                for clip in self._animation_timeline.manifest.clips.values()
+                for path in clip.frames
+            }
+            frames: dict[Path, Any] = {}
+            for path in paths:
+                frame = tk.PhotoImage(file=str(path))
+                frame_factor = max(1, frame.width() // 112)
+                frames[path] = frame.subsample(frame_factor, frame_factor)
+            self._cat_frames = frames
+        except Exception:
+            LOGGER.exception("animation frames failed to load; using static cat")
+            self._cat_frames = {}
+            self._animation_timeline = None
 
     def run(self) -> int:
         if os.name != "nt":
@@ -869,14 +1141,21 @@ class CatOverlayWindow:
         canvas.pack(fill="both", expand=True)
         root.update_idletasks()
         self._install_native_hit_test()
-        image = tk.PhotoImage(file=str(self.cat_path))
-        factor = max(1, image.width() // 112)
-        self._cat = image.subsample(factor, factor)
-        canvas.bind("<Button-1>", self._on_click)
-        root.bind("<Escape>", lambda _event: self._close())
+        self._load_cat_images(tk)
+        try:
+            self._exit_menu = self._create_exit_menu(tk)
+        except Exception:
+            LOGGER.exception("exit menu creation failed")
+            self._exit_menu = None
+        canvas.bind("<ButtonPress-1>", self._on_left_press)
+        canvas.bind("<B1-Motion>", self._on_left_motion)
+        canvas.bind("<ButtonRelease-1>", self._on_left_release)
+        canvas.bind("<Button-3>", self._on_right_click)
+        root.bind("<Escape>", self._on_escape)
+        self._sync_animation_state(self._clock())
         self._draw()
         root.deiconify()
-        root.after(50, self._poll)
+        self._poll_after_id = root.after(50, self._poll)
         if self.on_ready is not None:
             root.after(0, self.on_ready)
         try:
