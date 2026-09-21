@@ -39,7 +39,8 @@
 
 | 项目 | 记录 |
 | --- | --- |
-| 受测代码提交 | `0994f93d74548517eef5f636297f6919d49bd1fb` |
+| 受测生产代码提交 | `d01337f1c5001399a86c73508718bc8279ffcd32` |
+| 后续仅文档提交 | `ea97393`与本记录提交；均未更改运行逻辑或测试 |
 | 语音运行库 | sherpa-onnx `1.13.8`、sherpa-onnx-core `1.13.8`、sounddevice `0.5.3` |
 | 语音模型 | MeloTTS Chinese `a0d5c6a264c0ef92d70d8661d8cc502d79627cd6`，只内置 `model.int8.onnx` |
 | 离线资源 | Windows x64 / CPython 3.11 五个 wheel、模型、词典、FST、SHA-256 与许可说明 |

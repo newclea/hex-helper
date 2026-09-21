@@ -44,7 +44,7 @@
   `scripts/product/offline_speech_assets.py`、
   `scripts/recognition_overlay/overlay_config.py`、`scripts/recognition_overlay/app.py`。
 - 本轮主要提交：`6b43075`、`f376d9f`、`167c8ad`、`7f427a7`、`b8483fc`、
-  `50c05d5`、`26dc873`。
+  `50c05d5`、`26dc873`、`d01337f`。
 - 已实现：配置保留、动态语音菜单、消息队列、摘要策略、OCR 延时提示、
   常驻 Python worker、打断、静音、关闭和失败隔离。
 - 固定版本：sherpa-onnx `1.13.8`、sherpa-onnx-core `1.13.8`、sounddevice `0.5.3`；
@@ -85,13 +85,15 @@ PYTHONPATH=scripts/product:scripts/recognition_overlay \
 
 ## 2026-09-22 自动化快照
 
-- 受测代码提交：`0994f93d74548517eef5f636297f6919d49bd1fb`。
+- 受测生产代码提交：`d01337f1c5001399a86c73508718bc8279ffcd32`。
 - 结果：173 项通过，0 项失败；`compileall`、动画 JSON、`git diff --check`
   和离线资源 SHA-256 校验通过。
 - 离线包大小：93,088 KiB（约 90.9 MiB）；最大文件为 53,517,430 字节的
   `assets/speech/melo-tts-zh_en-int8/model.int8.onnx`。
 - 边界：macOS 自动化只验证逻辑与协议，不等于 Windows x64 离线安装、
   真实音频播放或进程清理验收。
+- 提交 `d01337f` 是本次测试覆盖的最新生产代码；其后的 `ea97393`
+  和本记录提交只修改文档，没有更改运行逻辑或测试。
 
 ## 代码推送基线
 
