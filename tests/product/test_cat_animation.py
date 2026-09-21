@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import struct
 from tempfile import TemporaryDirectory
 import unittest
+import zlib
 
 from cat_animation import (
     ANIMATION_STATES,
@@ -14,6 +16,59 @@ from cat_animation import (
     load_animation_manifest,
     select_base_state,
 )
+
+
+def _paeth(left: int, above: int, upper_left: int) -> int:
+    estimate = left + above - upper_left
+    distances = (abs(estimate - left), abs(estimate - above), abs(estimate - upper_left))
+    return (left, above, upper_left)[distances.index(min(distances))]
+
+
+def _rgba_pixels(path: Path) -> tuple[int, int, bytes]:
+    payload = path.read_bytes()
+    offset = 8
+    compressed = bytearray()
+    width = height = 0
+    while offset < len(payload):
+        length = struct.unpack(">I", payload[offset : offset + 4])[0]
+        kind = payload[offset + 4 : offset + 8]
+        value = payload[offset + 8 : offset + 8 + length]
+        offset += length + 12
+        if kind == b"IHDR":
+            width, height, depth, color, _, _, interlace = struct.unpack(">IIBBBBB", value)
+            if (depth, color, interlace) != (8, 6, 0):
+                raise AssertionError(f"unsupported PNG format: {path}")
+        elif kind == b"IDAT":
+            compressed.extend(value)
+    raw = zlib.decompress(bytes(compressed))
+    stride = width * 4
+    previous = bytearray(stride)
+    decoded = bytearray()
+    for row_index in range(height):
+        start = row_index * (stride + 1)
+        filter_type = raw[start]
+        row = bytearray(raw[start + 1 : start + 1 + stride])
+        for index in range(stride):
+            left = row[index - 4] if index >= 4 else 0
+            above = previous[index]
+            upper_left = previous[index - 4] if index >= 4 else 0
+            predictors = (0, left, above, (left + above) // 2, _paeth(left, above, upper_left))
+            row[index] = (row[index] + predictors[filter_type]) & 0xFF
+        decoded.extend(row)
+        previous = row
+    return width, height, bytes(decoded)
+
+
+def _changed_pixels(first: Path, second: Path) -> set[tuple[int, int]]:
+    width, height, first_pixels = _rgba_pixels(first)
+    other_width, other_height, second_pixels = _rgba_pixels(second)
+    if (width, height) != (other_width, other_height):
+        raise AssertionError("animation frame sizes differ")
+    return {
+        (index % width, index // width)
+        for index in range(width * height)
+        if first_pixels[index * 4 : index * 4 + 4] != second_pixels[index * 4 : index * 4 + 4]
+    }
 
 
 class AnimationStateTests(unittest.TestCase):
@@ -136,6 +191,30 @@ class ManifestTests(unittest.TestCase):
                 self.assertGreaterEqual(duration_ms, 2800)
                 self.assertLessEqual(duration_ms, 3200)
                 self.assertGreater(len({path.read_bytes() for path in clip.frames}), 1)
+
+    def test_waiting_and_listening_share_the_tilted_pose_frames(self) -> None:
+        root = Path(__file__).resolve().parents[2] / "assets" / "gamebuddy"
+        manifest = load_animation_manifest(root)
+        assert manifest is not None
+        idle = [path.read_bytes() for path in manifest.clips["idle"].frames]
+        listening = [path.read_bytes() for path in manifest.clips["listening"].frames]
+        self.assertEqual(idle, listening)
+
+    def test_motion_frames_lock_pixels_outside_the_moving_limbs(self) -> None:
+        root = Path(__file__).resolve().parents[2] / "assets" / "gamebuddy"
+        cases = {
+            "greeting": lambda x, y: 43 <= x <= 83 and 79 <= y <= 139,
+            "thinking": lambda x, y: (
+                38 <= x <= 90 and 70 <= y <= 173
+            ) or (
+                64 <= x <= 106 and 53 <= y <= 113
+            ),
+        }
+        for state, allowed in cases.items():
+            with self.subTest(state=state):
+                changed = _changed_pixels(root / state / "000.png", root / state / "001.png")
+                self.assertTrue(changed)
+                self.assertFalse({point for point in changed if not allowed(*point)})
 
 
 if __name__ == "__main__":
