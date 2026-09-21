@@ -14,6 +14,7 @@ FLAG_NAME = "left_click.flag"
 OCR_HOLD_NAME = "ocr_hold.flag"
 CLICK_EVENT_NAME = "Local\\LoLAssistantLeftClick"
 AUTO_REREAD_INTERVAL_SECONDS = 0.05
+AUTO_REREAD_STATUS_INTERVAL_SECONDS = 0.5
 DEFAULT_GAME_TITLE = "League of Legends (TM) Client"
 LEAGUE_WINDOW_CLASSES = ("RiotWindowClass", "RCLIENT")
 LEAGUE_WINDOW_TITLES = (
@@ -468,17 +469,26 @@ def read_wm_input(user32: object, lparam: int) -> bytes | None:
 
 
 class AutoRereadMonitor:
-    """Ask the vision process to reread the current frame on a fixed interval."""
+    """Signal rereads while OCR is eligible, with a throttled UI heartbeat."""
 
     def __init__(
         self,
         workspace: Path,
         interval_seconds: float = AUTO_REREAD_INTERVAL_SECONDS,
         on_tick: Callable[[], None] | None = None,
+        should_signal: Callable[[], bool] | None = None,
+        status_interval_seconds: float = AUTO_REREAD_STATUS_INTERVAL_SECONDS,
+        clock: Callable[[], float] = time.monotonic,
     ) -> None:
+        if interval_seconds <= 0 or status_interval_seconds <= 0:
+            raise ValueError("auto-reread intervals must be positive")
         self._workspace = workspace
         self._interval = interval_seconds
         self._on_tick = on_tick
+        self._should_signal = should_signal
+        self._status_interval = status_interval_seconds
+        self._clock = clock
+        self._last_status_at: float | None = None
         self._stop = threading.Event()
         self._thread: threading.Thread | None = None
 
@@ -504,12 +514,26 @@ class AutoRereadMonitor:
             self._emit()
 
     def _emit(self) -> None:
+        if self._should_signal is not None:
+            try:
+                if not self._should_signal():
+                    return
+            except Exception:
+                logging.exception("auto-reread gate callback failed")
+                return
         try:
             write_left_click(self._workspace)
         except OSError:
             pass
         if self._on_tick is None:
             return
+        now = self._clock()
+        if (
+            self._last_status_at is not None
+            and now - self._last_status_at < self._status_interval
+        ):
+            return
+        self._last_status_at = now
         try:
             self._on_tick()
         except Exception:

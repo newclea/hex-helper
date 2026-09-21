@@ -76,7 +76,15 @@ def log_path() -> Path:
     return user_data_dir() / "overlay.log"
 
 
+def ocr_diagnostics_path() -> Path:
+    return user_data_dir() / "ocr_diagnostics.jsonl"
+
+
 def overlay_config_path() -> Path:
+    return user_data_dir() / "overlay.json"
+
+
+def legacy_overlay_config_path() -> Path:
     return executable_dir() / "overlay.json"
 
 

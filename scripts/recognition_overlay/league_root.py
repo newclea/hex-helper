@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 from pathlib import Path
 
-from paths import executable_dir, overlay_config_path
+from paths import executable_dir, legacy_overlay_config_path, overlay_config_path
 
 
 def is_league_root(path: Path) -> bool:
@@ -34,19 +35,19 @@ def root_from_client_exe(exe_path: Path) -> Path | None:
 
 
 def _read_config_root() -> Path | None:
-    config = overlay_config_path()
-    if not config.is_file():
-        return None
-    try:
-        raw = json.loads(config.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return None
-    if not isinstance(raw, dict):
-        return None
-    value = raw.get("league_root")
-    if not isinstance(value, str) or not value.strip():
-        return None
-    return Path(value.strip())
+    for config in (overlay_config_path(), legacy_overlay_config_path()):
+        if not config.is_file():
+            continue
+        try:
+            raw = json.loads(config.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if not isinstance(raw, dict):
+            continue
+        value = raw.get("league_root")
+        if isinstance(value, str) and value.strip():
+            return Path(value.strip())
+    return None
 
 
 def _read_text_root() -> Path | None:
@@ -147,7 +148,8 @@ def persist_league_root(root: Path) -> None:
             json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
-    except OSError:
+    except OSError as error:
+        logging.warning("could not persist League root: %s", error)
         return
 
 

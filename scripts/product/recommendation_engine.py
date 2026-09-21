@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from datetime import date
 import json
 from pathlib import Path
-import random
 import re
 from typing import Any, Mapping, Sequence
 
@@ -133,17 +132,19 @@ class RecommendationEngine:
         self._hero_aliases: dict[str, str] = {}
         for row in win_rows:
             hero = str(row.get("英雄名") or "").strip()
-            augment = str(row.get("海克斯名称") or "").strip()
-            rate = _percentage(row.get("海克斯胜率"))
-            if not hero or not augment or rate is None:
+            if not hero:
                 continue
             hero_key = normalize_name(hero)
             self._register_hero_aliases(hero, hero_key)
-            self._win_by_hero.setdefault(hero_key, {})[normalize_name(augment)] = row
             self._hero_labels.setdefault(hero_key, hero)
             hero_rate = _percentage(row.get("英雄胜率"))
             if hero_rate is not None:
                 self._hero_win_rates[hero_key] = hero_rate
+            augment = str(row.get("海克斯名称") or "").strip()
+            rate = _percentage(row.get("海克斯胜率"))
+            if not augment or rate is None:
+                continue
+            self._win_by_hero.setdefault(hero_key, {})[normalize_name(augment)] = row
 
         raw_plans: list[FunPlan] = []
         for index, row in enumerate(fun_builds):
@@ -222,45 +223,89 @@ class RecommendationEngine:
         self._hero_aliases.setdefault(compact, canonical)
         parts = hero.split()
         if len(parts) > 1:
+            # Recommendation rows prefix the champion title to the display
+            # name used by the client catalog.  Most display names are a
+            # single token, but names such as "烈娜塔 · 戈拉斯克" are not.
+            # Register the whole suffix as well as the final token so both
+            # forms resolve to the same recommendation pool.
+            self._hero_aliases.setdefault(
+                normalize_name(" ".join(parts[1:])), canonical
+            )
             self._hero_aliases.setdefault(normalize_name(parts[-1]), canonical)
 
     def _resolve_hero_key(self, hero: str) -> str:
         key = normalize_name(hero)
         return self._hero_aliases.get(key, key)
 
-    def strategy_options(self, hero: str) -> list[StrategyOption]:
+    @staticmethod
+    def _normalize_choices(
+        choices: Sequence[Mapping[str, Any]],
+    ) -> list[dict[str, str]] | None:
+        if not 1 <= len(choices) <= 3:
+            return None
+        cards: list[dict[str, str]] = []
+        seen_slots: set[str] = set()
+        for item in choices:
+            slot = str(item.get("slot") or "")
+            name = str(item.get("name") or "").strip()
+            if slot not in SLOTS or slot in seen_slots or not name:
+                return None
+            seen_slots.add(slot)
+            cards.append({"slot": slot, "name": name})
+        return cards
+
+    def strategy_options(
+        self,
+        hero: str,
+        *,
+        choices: Sequence[Mapping[str, Any]] = (),
+        selected_augments: Sequence[str] = (),
+    ) -> list[StrategyOption]:
+        """Choose two plans from the whole pool for this offer and history.
+
+        Any plan that can recommend an unowned card in the current offer comes
+        before plans that would fall back to win rate. History overlap then
+        favors a path the player has already started; names break ties without
+        depending on source rating, update date, or input order.
+        """
+
         hero_key = self._resolve_hero_key(hero)
+        selected = {normalize_name(item) for item in selected_augments}
+        offered = {
+            normalize_name(card["name"])
+            for card in self._normalize_choices(choices) or []
+        } - selected
+
+        def offer_plan_key(plan: FunPlan) -> tuple[bool, int, str, str]:
+            augments = {normalize_name(name) for name in plan.augments}
+            return (
+                not bool(augments & offered),
+                -len(augments & selected),
+                plan.name,
+                plan.id,
+            )
+
         options = [
             StrategyOption(
                 id=MODE_WIN_RATE,
-                title="胜率优先",
-                subtitle="每轮推荐三张中该英雄胜率最高的一张",
+                title="胜率流",
+                subtitle=(
+                    "每轮推荐三张中该英雄胜率最高的一张"
+                    if hero_key in self._win_by_hero
+                    else "当前英雄暂无可靠胜率数据"
+                ),
                 available=hero_key in self._win_by_hero,
             )
         ]
-        plans = self._plans_by_hero.get(hero_key, [])[:2]
-        for index in range(2):
-            if index < len(plans):
-                plan = plans[index]
-                core = " + ".join(plan.core_augments)
-                options.append(
-                    StrategyOption(
-                        id=f"{MODE_FUN_PREFIX}{plan.id}",
-                        title=f"趣味玩法 {index + 1} · {plan.name}",
-                        subtitle=f"核心：{core}",
-                        available=True,
-                        plan_id=plan.id,
-                    )
-                )
-            else:
-                options.append(
-                    StrategyOption(
-                        id=f"{MODE_FUN_PREFIX}unavailable-{index + 1}",
-                        title=f"趣味玩法 {index + 1}",
-                        subtitle="当前英雄暂无足够的可靠玩法数据",
-                        available=False,
-                    )
-                )
+        plans = sorted(
+            self._plans_by_hero.get(hero_key, []), key=offer_plan_key
+        )[:2]
+        for plan in plans:
+            options.append(StrategyOption(
+                id=f"{MODE_FUN_PREFIX}{plan.id}", title=plan.name,
+                subtitle=f"核心：{' + '.join(plan.core_augments)}",
+                available=True, plan_id=plan.id,
+            ))
         return options
 
     def champion_select_recommendations(
@@ -270,54 +315,71 @@ class RecommendationEngine:
         bench: Sequence[str],
         seed: str,
     ) -> list[str]:
-        """Return one win-rate line and up to three stable fun suggestions."""
+        """Show the known win-rate leader, then up to three distinct fun heroes.
+
+        ``seed`` remains accepted for callers using the previous interface;
+        recommendation order is deterministic and independent of it.
+        """
 
         candidates: list[str] = []
+        candidate_labels: dict[str, str] = {}
         seen: set[str] = set()
         for hero in ([current_hero] if current_hero else []) + list(bench):
             key = self._resolve_hero_key(str(hero or ""))
             if key and key not in seen:
                 seen.add(key)
                 candidates.append(key)
+                candidate_labels[key] = str(hero).strip()
         if not candidates:
             return []
 
-        lines: list[str] = []
-        rated = [key for key in candidates if key in self._hero_win_rates]
-        if rated:
-            winner = max(
-                rated,
-                key=lambda key: (self._hero_win_rates[key], self._hero_labels.get(key, key)),
-            )
-            label = self._hero_labels.get(winner, winner)
-            rate = self._hero_win_rates[winner]
-            current_key = self._resolve_hero_key(current_hero or "")
-            action = f"当前{label}即首选" if winner == current_key else f"建议从待选席换成{label}"
-            lines.append(f"胜率推荐：{action}，英雄胜率 {rate:.2f}%。")
+        def label(key: str) -> str:
+            return self.hero_display_name(candidate_labels[key])
 
-        def newest_first(plan: FunPlan) -> tuple[int, str, str]:
-            try:
-                ordinal = -date.fromisoformat(plan.updated_on).toordinal()
-            except ValueError:
-                ordinal = 0
-            return (ordinal, plan.hero, plan.name)
-
-        recent_plans = sorted(
-            (
-                plan
-                for key in candidates
-                for plan in self._plans_by_hero.get(key, [])
+        ranked = sorted(
+            candidates,
+            key=lambda key: (
+                -len(self._plans_by_hero.get(key, [])),
+                key not in self._hero_win_rates,
+                -self._hero_win_rates.get(key, 0.0),
+                label(key),
             ),
-            key=newest_first,
-        )[:10]
-        rng = random.Random(seed)
-        chosen = rng.sample(recent_plans, min(3, len(recent_plans)))
-        for index, plan in enumerate(chosen, start=1):
-            lines.append(
-                f"趣味{index}：{plan.hero}的「{plan.name}」，"
-                f"核心海克斯：{' + '.join(plan.core_augments)}。"
+        )
+        lines: list[str] = []
+        known = [key for key in candidates if key in self._hero_win_rates]
+        winner = min(known, key=lambda key: (-self._hero_win_rates[key], label(key))) if known else None
+        if winner is not None:
+            rate = f"{self._hero_win_rates[winner]:.2f}".rstrip("0").rstrip(".")
+            scope = "胜率最高" if len(known) == len(candidates) else "已知胜率最高"
+            lines.append(f"{label(winner)}胜率有{rate}%，可选英雄里{scope}，追求取胜优选！")
+        fun_candidates = [key for key in ranked if key != winner and self._plans_by_hero.get(key)][:3]
+        for index, key in enumerate(fun_candidates):
+            plans = sorted(
+                self._plans_by_hero.get(key, []),
+                key=lambda plan: (plan.name, plan.id),
             )
+            examples = "和".join(f"[{plan.name}]" for plan in plans[:2])
+            ending = ("新玩法，可以试试~", "创意，值得一试~", "玩法，欢乐对局快开始咯！")[index]
+            lines.append(f"{label(key)}有{examples}{ending}")
+        # With a single useful candidate, retain its fun paths without a
+        # duplicate hero line or the previous lengthy core explanations.
+        if winner is not None and not fun_candidates:
+            plans = sorted(self._plans_by_hero.get(winner, []), key=lambda plan: (plan.name, plan.id))
+            if plans:
+                examples = "和".join(f"[{plan.name}]" for plan in plans[:2])
+                lines[0] += f"也有{examples}玩法~"
+        if not lines:
+            lines.append("可选英雄暂无可靠的胜率或趣味玩法资料，选喜欢的英雄吧~")
         return lines
+
+    def hero_display_name(self, hero: str) -> str:
+        label = self._hero_labels.get(self._resolve_hero_key(hero), hero)
+        parts = label.split(maxsplit=1)
+        return parts[-1] if parts else hero
+
+    def strategy_plan(self, hero: str, strategy_id: str) -> FunPlan | None:
+        """Return the complete documented requirements, not only the core pair."""
+        return self._plan(hero, strategy_id)
 
     def _plan(self, hero: str, strategy_id: str) -> FunPlan | None:
         if not strategy_id.startswith(MODE_FUN_PREFIX):
@@ -367,17 +429,9 @@ class RecommendationEngine:
         choices: Sequence[Mapping[str, str]],
         selected_augments: Sequence[str] = (),
     ) -> Recommendation | None:
-        if not 1 <= len(choices) <= 3:
+        normalized_cards = self._normalize_choices(choices)
+        if normalized_cards is None:
             return None
-        normalized_cards: list[dict[str, str]] = []
-        seen_slots: set[str] = set()
-        for item in choices:
-            slot = str(item.get("slot") or "")
-            name = str(item.get("name") or "").strip()
-            if slot not in SLOTS or slot in seen_slots or not name:
-                return None
-            seen_slots.add(slot)
-            normalized_cards.append({"slot": slot, "name": name})
         plan = self._plan(hero, strategy_id)
         if strategy_id == MODE_WIN_RATE:
             card, rate = self._best_by_win_rate(hero, normalized_cards)
@@ -436,22 +490,19 @@ class RecommendationEngine:
             )
 
         card, rate = self._best_by_win_rate(hero, normalized_cards)
-        scope = "三张" if len(normalized_cards) == 3 else "已识别候选"
         if rate is not None:
-            fallback = f"先选{scope}中胜率最高的一张（{rate:.2f}%）"
+            fallback = f"这轮先按胜率推荐。该海克斯胜率：{rate:.2f}%。"
         else:
             fallback = (
-                "胜率池也暂无有效数据，"
-                f"临时选择「{card['name']}」海克斯"
+                "本轮也暂无有效胜率数据，"
+                f"暂以「{card['name']}」作为备选。"
             )
         return Recommendation(
             augment=card["name"],
             slot=card["slot"],
             position=SLOT_LABELS[card["slot"]],
             reason=(
-                f"哎呀，「{plan.name}」需要的"
-                f"{' / '.join(plan.core_augments)}海克斯没有抽到呢，"
-                f"那我们{fallback}吧！"
+                f"「{plan.name}」的搭配海克斯这轮没有抽到。{fallback}"
             ),
             matched_by="win_rate_fallback",
             win_rate=rate,

@@ -1,9 +1,8 @@
-"""Hexcore timing helpers for overlay copy and when OCR may run.
+"""Display estimates and OCR timing, kept separate from recorded pick progress.
 
-The first offer opens at level 3. After a pick is recorded, OCR stays off until the next hexcore level
-and a death (or the fountain window right after that death). Missing
-Live Client data fails open so a later offer is not skipped. The first
-offer stays open from level 3 until that pick.
+Every death is a detection opportunity, regardless of level or recorded round.
+Level estimates describe pending offers; they must never suppress a real offer.
+Missing Live Client data fails open, and accepted offers remain observable.
 """
 
 from __future__ import annotations
@@ -87,24 +86,16 @@ def hexcore_ocr_open(
 ) -> bool:
     if type(completed) is not int or completed < 0:
         return False
-    if completed >= 4:
-        return False
-    threshold = next_hexcore_level(completed)
-    if threshold is None:
-        return False
-    if type(level) is int and level < threshold:
-        return False
     if offer_visible and not round_closed:
         return True
-    if not round_closed:
+    if is_dead is True or is_dead is None or type(level) is not int:
         return True
-    if type(level) is not int:
-        return True
-    if level < threshold:
-        return False
-    if is_dead is True or is_dead is None:
-        return True
-    return (
+    if (
         seconds_since_respawn is not None
         and 0.0 <= seconds_since_respawn <= RESPAWN_FOUNTAIN_SECONDS
-    )
+    ):
+        return True
+    # The initial offer can appear while alive. Subsequent empty-death probes
+    # end with the respawn window; an already accepted offer is kept open by
+    # offer_visible above, including when its selection is delayed.
+    return not round_closed and completed == 0 and level >= HEXCORE_LEVELS[0]

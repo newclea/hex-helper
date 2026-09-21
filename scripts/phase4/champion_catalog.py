@@ -14,7 +14,7 @@ from typing import Any, Mapping
 
 WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CHAMPION_CATALOG = (
-    WORKSPACE_ROOT / "Scrape" / "raw" / "shared" / "champions_zh_CN.json"
+    WORKSPACE_ROOT / "data" / "champions" / "champions_zh_CN.json"
 )
 MAXIMUM_CHAMPION_ID = 10_000
 MAXIMUM_LABEL_CHARS = 32
@@ -54,8 +54,9 @@ class ChampionCatalog:
         self._records = dict(records)
         self._by_riot_id: dict[str, ChampionInfo] = {}
         for info in self._records.values():
-            if info.riot_id:
-                self._by_riot_id[info.riot_id.casefold()] = info
+            for alias in (info.riot_id, info.name, info.title, f"{info.name} {info.title}"):
+                if alias.strip():
+                    self._by_riot_id[alias.casefold()] = info
 
     @classmethod
     def load(cls, path: Path | None = None) -> "ChampionCatalog":

@@ -1,4 +1,4 @@
-"""Persist the player's per-match strategy without touching OCR history."""
+"""Persist match hero and the last viewed recommendation tab, not a locked plan."""
 
 from __future__ import annotations
 
@@ -36,3 +36,7 @@ class StrategyStore:
         )
         temporary.replace(self.path)
 
+    def clear(self, match_id: str) -> None:
+        """Invalidate only this match's choice after a confirmed hero swap."""
+        if self.load(match_id) is not None:
+            self.path.unlink(missing_ok=True)

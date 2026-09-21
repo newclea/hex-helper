@@ -1,4 +1,4 @@
 ﻿SHA256  outputs/tmp/build/bin/lol_augment_assistant.exe
-CEE929E6EB02F04DB418859877AB1DBFAC832D180E9CDDBA015602D36AFCF50D
-built   2026-09-15 00:54:25 (local)
-note    Release; dark-card detector + overlay OCR raw text
+901E78EFE7CC7E715793810AB71DEC98BC246A69F5EF8D4284DBC8190440E28A
+built   2026-09-21 03:13:37 (local)
+note    Release; every-death scanning; explicit offer-round binding; safe same-round reroll persistence; confirmed-choice retry; temporary-hide round protection; Python selection confirmation bridge; stat-shard screen classification; offline completed-offers restoration; WGC restart lifetime fix. Python post-pick closeout and adaptive capsule UI in source. Validation: docs/long-task-2026-09-21.md

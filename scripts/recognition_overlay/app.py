@@ -4,9 +4,11 @@
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import sys
 import threading
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -26,15 +28,21 @@ _bootstrap_imports()
 from augment_catalog import AugmentCatalog
 from champion_catalog import ChampionCatalog
 from history_store import HistoryStore
-from lcu_champ_select import LcuChampSelectPoller
+from lcu_champ_select import (
+    EnvironmentLcuConnectionProvider,
+    LcuChampSelectPoller,
+)
 from league_root import resolve_league_root
 from overlay_window import OverlayWindow
+from ocr_diagnostics import OcrDiagnostics
 from paths import (
     augment_catalog_path,
+    bundle_dir,
     champion_catalog_path,
     find_vision_exe,
     history_path,
     log_path,
+    ocr_diagnostics_path,
     vision_home,
     vision_workspace,
     strategy_path,
@@ -44,6 +52,7 @@ from view_model import RecognitionViewModel
 from click_flag import (
     AUTO_REREAD_INTERVAL_SECONDS,
     AutoRereadMonitor,
+    write_left_click,
 )
 from vision_client import VisionSupervisor
 from cat_overlay import CatOverlayWindow
@@ -52,29 +61,18 @@ from recommendation_engine import RecommendationEngine
 from strategy_store import StrategyStore
 
 
-def _ocr_raw_summary(debug: Any) -> str:
-    if not isinstance(debug, Mapping):
-        return "-"
-    cards = debug.get("cards")
-    if not isinstance(cards, list) or not cards:
-        return "-"
-    parts: list[str] = []
-    for item in cards:
-        if not isinstance(item, Mapping):
-            continue
-        slot = str(item.get("slot") or "?")
-        raw = item.get("raw_text")
-        text = " ".join(str(raw).split()) if raw is not None else ""
-        if len(text) > 40:
-            text = text[:40] + "…"
-        parts.append(f"{slot}:{text or '空'}")
-    return " | ".join(parts) if parts else "-"
+_single_instance_handle: int | None = None
 
 
 def _configure_logging() -> None:
     destination = log_path()
     handlers: list[logging.Handler] = [
-        logging.FileHandler(destination, encoding="utf-8"),
+        RotatingFileHandler(
+            destination,
+            maxBytes=2 * 1024 * 1024,
+            backupCount=3,
+            encoding="utf-8",
+        ),
     ]
     if not getattr(sys, "frozen", False):
         handlers.append(logging.StreamHandler(sys.stderr))
@@ -118,7 +116,8 @@ def _parser() -> argparse.ArgumentParser:
 class RecognitionApp:
     def __init__(self, args: argparse.Namespace) -> None:
         self.args = args
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
+        self.diagnostics = OcrDiagnostics(ocr_diagnostics_path())
         champions = ChampionCatalog.load(champion_catalog_path())
         catalog = AugmentCatalog.load(args.knowledge or augment_catalog_path())
         self.model = RecognitionViewModel(
@@ -138,7 +137,7 @@ class RecognitionApp:
                 on_close=self.stop,
             )
         else:
-            repository_root = Path(__file__).resolve().parents[2]
+            repository_root = bundle_dir()
             engine = RecommendationEngine.load(
                 args.recommendation_data
                 or default_recommendation_root(repository_root)
@@ -153,15 +152,22 @@ class RecognitionApp:
                 width=args.width,
                 height=min(args.height, 340),
                 cat_path=repository_root / "assets" / "gamebuddy-cat.png",
-                on_strategy=self.product.select_strategy,
+                on_strategy=self._on_strategy,
                 on_refresh=self._on_manual_refresh,
+                on_tick=self._on_ui_tick,
                 on_ready=self._start_workers,
                 on_close=self.stop,
             )
         self.poller = LcuChampSelectPoller(
             self._on_lcu,
             catalog=champions,
-            interval_seconds=1.0,
+            # Fast custom ARAM lobbies can expose the final champion for only
+            # a brief transition before GameStart.  Four polls per second is
+            # still negligible for a loopback GET and avoids missing it.
+            interval_seconds=0.25,
+            provider=EnvironmentLcuConnectionProvider(
+                root_resolver=lambda: resolve_league_root(self.args.league_root)
+            ),
         )
         self.live_client = LiveClientPoller(
             self._on_live_client, interval_seconds=0.25
@@ -170,6 +176,7 @@ class RecognitionApp:
             workspace=vision_workspace(),
             interval_seconds=AUTO_REREAD_INTERVAL_SECONDS,
             on_tick=self._on_reread_tick,
+            should_signal=self._should_ocr,
         )
         self.vision = VisionSupervisor(
             exe=find_vision_exe(args.vision_exe),
@@ -180,6 +187,7 @@ class RecognitionApp:
             on_status=self._on_vision_status,
             completed_offers=self._completed_offers,
             champion=lambda: None,
+            match_id=self._current_match_id,
             should_run=self._should_run_vision,
             should_ocr=self._should_ocr,
             window_title=args.window_title,
@@ -194,7 +202,29 @@ class RecognitionApp:
             return
         self.window.set_view(self.product.present(self.model.snapshot()))
 
+    def _on_strategy(self, strategy_id: str) -> None:
+        with self._lock:
+            if self.product is not None:
+                accepted = self.product.select_strategy(strategy_id)
+                snapshot = self.model.snapshot()
+                logging.info(
+                    "strategy selection accepted=%s strategy_id=%s match_id=%s phase=%s champion=%s",
+                    accepted,
+                    strategy_id,
+                    snapshot.get("match_id"),
+                    snapshot.get("phase"),
+                    snapshot.get("champion"),
+                )
+
     def _on_product_change(self) -> None:
+        with self._lock:
+            self._publish()
+
+    def _on_ui_tick(self) -> None:
+        # snapshot() evaluates the short detector visibility grace against the
+        # current monotonic clock.  A lightweight UI tick guarantees the speech
+        # bubble disappears even if the detector process stops immediately
+        # after its final "not visible" frame.
         with self._lock:
             self._publish()
 
@@ -206,55 +236,89 @@ class RecognitionApp:
     def _on_manual_refresh(self) -> None:
         with self._lock:
             self.model.mark_left_click()
+            write_left_click(vision_workspace())
             self._publish()
-        self.vision.request_reread()
 
     def _on_lcu(self, event: Mapping[str, Any]) -> None:
         with self._lock:
+            context = event.get("context")
             self.model.apply_lcu(event)
+            snapshot = self.model.snapshot()
+            logging.info(
+                "lcu state status=%s reason=%s phase=%s champion_id=%s match_id=%s champion=%s",
+                event.get("status"),
+                event.get("reason"),
+                context.get("gameflowPhase") if isinstance(context, Mapping) else None,
+                context.get("championId") if isinstance(context, Mapping) else None,
+                snapshot.get("match_id"),
+                snapshot.get("champion"),
+            )
             self._publish()
 
     def _on_vision(self, kind: str, payload: Mapping[str, Any]) -> None:
+        commands: list[dict[str, Any]] = []
         with self._lock:
+            source_match = payload.get("_vision_match_id")
+            if source_match is not None and source_match != self.model.match_id:
+                return
             if kind == "game_state":
                 self.model.apply_game_state(payload)
             elif kind == "selection_observed":
                 logging.info(
-                    "vision selection_observed source=%s slot=%s id=%s",
-                    payload.get("source"),
-                    payload.get("selected_slot"),
-                    payload.get("selected_augment_id"),
+                    "vision selection_observed payload=%s",
+                    json.dumps(dict(payload), ensure_ascii=False, separators=(",", ":"))
+                    .replace("\u0085", "\\u0085").replace("\u2028", "\\u2028").replace("\u2029", "\\u2029"),
                 )
                 self.model.apply_selection_observed(payload)
+            elif kind == "selection_confirmation_ack":
+                logging.info("vision selection_confirmation_ack payload=%s",
+                             json.dumps(dict(payload), ensure_ascii=False, separators=(",", ":")))
             elif kind == "click_ack":
                 logging.info(
                     "vision click_ack reason=%s", payload.get("reason")
                 )
                 self.model.apply_click_ack(payload)
             elif kind == "frame_result":
-                reason = payload.get("reason")
-                if reason not in {
-                    "duplicate_offer",
-                    "same_content_already_processed",
-                    "awaiting_ocr_consensus:1/2",
-                }:
-                    logging.info(
-                        "vision frame_result cause=%s reason=%s raw=%s",
-                        payload.get("reread_cause"),
-                        reason,
-                        _ocr_raw_summary(payload.get("recognition_debug")),
-                    )
+                completed = self.model.completed_stage()
+                self.diagnostics.record(payload, {
+                    "match_id": self.model.match_id,
+                    "champion": self.model.champion,
+                    "phase": self.model.phase,
+                    "game_mode": self.model.game_mode,
+                    "live_level": self.model.live_level,
+                    "live_is_dead": self.model.live_is_dead,
+                    "confirmed_count": self.model.confirmed_count(),
+                    "completed_stage": completed,
+                    "expected_stage": completed + 1 if completed < 4 else None,
+                    "offer_round": self.model.offer_round,
+                    "mayhem_stage": self.model.mayhem_stage,
+                    "mayhem_phase": self.model.mayhem_phase,
+                })
                 self.model.apply_frame_result(payload)
+                commands = self.model.take_selection_commands()
             elif kind == "mayhem_selection_state":
                 self.model.apply_mayhem_selection(payload)
             elif kind == "live_client_state":
+                self._sync_vision_mode(payload)
                 self.model.apply_live_client(payload)
             self._publish()
+        # File I/O stays outside the model/UI lock. The supervisor validates
+        # that the same match and child session still own this command.
+        for command in commands:
+            sent = self.vision.confirm_selection(command)
+            logging.info("python OCR selection confirmation submitted=%s session=%s stage=%s",
+                         sent, command.get("session_id"), command.get("offer_stage"))
 
     def _on_live_client(self, event: Mapping[str, Any]) -> None:
         with self._lock:
+            self._sync_vision_mode(event)
             self.model.apply_live_client(event)
             self._publish()
+
+    def _sync_vision_mode(self, event: Mapping[str, Any]) -> None:
+        mode = str(event.get("gameMode") or "").strip().upper()
+        if mode in {"KIWI", "KIWI_JADE"}:
+            self.vision.set_mode(mode)
 
     def _on_vision_status(self, status: str, note: str | None) -> None:
         with self._lock:
@@ -263,7 +327,11 @@ class RecognitionApp:
 
     def _completed_offers(self) -> int:
         with self._lock:
-            return self.model.confirmed_count()
+            return self.model.completed_stage()
+
+    def _current_match_id(self) -> str:
+        with self._lock:
+            return self.model.match_id
 
     def _should_run_vision(self) -> bool:
         with self._lock:
@@ -296,9 +364,10 @@ class RecognitionApp:
 
     def stop(self) -> None:
         self.reread.stop()
+        self.vision.stop()
         self.poller.stop()
         self.live_client.stop()
-        self.vision.stop()
+        self.diagnostics.close()
 
     def run(self) -> int:
         try:
@@ -308,6 +377,7 @@ class RecognitionApp:
 
 
 def _single_instance() -> bool:
+    global _single_instance_handle
     if not os_name_nt():
         return True
     import ctypes
@@ -321,10 +391,32 @@ def _single_instance() -> bool:
     kernel32.CreateMutexW.restype = ctypes.c_void_p
     handle = kernel32.CreateMutexW(None, True, "Local\\LoLRecognitionOverlay.Single")
     if not handle:
-        return True
-    if ctypes.get_last_error() == 183:
+        logging.error("single-instance mutex failed error=%s", ctypes.get_last_error())
         return False
+    if ctypes.get_last_error() == 183:
+        kernel32.CloseHandle.argtypes = [ctypes.c_void_p]
+        kernel32.CloseHandle.restype = ctypes.c_int
+        kernel32.CloseHandle(handle)
+        return False
+    _single_instance_handle = int(handle)
     return True
+
+
+def _release_single_instance() -> None:
+    global _single_instance_handle
+    handle = _single_instance_handle
+    _single_instance_handle = None
+    if not handle or not os_name_nt():
+        return
+    try:
+        import ctypes
+
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.CloseHandle.argtypes = [ctypes.c_void_p]
+        kernel32.CloseHandle.restype = ctypes.c_int
+        kernel32.CloseHandle(handle)
+    except Exception:
+        return
 
 
 def _keep_recognition_responsive() -> None:
@@ -364,7 +456,7 @@ def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     if not _single_instance():
         logging.warning("another overlay instance is already running")
-        _message_box("已经有一个识别窗口在运行，请先关掉旧窗口再开这个。")
+        _message_box("无法启动第二个识别窗口；请先关掉已经运行的窗口再重试。")
         return 2
     try:
         return RecognitionApp(args).run()
@@ -373,6 +465,8 @@ def main(argv: list[str] | None = None) -> int:
         if os_name_nt():
             _message_box("LoL 识别启动失败，详见 overlay.log")
         return 1
+    finally:
+        _release_single_instance()
 
 
 def os_name_nt() -> bool:

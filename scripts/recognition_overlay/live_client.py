@@ -19,6 +19,7 @@ from urllib.request import Request
 
 LIVE_CLIENT_HOST = "127.0.0.1"
 LIVE_CLIENT_PORT = 2999
+LIVE_CLIENT_TIMEOUT_SECONDS = 0.5
 MAXIMUM_RESPONSE_BYTES = 1 * 1024 * 1024
 ACTIVE_PLAYER_NAME_PATH = "/liveclientdata/activeplayername"
 PLAYER_LIST_PATH = "/liveclientdata/playerlist"
@@ -53,6 +54,7 @@ class LiveClientSnapshot:
         )
         return (
             self.status,
+            self.reason,
             self.champion_name,
             self.game_mode,
             self.level,
@@ -72,7 +74,7 @@ class LiveClientHttpsTransport:
         request = Request(url, method="GET", headers={"Accept": "application/json"})
         try:
             with urllib.request.urlopen(
-                request, timeout=1.5, context=self._context
+                request, timeout=LIVE_CLIENT_TIMEOUT_SECONDS, context=self._context
             ) as response:
                 status_code = int(getattr(response, "status", 0) or 0)
                 raw = response.read(MAXIMUM_RESPONSE_BYTES + 1)
@@ -311,6 +313,8 @@ class LiveClientPoller:
         if self._thread is not None:
             raise RuntimeError("Live Client poller is already running")
         self._stop.clear()
+        self._previous = None
+        self._last_emit = 0.0
         self._thread = threading.Thread(
             target=self._run, name="live-client-poller", daemon=True
         )
@@ -320,8 +324,9 @@ class LiveClientPoller:
         self._stop.set()
         thread = self._thread
         if thread is not None:
-            thread.join(timeout=1.0)
-        self._thread = None
+            thread.join(timeout=2.0)
+            if not thread.is_alive():
+                self._thread = None
 
     def _run(self) -> None:
         while not self._stop.is_set():
@@ -329,6 +334,8 @@ class LiveClientPoller:
                 snapshot = read_live_client_snapshot(self._transport)
             except Exception:
                 snapshot = LiveClientSnapshot(status="UNAVAILABLE", reason="connect_failed")
+            if self._stop.is_set():
+                break
             identity = snapshot.identity()
             now = self._clock()
             changed = identity != self._previous

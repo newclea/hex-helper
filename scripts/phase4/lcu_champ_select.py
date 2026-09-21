@@ -38,10 +38,13 @@ MAXIMUM_LOG_BYTES = 2 * 1024 * 1024
 MAXIMUM_LOG_CANDIDATES = 16
 MAXIMUM_BENCH_CHAMPIONS = 16
 GAMEFLOW_PATH = "/lol-gameflow/v1/gameflow-phase"
+GAMEFLOW_SESSION_PATH = "/lol-gameflow/v1/session"
 CHAMP_SELECT_SESSION_PATH = "/lol-champ-select/v1/session"
 CURRENT_CHAMPION_PATH = "/lol-champ-select/v1/current-champion"
+SUBSET_CHAMPIONS_PATH = "/lol-lobby-team-builder/champ-select/v1/subset-champion-list"
 ALLOWED_PATHS = frozenset(
-    {GAMEFLOW_PATH, CHAMP_SELECT_SESSION_PATH, CURRENT_CHAMPION_PATH}
+    {GAMEFLOW_PATH, GAMEFLOW_SESSION_PATH, CHAMP_SELECT_SESSION_PATH,
+     CURRENT_CHAMPION_PATH, SUBSET_CHAMPIONS_PATH}
 )
 LCU_STATUSES = frozenset({"READY", "PARTIAL", "UNAVAILABLE", "INVALID_RESPONSE"})
 
@@ -81,6 +84,7 @@ class ChampSelectSession:
     bench_enabled: bool
     bench: tuple[BenchChampion, ...]
     champion_id: int | None
+    allow_subset_champion_picks: bool = False
 
 
 @dataclass(frozen=True)
@@ -91,6 +95,7 @@ class LcuContextSnapshot:
     champion_id: int | None = None
     bench_enabled: bool | None = None
     bench: tuple[BenchChampion, ...] = ()
+    game_id: int | None = None
 
     def identity(self) -> tuple[Any, ...]:
         return (
@@ -100,6 +105,7 @@ class LcuContextSnapshot:
             self.champion_id,
             self.bench_enabled,
             tuple((item.champion_id, item.name) for item in self.bench),
+            self.game_id,
         )
 
 
@@ -222,6 +228,23 @@ def parse_current_champion_id(body: str) -> int | None:
     return value
 
 
+def parse_gameflow_game_id(body: str, *, phase: str) -> int | None:
+    """Read the uint64 game identity from a phase-consistent LCU session."""
+    try:
+        session = json.loads(body)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(session, Mapping) or session.get("phase") != phase:
+        return None
+    game = session.get("gameData")
+    if not isinstance(game, Mapping):
+        return None
+    game_id = game.get("gameId")
+    if type(game_id) is not int or not 1 <= game_id <= 18_446_744_073_709_551_615:
+        return None
+    return game_id
+
+
 def parse_champ_select_session(
     body: str,
     catalog: ChampionCatalog,
@@ -235,6 +258,9 @@ def parse_champ_select_session(
 
     bench_enabled = data.get("benchEnabled")
     if bench_enabled is not None and type(bench_enabled) is not bool:
+        return None
+    allow_subset = data.get("allowSubsetChampionPicks", False)
+    if type(allow_subset) is not bool:
         return None
 
     raw_bench = data.get("benchChampions", [])
@@ -277,7 +303,30 @@ def parse_champ_select_session(
         bench_enabled=enabled,
         bench=tuple(bench),
         champion_id=champion_id,
+        allow_subset_champion_picks=allow_subset,
     )
+
+
+def parse_subset_champions(
+    body: str, catalog: ChampionCatalog,
+) -> tuple[BenchChampion, ...] | None:
+    """Read the limited champion cards offered before a local pick exists."""
+    try:
+        ids = json.loads(body)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(ids, list) or len(ids) > MAXIMUM_BENCH_CHAMPIONS:
+        return None
+    champions: list[BenchChampion] = []
+    seen: set[int] = set()
+    for champion_id in ids:
+        if type(champion_id) is not int or not 0 <= champion_id <= 10_000:
+            return None
+        if champion_id == 0 or champion_id in seen:
+            continue
+        seen.add(champion_id)
+        champions.append(BenchChampion(champion_id, catalog.label(champion_id)))
+    return tuple(champions)
 
 
 def is_active_loopback_listener(app_pid: int, port: int) -> bool:
@@ -349,15 +398,24 @@ def discover_from_league_root(league_root: Path) -> LcuLaunchArguments | None:
     log_directory = league_root / "LeagueClient"
     if not log_directory.is_dir():
         return None
-    logs = [
-        path
-        for path in log_directory.iterdir()
-        if path.is_file() and path.name.endswith("_LeagueClientUx.log")
-    ]
-    logs.sort(key=lambda path: path.stat().st_mtime, reverse=True)
-    for path in logs[:MAXIMUM_LOG_CANDIDATES]:
+    logs: list[tuple[float, Path]] = []
+    try:
+        candidates = list(log_directory.iterdir())
+    except OSError:
+        return None
+    for path in candidates:
         try:
-            text = path.read_bytes()[:MAXIMUM_LOG_BYTES].decode("utf-8", errors="ignore")
+            if path.is_file() and path.name.endswith("_LeagueClientUx.log"):
+                logs.append((path.stat().st_mtime, path))
+        except OSError:
+            continue
+    logs.sort(key=lambda item: item[0], reverse=True)
+    for _, path in logs[:MAXIMUM_LOG_CANDIDATES]:
+        try:
+            with path.open("rb") as stream:
+                text = stream.read(MAXIMUM_LOG_BYTES).decode(
+                    "utf-8", errors="ignore"
+                )
         except OSError:
             continue
         arguments = parse_lcu_launch_arguments(text)
@@ -369,9 +427,13 @@ def discover_from_league_root(league_root: Path) -> LcuLaunchArguments | None:
 
 
 class EnvironmentLcuConnectionProvider:
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        root_resolver: Callable[[], Path | None] | None = None,
+    ) -> None:
         self._cached: LcuLaunchArguments | None = None
         self._cached_root: str | None = None
+        self._root_resolver = root_resolver
 
     def invalidate(self) -> None:
         self._cached = None
@@ -390,6 +452,19 @@ class EnvironmentLcuConnectionProvider:
             return LcuConnection(port=port, token=token), "ok"
 
         league_root = os.environ.get("LOL_ASSISTANT_LEAGUE_ROOT")
+        if not league_root and self._root_resolver is not None:
+            try:
+                discovered = self._root_resolver()
+            except Exception:
+                discovered = None
+            if discovered is not None:
+                try:
+                    resolved = discovered.expanduser().resolve()
+                except OSError:
+                    resolved = None
+                if resolved is not None and resolved.is_absolute():
+                    league_root = str(resolved)
+                    os.environ["LOL_ASSISTANT_LEAGUE_ROOT"] = league_root
         if not league_root:
             self.invalidate()
             return None, "auth_unavailable"
@@ -498,27 +573,79 @@ def read_lcu_snapshot(
     phase = parse_gameflow_phase(phase_response.body)
     if phase is None:
         return LcuContextSnapshot(status="INVALID_RESPONSE", reason="gameflow_invalid_response")
+    game_id = None
+    if phase in {"ChampSelect", "GameStart", "InProgress", "Reconnect"}:
+        game_response = client.get(connection, GAMEFLOW_SESSION_PATH)
+        if game_response.ok:
+            game_id = parse_gameflow_game_id(game_response.body, phase=phase)
+        elif game_response.error_code == "auth_rejected" and provider is not None:
+            provider.invalidate()
     if phase != "ChampSelect":
-        return LcuContextSnapshot(status="READY", reason="ok", gameflow_phase=phase)
+        return LcuContextSnapshot(
+            status="READY", reason="ok", gameflow_phase=phase, game_id=game_id
+        )
 
     session_response = client.get(connection, CHAMP_SELECT_SESSION_PATH)
     if session_response.ok:
         session = parse_champ_select_session(session_response.body, catalog)
         if session is not None:
-            status = "READY" if session.champion_id is not None or session.bench else "PARTIAL"
-            reason_text = "ok" if status == "READY" else "champion_unavailable"
+            champion_id = session.champion_id
+            # During the short ARAM/custom-game transition the session object
+            # can be valid while myTeam still reports championId=0.  The
+            # dedicated endpoint is often already populated at that point, so
+            # use it as a fallback instead of waiting until the session request
+            # itself fails.  Missing this window pushed strategy choice into
+            # the live game on fast custom lobbies.
+            if champion_id is None:
+                champion_response = client.get(connection, CURRENT_CHAMPION_PATH)
+                if champion_response.ok:
+                    champion_id = parse_current_champion_id(champion_response.body)
+                elif champion_response.error_code == "auth_rejected" and provider is not None:
+                    provider.invalidate()
+            bench = session.bench
+            subset_failure = None
+            if session.allow_subset_champion_picks:
+                # In Mayhem's initial 15-second pick, championId/current-
+                # champion are 0 and benchChampions is empty. The two actual
+                # cards are already in this separate endpoint. The general
+                # pickable-champion-ids endpoint contains the owned roster and
+                # must never be substituted for the on-screen candidate set.
+                subset_response = client.get(connection, SUBSET_CHAMPIONS_PATH)
+                subset = (
+                    parse_subset_champions(subset_response.body, catalog)
+                    if subset_response.ok else None
+                )
+                if subset is not None:
+                    seen = {champion_id} if champion_id is not None else set()
+                    combined = []
+                    for item in (*bench, *subset):
+                        if item.champion_id not in seen:
+                            seen.add(item.champion_id)
+                            combined.append(item)
+                    bench = tuple(combined[:MAXIMUM_BENCH_CHAMPIONS])
+                else:
+                    subset_failure = (
+                        "subset_invalid_response" if subset_response.ok
+                        else "subset_unavailable"
+                    )
+                    if subset_response.error_code == "auth_rejected" and provider is not None:
+                        provider.invalidate()
+            status = "READY" if champion_id is not None or bench else "PARTIAL"
+            reason_text = "ok" if status == "READY" else subset_failure or "champion_unavailable"
             return LcuContextSnapshot(
                 status=status,
                 reason=reason_text,
                 gameflow_phase=phase,
-                champion_id=session.champion_id,
+                champion_id=champion_id,
                 bench_enabled=session.bench_enabled,
-                bench=session.bench,
+                bench=bench,
+                game_id=game_id,
             )
         return LcuContextSnapshot(
             status="PARTIAL",
             reason="session_invalid_response",
             gameflow_phase=phase,
+            game_id=game_id,
         )
     if session_response.error_code == "auth_rejected":
         if provider is not None:
@@ -536,6 +663,7 @@ def read_lcu_snapshot(
         reason="bench_unavailable",
         gameflow_phase=phase,
         champion_id=champion_id,
+        game_id=game_id,
     )
 
 
@@ -547,6 +675,7 @@ def snapshot_to_event(snapshot: LcuContextSnapshot, *, sequence: int) -> dict[st
             "championId": snapshot.champion_id,
             "benchEnabled": snapshot.bench_enabled,
             "benchChampions": [item.as_dict() for item in snapshot.bench],
+            "gameId": snapshot.game_id,
         }
     return {
         "type": "lcu_context_state",
@@ -594,6 +723,9 @@ class LcuChampSelectPoller:
         if self._thread is not None:
             raise RuntimeError("LCU champ-select poller is already running")
         self._stop.clear()
+        self._previous = None
+        self._last_emit = 0.0
+        self._sequence = 0
         self._thread = threading.Thread(
             target=self._run, name="lcu-champ-select-poller", daemon=True
         )
@@ -603,8 +735,9 @@ class LcuChampSelectPoller:
         self._stop.set()
         thread = self._thread
         if thread is not None:
-            thread.join(timeout=1.0)
-        self._thread = None
+            thread.join(timeout=2.0)
+            if not thread.is_alive():
+                self._thread = None
 
     def _run(self) -> None:
         while not self._stop.is_set():
@@ -617,6 +750,8 @@ class LcuChampSelectPoller:
                 )
             except Exception:
                 snapshot = LcuContextSnapshot(status="UNAVAILABLE", reason="connect_failed")
+            if self._stop.is_set():
+                break
             identity = snapshot.identity()
             now = self._clock()
             changed = identity != self._previous
