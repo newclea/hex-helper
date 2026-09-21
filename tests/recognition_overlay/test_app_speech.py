@@ -4,6 +4,7 @@ import threading
 import time
 import unittest
 from contextlib import ExitStack
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock, call, patch
 
@@ -44,6 +45,7 @@ class RecognitionAppSpeechTests(unittest.TestCase):
             recommendation_data=None, mode="KIWI", league_root=None,
             vision_exe=None, window_title="League", max_seconds=10.0,
         )
+        bundle_root = Path("C:/gamebuddy")
         dependencies = (
             "OcrDiagnostics", "HistoryStore", "RecognitionViewModel", "RecommendationEngine",
             "StrategyStore", "ProductController", "CatOverlayWindow", "LcuChampSelectPoller",
@@ -52,7 +54,10 @@ class RecognitionAppSpeechTests(unittest.TestCase):
         )
         with ExitStack() as stack:
             stack.enter_context(patch("app.load_voice_settings", return_value=VoiceSettings()))
-            stack.enter_context(patch("app.WindowsSpeechAdapter", return_value=adapter))
+            offline_adapter = stack.enter_context(
+                patch("app.OfflineSpeechAdapter", return_value=adapter)
+            )
+            stack.enter_context(patch("app.bundle_dir", return_value=bundle_root))
             stack.enter_context(patch("app.ChampionCatalog.load", return_value=Mock()))
             stack.enter_context(patch("app.AugmentCatalog.load", return_value=Mock()))
             mocks = {name: stack.enter_context(patch(f"app.{name}")) for name in dependencies}
@@ -66,6 +71,7 @@ class RecognitionAppSpeechTests(unittest.TestCase):
                 time.sleep(0.01)
             app.stop()
         adapter.start.assert_called_once_with()
+        offline_adapter.assert_called_once_with(bundle_root=bundle_root)
         mocks["CatOverlayWindow"].assert_called_once()
 
     def test_publish_updates_window_and_speech_policy(self) -> None:

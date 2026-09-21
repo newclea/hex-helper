@@ -64,9 +64,9 @@ from controller import ProductController, default_recommendation_root
 from recommendation_engine import RecommendationEngine
 from strategy_store import StrategyStore
 from overlay_config import load_voice_settings, update_overlay_config
+from offline_speech import OfflineSpeechAdapter
 from speech import SpeechMessage, SpeechService
 from speech_policy import CompanionSpeechPolicy
-from windows_speech import WindowsSpeechAdapter
 
 
 _single_instance_handle: int | None = None
@@ -185,7 +185,7 @@ class RecognitionApp:
             capture_backend="wgc",
         )
         self.speech = SpeechService(
-            WindowsSpeechAdapter(voice_name=voice.voice_name),
+            OfflineSpeechAdapter(bundle_root=bundle_dir()),
             enabled=voice.enabled,
             clock=self._clock,
         )
