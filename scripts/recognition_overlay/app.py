@@ -58,6 +58,7 @@ from click_flag import (
     write_left_click,
 )
 from vision_client import VisionSupervisor
+from cat_animation import GREETING_SECONDS
 from cat_overlay import CatOverlayWindow
 from controller import ProductController, default_recommendation_root
 from recommendation_engine import RecommendationEngine
@@ -69,6 +70,12 @@ from windows_speech import WindowsSpeechAdapter
 
 
 _single_instance_handle: int | None = None
+STARTUP_OCR_STATES = frozenset({
+    "ocr_reading",
+    "ocr_confirming",
+    "ocr_updating",
+    "ocr_error",
+})
 
 
 def _configure_logging() -> None:
@@ -126,6 +133,7 @@ class RecognitionApp:
         self._lock = threading.RLock()
         self._stopped = False
         self._clock = time.monotonic
+        self._startup_greeting_until = self._clock() + GREETING_SECONDS
         voice = load_voice_settings(overlay_config_path(), legacy_overlay_config_path())
         self.speech_policy = CompanionSpeechPolicy()
         self.diagnostics = OcrDiagnostics(ocr_diagnostics_path())
@@ -221,8 +229,20 @@ class RecognitionApp:
             self.window.set_text(self.model.render())
             return
         view = self.product.present(self.model.snapshot())
-        self.window.set_view(view)
-        self._publish_speech(self.speech_policy.update(view, self._clock()))
+        now = self._clock()
+        presented = self._startup_presentation(view, now)
+        self.window.set_view(presented)
+        self._publish_speech(self.speech_policy.update(presented, now))
+
+    def _startup_presentation(self, view: Mapping[str, Any], now: float) -> Mapping[str, Any]:
+        if now >= self._startup_greeting_until or view.get("state") not in STARTUP_OCR_STATES:
+            return view
+        return {
+            "state": "waiting",
+            "bubble_visible": False,
+            "message": "核宝来了。",
+            "options": [],
+        }
 
     def _publish_speech(self, messages: tuple[SpeechMessage, ...]) -> None:
         for message in messages:
