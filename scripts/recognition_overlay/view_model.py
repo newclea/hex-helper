@@ -249,14 +249,8 @@ class RecognitionViewModel:
         self.live_level: int | None = None
         self.live_is_dead: bool | None = None
         self.live_game_time: float | None = None
-        self._respawned_at: float | None = None
-        self._death_sequence = 0
-        self._closed_death_sequence = 0
-        self._latest_death_level: int | None = None
-        self._death_ocr_allowed = False
+        self._reset_death_ocr_state()
         self._post_pick_scan_until: float | None = None
-        self._probe_until: float | None = None
-        self._probe_key: tuple[int, int] | None = None
         self._max_eligible: int = 0
         self.vision_status = "未启动"
         self.vision_detail: str | None = None
@@ -296,6 +290,15 @@ class RecognitionViewModel:
             "选人待选席走 LCU。每次 OCR 都重新读左中右文字，"
             "并判断另外两张是否消失、是否已经选中。"
         )
+
+    def _reset_death_ocr_state(self) -> None:
+        self._respawned_at: float | None = None
+        self._death_sequence = 0
+        self._closed_death_sequence = 0
+        self._latest_death_level: int | None = None
+        self._death_ocr_allowed = False
+        self._probe_until: float | None = None
+        self._probe_key: tuple[int, int] | None = None
 
     def snapshot(self) -> dict[str, Any]:
         return {
@@ -1892,14 +1895,8 @@ class RecognitionViewModel:
         self.live_level = None
         self.live_is_dead = None
         self.live_game_time = None
-        self._respawned_at = None
-        self._death_sequence = 0
-        self._closed_death_sequence = 0
-        self._latest_death_level = None
-        self._death_ocr_allowed = False
-        self._probe_until = None
+        self._reset_death_ocr_state()
         self._post_pick_scan_until = None
-        self._probe_key = None
         self._max_eligible = 0
         self.live_champion = None
         self.champion = None
