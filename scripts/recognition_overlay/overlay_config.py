@@ -15,7 +15,6 @@ LOGGER = logging.getLogger(__name__)
 @dataclass(frozen=True)
 class VoiceSettings:
     enabled: bool = True
-    voice_name: str | None = None
 
 
 def _read_object(path: Path) -> dict[str, object] | None:
@@ -37,10 +36,8 @@ def read_config_value(key: str, paths: Sequence[Path]) -> object | None:
 def load_voice_settings(primary: Path, legacy: Path) -> VoiceSettings:
     paths = (primary, legacy)
     enabled_value = read_config_value("voice_enabled", paths)
-    name_value = read_config_value("voice_name", paths)
     enabled = enabled_value if isinstance(enabled_value, bool) else True
-    voice_name = name_value.strip() if isinstance(name_value, str) and name_value.strip() else None
-    return VoiceSettings(enabled=enabled, voice_name=voice_name)
+    return VoiceSettings(enabled=enabled)
 
 
 def _remove_temporary(path: Path) -> None:

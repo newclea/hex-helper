@@ -30,9 +30,9 @@ class OverlayConfigTests(unittest.TestCase):
 
     def test_voice_defaults_to_enabled(self) -> None:
         settings = load_voice_settings(self.primary, self.legacy)
-        self.assertEqual(VoiceSettings(enabled=True, voice_name=None), settings)
+        self.assertEqual(VoiceSettings(enabled=True), settings)
 
-    def test_primary_values_win_for_each_key(self) -> None:
+    def test_voice_name_is_ignored_when_loading_runtime_settings(self) -> None:
         self.write_json(self.legacy, {
             "voice_enabled": False,
             "voice_name": "Legacy voice",
@@ -41,7 +41,7 @@ class OverlayConfigTests(unittest.TestCase):
 
         settings = load_voice_settings(self.primary, self.legacy)
 
-        self.assertEqual(VoiceSettings(enabled=True, voice_name="Legacy voice"), settings)
+        self.assertEqual(VoiceSettings(enabled=True), settings)
 
     def test_corrupt_primary_falls_back_to_legacy(self) -> None:
         self.write_json(self.legacy, {
@@ -53,17 +53,17 @@ class OverlayConfigTests(unittest.TestCase):
 
         settings = load_voice_settings(self.primary, self.legacy)
 
-        self.assertEqual(VoiceSettings(enabled=False, voice_name="Xiaoxiao"), settings)
+        self.assertEqual(VoiceSettings(enabled=False), settings)
 
     def test_invalid_voice_values_use_defaults(self) -> None:
         self.write_json(self.primary, {
             "voice_enabled": "false",
-            "voice_name": "   ",
+            "voice_name": {"invalid": "runtime must ignore this"},
         })
 
         settings = load_voice_settings(self.primary, self.legacy)
 
-        self.assertEqual(VoiceSettings(enabled=True, voice_name=None), settings)
+        self.assertEqual(VoiceSettings(enabled=True), settings)
 
     def test_read_config_value_uses_first_file_containing_key(self) -> None:
         self.write_json(self.primary, {"other": 1})
