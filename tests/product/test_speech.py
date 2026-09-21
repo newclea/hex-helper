@@ -171,6 +171,37 @@ class BlockingStartAdapter(FakeAdapter):
         return self.start_release.wait(1.0)
 
 
+class BlockingSpeakAdapter(FakeAdapter):
+    def __init__(self) -> None:
+        super().__init__()
+        threading = __import__("threading")
+        self.speak_entered = threading.Event()
+        self.speak_release = threading.Event()
+        self.active: str | None = None
+        self.cancelled_active: list[str] = []
+        self.active_cancelled = threading.Event()
+        self.high_committed = threading.Event()
+
+    def speak(self, text: str) -> bool:
+        self.finished.clear()
+        self.speak_entered.set()
+        if not self.speak_release.wait(1.0):
+            return False
+        self.spoken.append(text)
+        self.active = text
+        if text == "high":
+            self.high_committed.set()
+        return True
+
+    def cancel(self) -> None:
+        self.cancelled += 1
+        if self.active is not None:
+            self.cancelled_active.append(self.active)
+            self.active = None
+            self.active_cancelled.set()
+        self.finished.set()
+
+
 class SpeechServiceTests(unittest.TestCase):
     def test_adapter_starts_lazily_and_failure_does_not_raise(self) -> None:
         import time
@@ -235,6 +266,40 @@ class SpeechServiceTests(unittest.TestCase):
             time.sleep(0.01)
         service.close()
         self.assertEqual(["high"], adapter.spoken)
+
+    def test_mute_recancels_message_committed_after_initial_cancel(self) -> None:
+        import time
+
+        adapter = BlockingSpeakAdapter()
+        service = SpeechService(adapter, clock=time.monotonic)
+        now = time.monotonic()
+        service.publish(message("normal", expires_at=now + 10.0))
+        self.assertTrue(adapter.speak_entered.wait(1.0))
+        service.set_enabled(False)
+        adapter.speak_release.set()
+        try:
+            self.assertTrue(adapter.active_cancelled.wait(1.0))
+            self.assertIsNone(adapter.active)
+            self.assertEqual(["normal"], adapter.cancelled_active)
+        finally:
+            service.close()
+
+    def test_high_recancels_late_low_then_becomes_active(self) -> None:
+        import time
+
+        adapter = BlockingSpeakAdapter()
+        service = SpeechService(adapter, clock=time.monotonic)
+        now = time.monotonic()
+        service.publish(message("low", SpeechPriority.LOW, now + 10.0))
+        self.assertTrue(adapter.speak_entered.wait(1.0))
+        service.publish(message("high", SpeechPriority.HIGH, now + 10.0))
+        adapter.speak_release.set()
+        try:
+            self.assertTrue(adapter.high_committed.wait(1.0))
+            self.assertEqual("high", adapter.active)
+            self.assertEqual(["low"], adapter.cancelled_active)
+        finally:
+            service.close()
 
     def test_mute_cancels_synchronously_and_close_is_idempotent(self) -> None:
         adapter = FakeAdapter()

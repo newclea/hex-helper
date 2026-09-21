@@ -177,6 +177,10 @@ class SpeechService:
             if not self._speak(message.summary):
                 self._clear_current()
                 continue
+            if not self._dispatch_is_valid(message, generation):
+                self._cancel_adapter()
+                self._clear_current()
+                continue
             self._wait_for_speech()
             self._clear_current()
 
