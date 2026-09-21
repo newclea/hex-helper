@@ -80,6 +80,8 @@ class CatOverlayWindow:
         on_tick: Callable[[], None] | None = None,
         on_ready: Callable[[], None] | None = None,
         on_close: Callable[[], None] | None = None,
+        on_voice_toggle: Callable[[bool], None] | None = None,
+        voice_enabled: bool = True,
         width: int = 560,
         height: int = 300,
         **_: Any,
@@ -91,6 +93,8 @@ class CatOverlayWindow:
         self.on_tick = on_tick
         self.on_ready = on_ready
         self.on_close = on_close
+        self.on_voice_toggle = on_voice_toggle
+        self._voice_enabled = voice_enabled
         self.width = max(CAT_WIDTH, width)
         self.height = max(CAT_HEIGHT, height)
         self._cat_screen_rect = Rect(0, TOP_MARGIN, CAT_WIDTH, TOP_MARGIN + CAT_HEIGHT)
@@ -1070,6 +1074,7 @@ class CatOverlayWindow:
         self._cancel_pointer()
         if self._exit_menu is None:
             return
+        self._refresh_context_menu()
         self._exit_menu.update_idletasks()
         work = self._monitor_work_area(Point(int(event.x_root), int(event.y_root)))
         maximum_left = max(work.left, work.right - self._exit_menu.winfo_reqwidth())
@@ -1094,8 +1099,29 @@ class CatOverlayWindow:
         else:
             self._close()
 
-    def _create_exit_menu(self, tk: Any) -> Any:
+    def _menu_labels(self) -> list[str]:
+        voice_label = "关闭语音" if self._voice_enabled else "开启语音"
+        return [voice_label, "退出"]
+
+    def _toggle_voice(self) -> None:
+        if self.on_voice_toggle is not None:
+            self.on_voice_toggle(not self._voice_enabled)
+
+    def set_voice_enabled(self, enabled: bool) -> None:
+        self._voice_enabled = bool(enabled)
+        self._refresh_context_menu()
+
+    def _refresh_context_menu(self) -> None:
+        if self._exit_menu is None:
+            return
+        try:
+            self._exit_menu.entryconfigure(0, label=self._menu_labels()[0])
+        except Exception:
+            LOGGER.debug("voice menu label update failed", exc_info=True)
+
+    def _create_context_menu(self, tk: Any) -> Any:
         menu = tk.Menu(self._root, tearoff=False)
+        menu.add_command(label=self._menu_labels()[0], command=self._toggle_voice)
         menu.add_command(label="退出", command=self._close)
         menu.bind("<Unmap>", lambda _event: setattr(self, "_menu_posted", False))
         return menu
@@ -1203,7 +1229,7 @@ class CatOverlayWindow:
         self._install_native_hit_test()
         self._load_cat_images(tk)
         try:
-            self._exit_menu = self._create_exit_menu(tk)
+            self._exit_menu = self._create_context_menu(tk)
         except Exception:
             LOGGER.exception("exit menu creation failed")
             self._exit_menu = None

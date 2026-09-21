@@ -54,13 +54,16 @@ class FakeCanvas:
 class FakeMenu:
     def __init__(self, *_args, **_kwargs) -> None:
         self.labels: list[str] = []
-        self.command = None
+        self.commands = []
         self.popup: tuple[int, int] | None = None
         self.unposted = False
 
     def add_command(self, *, label, command):
         self.labels.append(label)
-        self.command = command
+        self.commands.append(command)
+
+    def entryconfigure(self, index, *, label):
+        self.labels[index] = label
 
     def bind(self, *_args):
         return None
@@ -141,12 +144,17 @@ def event_at(x, y, *, x_root=None, y_root=None):
     )
 
 
-def make_window(*, on_refresh=None, on_close=None, refresh_available=False):
+def make_window(
+    *, on_refresh=None, on_close=None, on_voice_toggle=None,
+    voice_enabled=True, refresh_available=False,
+):
     window = CatOverlayWindow(
         cat_path=Path("missing.png"),
         on_strategy=Mock(),
         on_refresh=on_refresh,
         on_close=on_close,
+        on_voice_toggle=on_voice_toggle,
+        voice_enabled=voice_enabled,
     )
     window._root = FakeRoot()
     window._canvas = FakeCanvas()
@@ -358,14 +366,24 @@ class CatOverlayInteractionTests(unittest.TestCase):
         window._on_right_click(event_at(2, 2))
         self.assertIsNone(window._exit_menu.popup)
 
-    def test_exit_menu_has_one_item_and_clamps_to_work_area(self) -> None:
+    def test_context_menu_has_voice_and_exit_items_and_clamps_to_work_area(self) -> None:
         window = make_window()
-        window._exit_menu = window._create_exit_menu(FakeTk)
+        window._exit_menu = window._create_context_menu(FakeTk)
         window._monitor_work_area = lambda _point: Rect(0, 0, 100, 100)
         event = event_at(window.width - 72, 74, x_root=95, y_root=95)
         window._on_right_click(event)
-        self.assertEqual(["退出"], window._exit_menu.labels)
+        self.assertEqual(["关闭语音", "退出"], window._exit_menu.labels)
         self.assertEqual((60, 70), window._exit_menu.popup)
+
+    def test_voice_menu_label_and_callback_follow_current_state(self) -> None:
+        toggle = Mock()
+        window = make_window(on_voice_toggle=toggle, voice_enabled=True)
+        menu = window._create_context_menu(FakeTk)
+        self.assertEqual(["关闭语音", "退出"], menu.labels)
+        menu.commands[0]()
+        toggle.assert_called_once_with(False)
+        window.set_voice_enabled(False)
+        self.assertEqual(["开启语音", "退出"], window._menu_labels())
 
     def test_escape_dismisses_posted_menu_without_closing(self) -> None:
         closed = Mock()

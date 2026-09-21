@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import unittest
 from dataclasses import FrozenInstanceError
+from unittest.mock import Mock
 
-from speech import SpeechMessage, SpeechPriority, SpeechQueue, should_interrupt
+from speech import SpeechMessage, SpeechPriority, SpeechQueue, SpeechService, should_interrupt
 
 
 def message(
@@ -82,6 +83,21 @@ class SpeechQueueTests(unittest.TestCase):
         queue.publish(message("normal", SpeechPriority.NORMAL, 200.0), 2.0)
         self.assertEqual("normal", queue.next(2.0).dedupe_key)
 
+    def test_throttled_low_does_not_block_high_message(self) -> None:
+        queue = SpeechQueue()
+        queue.publish(message("first", SpeechPriority.LOW, 200.0), 1.0)
+        self.assertEqual("first", queue.next(1.0).dedupe_key)
+        queue.publish(message("low", SpeechPriority.LOW, 200.0), 2.0)
+        queue.publish(message("high", SpeechPriority.HIGH, 200.0), 2.0)
+        self.assertEqual("high", queue.next(2.0).dedupe_key)
+
+    def test_dedupe_survives_dispatch_until_expiry(self) -> None:
+        queue = SpeechQueue()
+        queue.publish(message("same", expires_at=10.0), 1.0)
+        self.assertEqual("same", queue.next(2.0).dedupe_key)
+        self.assertFalse(queue.publish(message("same", expires_at=20.0), 3.0))
+        self.assertTrue(queue.publish(message("same", expires_at=20.0), 10.0))
+
     def test_mute_clears_low_and_rejects_new_messages(self) -> None:
         queue = SpeechQueue()
         queue.publish(message("low", SpeechPriority.LOW), 1.0)
@@ -112,6 +128,83 @@ class SpeechInterruptionTests(unittest.TestCase):
         self.assertFalse(should_interrupt(low, normal))
         self.assertFalse(should_interrupt(normal, high))
         self.assertFalse(should_interrupt(high, high))
+
+
+class FakeAdapter:
+    def __init__(self, start_ok: bool = True) -> None:
+        self.start_ok = start_ok
+        self.started = 0
+        self.spoken: list[str] = []
+        self.cancelled = 0
+        self.closed = 0
+        self.finished = __import__("threading").Event()
+
+    def start(self) -> bool:
+        self.started += 1
+        return self.start_ok
+
+    def speak(self, text: str) -> bool:
+        self.spoken.append(text)
+        return True
+
+    def wait_finished(self, timeout=None) -> bool:
+        return self.finished.wait(timeout)
+
+    def cancel(self) -> None:
+        self.cancelled += 1
+        self.finished.set()
+
+    def close(self) -> None:
+        self.closed += 1
+        self.finished.set()
+
+
+class SpeechServiceTests(unittest.TestCase):
+    def test_adapter_starts_lazily_and_failure_does_not_raise(self) -> None:
+        import time
+
+        adapter = FakeAdapter(start_ok=False)
+        service = SpeechService(adapter, clock=lambda: 1.0)
+        self.assertEqual(0, adapter.started)
+        service.publish(message("one"))
+        deadline = time.monotonic() + 1.0
+        while adapter.started == 0 and time.monotonic() < deadline:
+            time.sleep(0.01)
+        service.close()
+        self.assertEqual(1, adapter.started)
+        self.assertEqual(1, adapter.closed)
+
+    def test_high_interrupts_playing_low(self) -> None:
+        import time
+
+        adapter = FakeAdapter()
+        service = SpeechService(adapter, clock=time.monotonic)
+        now = time.monotonic()
+        service.publish(message("low", SpeechPriority.LOW, now + 10.0))
+        deadline = time.monotonic() + 1.0
+        while not adapter.spoken and time.monotonic() < deadline:
+            time.sleep(0.01)
+        service.publish(message("high", SpeechPriority.HIGH, now + 10.0))
+        self.assertGreaterEqual(adapter.cancelled, 1)
+        service.close()
+
+    def test_mute_cancels_synchronously_and_close_is_idempotent(self) -> None:
+        adapter = FakeAdapter()
+        service = SpeechService(adapter)
+        service.set_enabled(False)
+        self.assertEqual(1, adapter.cancelled)
+        service.close()
+        service.close()
+        self.assertEqual(1, adapter.closed)
+
+    def test_adapter_exceptions_do_not_escape_ui_or_shutdown(self) -> None:
+        adapter = FakeAdapter()
+        adapter.cancel = Mock(side_effect=RuntimeError("cancel failed"))
+        adapter.close = Mock(side_effect=RuntimeError("close failed"))
+        service = SpeechService(adapter)
+        with self.assertLogs("speech", level="ERROR"):
+            service.set_enabled(False)
+            service.close()
 
 
 if __name__ == "__main__":

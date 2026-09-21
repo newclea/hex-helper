@@ -8,6 +8,7 @@ import json
 import logging
 import sys
 import threading
+import time
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import Any, Mapping
@@ -42,7 +43,9 @@ from paths import (
     find_vision_exe,
     history_path,
     log_path,
+    legacy_overlay_config_path,
     ocr_diagnostics_path,
+    overlay_config_path,
     vision_home,
     vision_workspace,
     strategy_path,
@@ -59,6 +62,10 @@ from cat_overlay import CatOverlayWindow
 from controller import ProductController, default_recommendation_root
 from recommendation_engine import RecommendationEngine
 from strategy_store import StrategyStore
+from overlay_config import load_voice_settings, update_overlay_config
+from speech import SpeechMessage, SpeechService
+from speech_policy import CompanionSpeechPolicy
+from windows_speech import WindowsSpeechAdapter
 
 
 _single_instance_handle: int | None = None
@@ -117,6 +124,10 @@ class RecognitionApp:
     def __init__(self, args: argparse.Namespace) -> None:
         self.args = args
         self._lock = threading.RLock()
+        self._stopped = False
+        self._clock = time.monotonic
+        voice = load_voice_settings(overlay_config_path(), legacy_overlay_config_path())
+        self.speech_policy = CompanionSpeechPolicy()
         self.diagnostics = OcrDiagnostics(ocr_diagnostics_path())
         champions = ChampionCatalog.load(champion_catalog_path())
         catalog = AugmentCatalog.load(args.knowledge or augment_catalog_path())
@@ -127,38 +138,7 @@ class RecognitionApp:
             champion_alias=champions.label_by_riot_id,
         )
         self.product: ProductController | None = None
-        if args.legacy_ui:
-            self.window = OverlayWindow(
-                width=args.width,
-                height=args.height,
-                title="LoL 识别",
-                text=self.model.render(),
-                on_ready=self._start_workers,
-                on_close=self.stop,
-            )
-        else:
-            repository_root = bundle_dir()
-            engine = RecommendationEngine.load(
-                args.recommendation_data
-                or default_recommendation_root(repository_root)
-            )
-            self.product = ProductController(
-                engine=engine,
-                store=StrategyStore(strategy_path()),
-                configured_mode=args.mode,
-                on_change=self._on_product_change,
-            )
-            self.window = CatOverlayWindow(
-                width=args.width,
-                height=min(args.height, 340),
-                cat_path=repository_root / "assets" / "gamebuddy-cat.png",
-                animation_root=repository_root / "assets" / "gamebuddy",
-                on_strategy=self._on_strategy,
-                on_refresh=self._on_manual_refresh,
-                on_tick=self._on_ui_tick,
-                on_ready=self._start_workers,
-                on_close=self.stop,
-            )
+        self.window = self._create_window(args, voice)
         self.poller = LcuChampSelectPoller(
             self._on_lcu,
             catalog=champions,
@@ -196,12 +176,64 @@ class RecognitionApp:
             max_seconds=args.max_seconds,
             capture_backend="wgc",
         )
+        self.speech = SpeechService(
+            WindowsSpeechAdapter(voice_name=voice.voice_name),
+            enabled=voice.enabled,
+            clock=self._clock,
+        )
+
+    def _create_window(self, args: argparse.Namespace, voice: Any) -> Any:
+        if args.legacy_ui:
+            return OverlayWindow(
+                width=args.width,
+                height=args.height,
+                title="LoL 识别",
+                text=self.model.render(),
+                on_ready=self._start_workers,
+                on_close=self.stop,
+            )
+        repository_root = bundle_dir()
+        engine = RecommendationEngine.load(
+            args.recommendation_data or default_recommendation_root(repository_root)
+        )
+        self.product = ProductController(
+            engine=engine,
+            store=StrategyStore(strategy_path()),
+            configured_mode=args.mode,
+            on_change=self._on_product_change,
+        )
+        return CatOverlayWindow(
+            width=args.width,
+            height=min(args.height, 340),
+            cat_path=repository_root / "assets" / "gamebuddy-cat.png",
+            animation_root=repository_root / "assets" / "gamebuddy",
+            on_strategy=self._on_strategy,
+            on_refresh=self._on_manual_refresh,
+            on_tick=self._on_ui_tick,
+            on_ready=self._start_workers,
+            on_close=self.stop,
+            on_voice_toggle=self._on_voice_toggle,
+            voice_enabled=voice.enabled,
+        )
 
     def _publish(self) -> None:
         if self.product is None:
             self.window.set_text(self.model.render())
             return
-        self.window.set_view(self.product.present(self.model.snapshot()))
+        view = self.product.present(self.model.snapshot())
+        self.window.set_view(view)
+        self._publish_speech(self.speech_policy.update(view, self._clock()))
+
+    def _publish_speech(self, messages: tuple[SpeechMessage, ...]) -> None:
+        for message in messages:
+            self.speech.publish(message)
+
+    def _on_voice_toggle(self, enabled: bool) -> None:
+        update_overlay_config(overlay_config_path(), {"voice_enabled": enabled})
+        self.speech.set_enabled(enabled)
+        setter = getattr(self.window, "set_voice_enabled", None)
+        if setter is not None:
+            setter(enabled)
 
     def _on_strategy(self, strategy_id: str) -> None:
         with self._lock:
@@ -228,6 +260,7 @@ class RecognitionApp:
         # after its final "not visible" frame.
         with self._lock:
             self._publish()
+            self._publish_speech(self.speech_policy.tick(self._clock()))
 
     def _on_reread_tick(self) -> None:
         with self._lock:
@@ -364,6 +397,11 @@ class RecognitionApp:
         self.vision.start()
 
     def stop(self) -> None:
+        with self._lock:
+            if self._stopped:
+                return
+            self._stopped = True
+        self.speech.close()
         self.reread.stop()
         self.vision.stop()
         self.poller.stop()

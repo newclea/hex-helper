@@ -3,9 +3,15 @@
 from __future__ import annotations
 
 import heapq
+import logging
+import threading
+import time
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import Protocol
+from typing import Callable, Protocol
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class SpeechPriority(IntEnum):
@@ -102,3 +108,118 @@ class SpeechQueue:
 
 def should_interrupt(current: SpeechMessage, incoming: SpeechMessage) -> bool:
     return current.priority == SpeechPriority.LOW and incoming.priority == SpeechPriority.HIGH
+
+
+class SpeechService:
+    def __init__(
+        self,
+        adapter: SpeechAdapter,
+        enabled: bool = True,
+        clock: Callable[[], float] = time.monotonic,
+    ) -> None:
+        self._adapter = adapter
+        self._clock = clock
+        self._queue = SpeechQueue()
+        self._condition = threading.Condition()
+        self._current: SpeechMessage | None = None
+        self._closed = False
+        self._adapter_available: bool | None = None
+        if not enabled:
+            self._queue.mute()
+        self._thread = threading.Thread(target=self._run, daemon=True)
+        self._thread.start()
+
+    def publish(self, message: SpeechMessage) -> bool:
+        with self._condition:
+            accepted = self._queue.publish(message, self._clock())
+            if accepted and self._current is not None:
+                if should_interrupt(self._current, message):
+                    self._cancel_adapter()
+            if accepted:
+                self._condition.notify()
+            return accepted
+
+    def set_enabled(self, enabled: bool) -> None:
+        with self._condition:
+            if enabled:
+                self._queue.unmute()
+            else:
+                self._queue.mute()
+                self._cancel_adapter()
+            self._condition.notify_all()
+
+    def close(self) -> None:
+        with self._condition:
+            if self._closed:
+                return
+            self._closed = True
+            self._cancel_adapter()
+            self._condition.notify_all()
+        self._thread.join(timeout=2.0)
+        self._close_adapter()
+
+    def _run(self) -> None:
+        while True:
+            message = self._next_message()
+            if message is None:
+                return
+            if not self._ensure_adapter() or not self._speak(message.summary):
+                self._clear_current()
+                continue
+            self._wait_for_speech()
+            self._clear_current()
+
+    def _next_message(self) -> SpeechMessage | None:
+        with self._condition:
+            while not self._closed:
+                message = self._queue.next(self._clock())
+                if message is not None:
+                    self._current = message
+                    return message
+                self._condition.wait(timeout=0.25)
+            return None
+
+    def _ensure_adapter(self) -> bool:
+        if self._adapter_available is None:
+            try:
+                self._adapter_available = self._adapter.start()
+            except Exception:
+                LOGGER.exception("speech adapter start failed")
+                self._adapter_available = False
+        return self._adapter_available
+
+    def _wait_for_speech(self) -> None:
+        while not self._speech_finished():
+            with self._condition:
+                if self._closed:
+                    return
+
+    def _clear_current(self) -> None:
+        with self._condition:
+            self._current = None
+
+    def _speak(self, summary: str) -> bool:
+        try:
+            return self._adapter.speak(summary)
+        except Exception:
+            LOGGER.exception("speech adapter playback failed")
+            return False
+
+    def _speech_finished(self) -> bool:
+        try:
+            return self._adapter.wait_finished(timeout=0.1)
+        except Exception:
+            LOGGER.exception("speech adapter wait failed")
+            return True
+
+    def _cancel_adapter(self) -> None:
+        try:
+            self._adapter.cancel()
+        except Exception:
+            LOGGER.exception("speech adapter cancel failed")
+
+    def _close_adapter(self) -> None:
+        try:
+            self._adapter.close()
+        except Exception:
+            LOGGER.exception("speech adapter close failed")
