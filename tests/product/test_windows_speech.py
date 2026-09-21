@@ -2,6 +2,7 @@ import json
 import queue
 import subprocess
 import unittest
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 from windows_speech import WindowsSpeechAdapter
@@ -173,6 +174,59 @@ class WindowsSpeechAdapterTests(unittest.TestCase):
 
         self.assertEqual(1, process.writes.count({"command": "close"}))
         self.assertEqual(1, process.terminate_count)
+
+    def test_old_reader_cannot_terminate_or_complete_new_process(self):
+        first = FakeProcess([{"event": "ready"}])
+        second = FakeProcess([{"event": "ready"}], auto_finish=True)
+        factory = Mock(side_effect=[first, second])
+        adapter = WindowsSpeechAdapter(process_factory=factory)
+        self.addCleanup(adapter.close)
+        self.assertTrue(adapter.start())
+
+        first.returncode = 1
+        self.assertTrue(adapter.start())
+        first.stdout.put({"event": "finished"})
+        self.assertFalse(adapter.wait_finished(0.01))
+        first.stdout.close()
+
+        self.assertTrue(adapter.speak("新进程"))
+        self.assertTrue(adapter.wait_finished(0.2))
+        self.assertEqual(0, second.terminate_count)
+        self.assertEqual(2, factory.call_count)
+
+
+class WindowsSpeechWorkerContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        worker = Path(__file__).parents[2] / "scripts" / "product" / "windows_speech_worker.ps1"
+        cls.source = worker.read_text("utf-8")
+
+    def command_body(self, command, next_command=None):
+        start = self.source.index(f'"{command}" {{')
+        end = self.source.index(f'"{next_command}" {{', start) if next_command else len(self.source)
+        return self.source[start:end]
+
+    def test_voice_selection_prefers_configured_then_chinese_female_then_default(self):
+        configured = self.source.index("if ($ConfiguredVoice)")
+        chinese = self.source.index('$_.VoiceInfo.Culture.Name -eq "zh-CN"')
+        self.assertLess(configured, chinese)
+        self.assertEqual(2, self.source.count("$Synthesizer.SelectVoice("))
+
+    def test_speak_is_async_without_automatic_cancel(self):
+        speak = self.command_body("speak", "cancel")
+        self.assertIn("SpeakAsync(", speak)
+        self.assertNotIn("SpeakAsyncCancelAll", speak)
+
+    def test_stdout_is_only_written_by_json_event_function(self):
+        self.assertEqual(1, self.source.count("[Console]::Out.WriteLine"))
+        self.assertGreaterEqual(self.source.count("Write-SpeechJsonEvent"), 4)
+
+    def test_cancel_and_close_contract(self):
+        cancel = self.command_body("cancel", "close")
+        close = self.command_body("close")
+        self.assertIn("SpeakAsyncCancelAll", cancel)
+        self.assertIn("SpeakAsyncCancelAll", close)
+        self.assertIn("Dispose", close)
 
 
 if __name__ == "__main__":

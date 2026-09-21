@@ -8,7 +8,7 @@ $utf8 = New-Object System.Text.UTF8Encoding($false)
 [Console]::OutputEncoding = $utf8
 $OutputEncoding = $utf8
 
-function Write-Event {
+function global:Write-SpeechJsonEvent {
     param(
         [string]$EventName,
         [string]$Message = ""
@@ -49,23 +49,17 @@ try {
     $synth = New-Object System.Speech.Synthesis.SpeechSynthesizer
     Select-SpeechVoice -Synthesizer $synth -ConfiguredVoice $VoiceName
     Register-ObjectEvent -InputObject $synth -EventName SpeakStarted -Action {
-        [Console]::Out.WriteLine('{"event":"started"}')
-        [Console]::Out.Flush()
+        Write-SpeechJsonEvent -EventName "started"
     } | Out-Null
     Register-ObjectEvent -InputObject $synth -EventName SpeakCompleted -Action {
         if ($EventArgs.Error) {
-            $payload = [ordered]@{
-                event = "error"
-                message = $EventArgs.Error.Message
-            }
-            [Console]::Out.WriteLine(($payload | ConvertTo-Json -Compress))
+            Write-SpeechJsonEvent -EventName "error" -Message $EventArgs.Error.Message
         }
         else {
-            [Console]::Out.WriteLine('{"event":"finished"}')
+            Write-SpeechJsonEvent -EventName "finished"
         }
-        [Console]::Out.Flush()
     } | Out-Null
-    Write-Event -EventName "ready"
+    Write-SpeechJsonEvent -EventName "ready"
 
     while (($line = [Console]::In.ReadLine()) -ne $null) {
         try {
@@ -83,18 +77,18 @@ try {
                     exit 0
                 }
                 default {
-                    Write-Event -EventName "error" -Message "Unknown command"
+                    Write-SpeechJsonEvent -EventName "error" -Message "Unknown command"
                 }
             }
         }
         catch {
-            Write-Event -EventName "error" -Message $_.Exception.Message
+            Write-SpeechJsonEvent -EventName "error" -Message $_.Exception.Message
         }
     }
     $synth.SpeakAsyncCancelAll()
     $synth.Dispose()
 }
 catch {
-    Write-Event -EventName "error" -Message $_.Exception.Message
+    Write-SpeechJsonEvent -EventName "error" -Message $_.Exception.Message
     exit 1
 }

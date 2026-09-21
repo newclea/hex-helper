@@ -36,6 +36,7 @@ class WindowsSpeechAdapter:
         self._finished_ok = False
         self._closed = False
         self._failure_logged = False
+        self._generation = 0
 
     def start(self) -> bool:
         with self._state_lock:
@@ -43,9 +44,10 @@ class WindowsSpeechAdapter:
                 return False
             if not self._is_running() and not self._launch_process():
                 return False
+            process = self._process
         if not self._ready.wait(READY_TIMEOUT_SECONDS) or not self._ready_ok:
             self._fail("Windows speech worker did not become ready")
-            self._terminate_process()
+            self._terminate_process(process)
             return False
         return True
 
@@ -79,14 +81,16 @@ class WindowsSpeechAdapter:
         try:
             process.wait(timeout=CLOSE_TIMEOUT_SECONDS)
         except (OSError, ValueError, subprocess.TimeoutExpired):
-            self._terminate_process()
+            self._terminate_process(process)
         self._close_output(process)
 
     def _launch_process(self) -> bool:
         self._ready.clear()
         self._ready_ok = False
+        self._finished.clear()
+        self._finished_ok = False
         try:
-            self._process = self._process_factory(
+            process = self._process_factory(
                 self._worker_command(),
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
@@ -99,7 +103,14 @@ class WindowsSpeechAdapter:
         except (OSError, ValueError) as error:
             self._fail("Unable to start Windows speech worker", error)
             return False
-        self._reader = threading.Thread(target=self._read_events, daemon=True)
+        self._generation += 1
+        generation = self._generation
+        self._process = process
+        self._reader = threading.Thread(
+            target=self._read_events,
+            args=(process, generation),
+            daemon=True,
+        )
         self._reader.start()
         return True
 
@@ -116,23 +127,22 @@ class WindowsSpeechAdapter:
             result += ["-VoiceName", self._voice_name]
         return result
 
-    def _read_events(self) -> None:
-        process = self._process
-        output = process.stdout if process is not None else None
+    def _read_events(self, process: subprocess.Popen, generation: int) -> None:
+        output = process.stdout
         if output is None:
-            self._protocol_failure("Windows speech worker stdout is unavailable")
+            self._protocol_failure(process, generation, "Windows speech worker stdout is unavailable")
             return
         try:
             while True:
                 line = output.readline()
                 if not line:
-                    self._protocol_failure("Windows speech worker stdout closed")
+                    self._protocol_failure(process, generation, "Windows speech worker stdout closed")
                     return
-                self._handle_event(line)
+                self._handle_event(process, generation, line)
         except (OSError, ValueError, TypeError) as error:
-            self._protocol_failure("Unable to read Windows speech event", error)
+            self._protocol_failure(process, generation, "Unable to read Windows speech event", error)
 
-    def _handle_event(self, line: str) -> None:
+    def _handle_event(self, process: subprocess.Popen, generation: int, line: str) -> None:
         try:
             message = json.loads(line)
         except (json.JSONDecodeError, TypeError) as error:
@@ -140,14 +150,15 @@ class WindowsSpeechAdapter:
         event = message.get("event") if isinstance(message, dict) else None
         if event not in VALID_EVENTS:
             raise ValueError("invalid speech event")
-        if event == "ready":
-            self._ready_ok = True
-            self._ready.set()
-        elif event == "started":
-            return
-        else:
-            self._finished_ok = event == "finished"
-            self._finished.set()
+        with self._state_lock:
+            if self._closed or not self._is_current_generation(process, generation):
+                return
+            if event == "ready":
+                self._ready_ok = True
+                self._ready.set()
+            elif event != "started":
+                self._finished_ok = event == "finished"
+                self._finished.set()
 
     def _write(self, message: dict[str, str]) -> bool:
         process = self._process
@@ -166,18 +177,24 @@ class WindowsSpeechAdapter:
             self._fail("Unable to write Windows speech command", error)
             return False
 
-    def _protocol_failure(self, message: str, error: Exception | None = None) -> None:
-        if self._closed:
-            return
-        self._ready_ok = False
-        self._finished_ok = False
-        self._ready.set()
-        self._finished.set()
+    def _protocol_failure(
+        self,
+        process: subprocess.Popen,
+        generation: int,
+        message: str,
+        error: Exception | None = None,
+    ) -> None:
+        with self._state_lock:
+            if self._closed or not self._is_current_generation(process, generation):
+                return
+            self._ready_ok = False
+            self._finished_ok = False
+            self._ready.set()
+            self._finished.set()
         self._fail(message, error)
-        self._terminate_process()
+        self._terminate_process(process)
 
-    def _terminate_process(self) -> None:
-        process = self._process
+    def _terminate_process(self, process: subprocess.Popen | None) -> None:
         if process is None:
             return
         try:
@@ -207,6 +224,9 @@ class WindowsSpeechAdapter:
 
     def _is_running(self) -> bool:
         return self._process is not None and self._process_is_running(self._process)
+
+    def _is_current_generation(self, process: subprocess.Popen, generation: int) -> bool:
+        return self._process is process and self._generation == generation
 
     def _process_is_running(self, process: subprocess.Popen) -> bool:
         try:
