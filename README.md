@@ -18,7 +18,8 @@
 
 ## 小猫交互
 
-- 右键点击小猫会显示仅含“退出”的菜单；选择后立即关闭 GameBuddy。
+- 右键点击小猫会显示动态的“开启语音”或“关闭语音”，以及“退出”。
+- 语音默认开启；切换后会保存，下次启动继续使用上次的设置。
 - 左键短按小猫仍会在可重试时重新识别；按住 500ms 后可拖动整个 Overlay。
 - 拖动使用虚拟桌面绝对坐标和当前显示器的实际工作区，支持连续跨屏和负坐标。
 - 小猫在每块显示器内保持完整可见；位置只在本次运行中有效。
@@ -29,6 +30,29 @@
 - 动画资源缺失或损坏时自动使用 `assets/gamebuddy-cat.png`，不影响识别与推荐。
 
 Windows 实机验收步骤见 `docs/windows-gamebuddy-acceptance.md`。
+
+## 语音陪伴
+
+- Windows 内置 `System.Speech` 会播报适合听取的简短摘要，不会逐字朗读整段气泡。
+- 推荐和关键错误使用高优先级；高优先级消息可以打断正在播放的低优先级陪伴消息。
+- OCR 持续时间严格超过 2 秒时播报一次识别进度；低优先级陪伴消息至少间隔 60 秒。
+- 重复或过期消息不会播报。
+- 语音组件不可用时会静默停用，不影响启动、识别、推荐和退出。
+- 退出 GameBuddy 时会停止播报并关闭常驻语音进程，不应遗留 PowerShell worker。
+
+可在 `%LOCALAPPDATA%\LoLRecognitionOverlay\overlay.json` 中配置语音：
+
+```json
+{
+  "league_root": "E:\\WeGameApps\\英雄联盟（含经典模式）",
+  "voice_enabled": true,
+  "voice_name": "Microsoft Xiaoxiao Online (Natural) - Chinese (Mainland)"
+}
+```
+
+`voice_enabled` 控制是否启用语音，缺省为 `true`；`voice_name` 可指定已安装的 Windows 语音。
+程序依次选择指定语音、已安装的 `zh-CN` 女声、Windows 默认语音。
+更新语音设置不会删除 `league_root`。
 
 ## 诊断
 
