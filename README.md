@@ -59,15 +59,17 @@ Windows 实机验收步骤见 `docs/windows-gamebuddy-acceptance.md`。
 
 ## Agent 文案能力测试
 
-当前版本只提供独立的 Agent 文案生成和连通性诊断能力，尚未接入任何 OCR、推荐、
-气泡或语音场景。受控测试期间，可在测试机的
+当前版本会在每次首次进入选英雄阶段时，后台调用一次 Agent，
+生成一句随机陪伴文案并交给现有离线语音服务播报。
+同一次选英雄阶段不会重复调用；离开选英雄、请求失败或结果过期时静默丢弃结果，
+不影响原有固定语音、OCR 和推荐流程。受控测试期间，可在测试机的
 `%LOCALAPPDATA%\LoLRecognitionOverlay\overlay.json` 中增加：
 
 ```json
 {
   "agent": {
     "provider": "taiji_direct",
-    "endpoint": "http://stream-server-online-hyaide-app.turbotke.production.polaris:8080/openapi/app_platform/app_create",
+    "endpoint": "http://stream-server-online-openapi.turbotke.production.polaris:8080/openapi/app_platform/app_create",
     "forward_service": "hyaide-application-22835",
     "token": "仅存放在测试机本地的 Token",
     "timeout_seconds": 10
@@ -84,6 +86,7 @@ py -3.11 -B scripts\recognition_overlay\agent_probe.py --prompt "请只回复：
 
 成功时输出包含 `"ok": true` 的 JSON；失败时返回非零退出码和稳定的 `error_code`。
 诊断输出不会显示 Token。该命令不启动 Overlay、不播放语音，也不代表未来网关已经验证。
+正常使用仍只需双击 `一键启动小猫.cmd`，无需额外启动 Agent 进程。
 
 ## 海克斯 OCR 时机
 

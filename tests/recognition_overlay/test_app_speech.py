@@ -8,6 +8,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock, call, patch
 
+from agent_config import AgentSettings
 from app import RecognitionApp
 from overlay_config import VoiceSettings
 from speech_policy import CompanionSpeechPolicy
@@ -28,6 +29,7 @@ def make_app() -> RecognitionApp:
     app.speech_policy.update.return_value = ("update-message",)
     app.speech_policy.tick.return_value = ("tick-message",)
     app.speech = Mock()
+    app.agent_speech = Mock()
     app.reread = Mock()
     app.vision = Mock()
     app.poller = Mock()
@@ -46,14 +48,16 @@ class RecognitionAppSpeechTests(unittest.TestCase):
             vision_exe=None, window_title="League", max_seconds=10.0,
         )
         bundle_root = Path("C:/gamebuddy")
+        agent_settings = AgentSettings()
         dependencies = (
             "OcrDiagnostics", "HistoryStore", "RecognitionViewModel", "RecommendationEngine",
             "StrategyStore", "ProductController", "CatOverlayWindow", "LcuChampSelectPoller",
             "EnvironmentLcuConnectionProvider", "LiveClientPoller", "AutoRereadMonitor",
-            "VisionSupervisor",
+            "VisionSupervisor", "build_agent_provider", "ChampionSelectAgentSpeech",
         )
         with ExitStack() as stack:
             stack.enter_context(patch("app.load_voice_settings", return_value=VoiceSettings()))
+            stack.enter_context(patch("app.load_agent_settings", return_value=agent_settings))
             offline_adapter = stack.enter_context(
                 patch("app.OfflineSpeechAdapter", return_value=adapter)
             )
@@ -73,6 +77,12 @@ class RecognitionAppSpeechTests(unittest.TestCase):
         adapter.start.assert_called_once_with()
         offline_adapter.assert_called_once_with(bundle_root=bundle_root)
         mocks["CatOverlayWindow"].assert_called_once()
+        mocks["build_agent_provider"].assert_called_once_with(agent_settings)
+        mocks["ChampionSelectAgentSpeech"].assert_called_once_with(
+            mocks["build_agent_provider"].return_value,
+            app.speech.publish,
+            clock=app._clock,
+        )
 
     def test_publish_updates_window_and_speech_policy(self) -> None:
         app = make_app()
@@ -134,11 +144,13 @@ class RecognitionAppSpeechTests(unittest.TestCase):
     def test_stop_closes_speech_first_and_is_idempotent(self) -> None:
         app = make_app()
         order: list[str] = []
+        app.agent_speech.close.side_effect = lambda: order.append("agent")
         app.speech.close.side_effect = lambda: order.append("speech")
         app.reread.stop.side_effect = lambda: order.append("reread")
         app.stop()
         app.stop()
-        self.assertEqual(["speech", "reread"], order[:2])
+        self.assertEqual(["agent", "speech", "reread"], order[:3])
+        app.agent_speech.close.assert_called_once_with()
         app.speech.close.assert_called_once_with()
         app.vision.stop.assert_called_once_with()
         app.poller.stop.assert_called_once_with()
@@ -155,6 +167,25 @@ class RecognitionAppSpeechTests(unittest.TestCase):
             app._start_workers()
 
         self.assertEqual(["speech", "poller"], order[:2])
+
+    def test_publish_updates_agent_speech_with_champion_context(self) -> None:
+        app = make_app()
+        app.model.snapshot.return_value = {
+            "phase": "ChampSelect",
+            "champion": "阿狸",
+            "bench": ["阿狸", "盖伦"],
+        }
+        app.product.present.return_value = {
+            "state": "champ_select",
+            "bubble_visible": True,
+        }
+
+        app._publish()
+
+        app.agent_speech.update.assert_called_once_with(
+            "champ_select",
+            {"champion": "阿狸", "bench": ["阿狸", "盖伦"]},
+        )
 
 
 if __name__ == "__main__":

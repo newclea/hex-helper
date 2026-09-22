@@ -63,7 +63,9 @@ from cat_overlay import CatOverlayWindow
 from controller import ProductController, default_recommendation_root
 from recommendation_engine import RecommendationEngine
 from strategy_store import StrategyStore
-from overlay_config import load_voice_settings, update_overlay_config
+from agent_companion import ChampionSelectAgentSpeech
+from agent_text import build_agent_provider
+from overlay_config import load_agent_settings, load_voice_settings, update_overlay_config
 from offline_speech import OfflineSpeechAdapter
 from speech import SpeechMessage, SpeechService
 from speech_policy import CompanionSpeechPolicy
@@ -76,6 +78,19 @@ STARTUP_OCR_STATES = frozenset({
     "ocr_updating",
     "ocr_error",
 })
+
+
+def _agent_context(snapshot: Mapping[str, Any]) -> dict[str, object]:
+    context: dict[str, object] = {}
+    champion = str(snapshot.get("champion") or "").strip()
+    if champion:
+        context["champion"] = champion[:32]
+    raw_bench = snapshot.get("bench")
+    if isinstance(raw_bench, list):
+        bench = [str(item).strip()[:32] for item in raw_bench[:10] if str(item).strip()]
+        if bench:
+            context["bench"] = bench
+    return context
 
 
 def _configure_logging() -> None:
@@ -189,6 +204,14 @@ class RecognitionApp:
             enabled=voice.enabled,
             clock=self._clock,
         )
+        agent_settings = load_agent_settings(
+            overlay_config_path(), legacy_overlay_config_path()
+        )
+        self.agent_speech = ChampionSelectAgentSpeech(
+            build_agent_provider(agent_settings),
+            self.speech.publish,
+            clock=self._clock,
+        )
 
     def _create_window(self, args: argparse.Namespace, voice: Any) -> Any:
         if args.legacy_ui:
@@ -230,11 +253,16 @@ class RecognitionApp:
         if self.product is None:
             self.window.set_text(self.model.render())
             return
-        view = self.product.present(self.model.snapshot())
+        snapshot = self.model.snapshot()
+        view = self.product.present(snapshot)
         now = self._clock()
         presented = self._startup_presentation(view, now)
         self.window.set_view(presented)
         self._publish_speech(self.speech_policy.update(presented, now))
+        self.agent_speech.update(
+            str(presented.get("state") or ""),
+            _agent_context(snapshot),
+        )
 
     def _startup_presentation(self, view: Mapping[str, Any], now: float) -> Mapping[str, Any]:
         if view.get("state") not in STARTUP_OCR_STATES:
@@ -429,6 +457,7 @@ class RecognitionApp:
             if self._stopped:
                 return
             self._stopped = True
+        self.agent_speech.close()
         self.speech.close()
         self.reread.stop()
         self.vision.stop()
