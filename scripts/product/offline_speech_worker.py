@@ -365,6 +365,7 @@ def main(argv: list[str] | None = None) -> int:
     arguments = parser.parse_args(argv)
     protocol_stream = _isolate_protocol_output()
     try:
+        sys.stdin.reconfigure(encoding="utf-8", errors="strict")
         try:
             paths = resolve_offline_speech_paths(arguments.bundle_root)
         except ValueError as error:

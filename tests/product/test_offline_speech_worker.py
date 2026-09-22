@@ -3,6 +3,7 @@ from __future__ import annotations
 import inspect
 import io
 import json
+import os
 import subprocess
 import sys
 import threading
@@ -414,6 +415,40 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
             json.loads(completed.stdout.decode("utf-8")),
         )
         self.assertIn(b"\x80native-log", completed.stderr)
+
+    def test_main_decodes_utf8_protocol_input_under_gbk_process_encoding(self):
+        worker_dir = Path(__file__).parents[2] / "scripts" / "product"
+        source = "\n".join(
+            (
+                "import json, sys",
+                f"sys.path.insert(0, {str(worker_dir)!r})",
+                "import offline_speech_worker as worker",
+                "worker.resolve_offline_speech_paths = lambda root: object()",
+                "def fake_run(paths, input_stream, output_stream):",
+                "    command = json.loads(input_stream.readline())",
+                "    worker._write_emitter(output_stream)({'event': 'received', 'text': command['text']})",
+                "    return 0",
+                "worker.run_protocol = fake_run",
+                "raise SystemExit(worker.main(['--bundle-root', '.']))",
+            )
+        )
+        command = json.dumps(
+            {"command": "speak", "text": "正在为你查看可选英雄。"},
+            ensure_ascii=False,
+        ).encode("utf-8") + b"\n"
+        environment = {**os.environ, "PYTHONIOENCODING": "gbk:surrogateescape"}
+
+        completed = subprocess.run(
+            [sys.executable, "-c", source],
+            input=command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=environment,
+            check=True,
+        )
+
+        event = json.loads(completed.stdout.decode("utf-8"))
+        self.assertEqual("正在为你查看可选英雄。", event["text"])
 
 
 if __name__ == "__main__":
