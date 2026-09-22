@@ -57,6 +57,34 @@ Windows 实机验收步骤见 `docs/windows-gamebuddy-acceptance.md`。
 `voice_enabled` 控制是否启用语音，缺省为 `true`。旧配置中的 `voice_name`
 会被保留但不再使用；更新语音设置不会删除 `league_root`。
 
+## Agent 文案能力测试
+
+当前版本只提供独立的 Agent 文案生成和连通性诊断能力，尚未接入任何 OCR、推荐、
+气泡或语音场景。受控测试期间，可在测试机的
+`%LOCALAPPDATA%\LoLRecognitionOverlay\overlay.json` 中增加：
+
+```json
+{
+  "agent": {
+    "provider": "taiji_direct",
+    "endpoint": "http://stream-server-online-hyaide-app.turbotke.production.polaris:8080/openapi/app_platform/app_create",
+    "forward_service": "hyaide-application-22835",
+    "token": "仅存放在测试机本地的 Token",
+    "timeout_seconds": 10
+  }
+}
+```
+
+真实 Token 不得写入仓库根目录的 `overlay.json`，也不得提交到 Git。然后在项目根目录运行：
+
+```bat
+set PYTHONPATH=scripts\product;scripts\recognition_overlay
+py -3.11 -B scripts\recognition_overlay\agent_probe.py --prompt "请只回复：连接成功"
+```
+
+成功时输出包含 `"ok": true` 的 JSON；失败时返回非零退出码和稳定的 `error_code`。
+诊断输出不会显示 Token。该命令不启动 Overlay、不播放语音，也不代表未来网关已经验证。
+
 ## 海克斯 OCR 时机
 
 - 保留 3 级首轮海克斯判断。
