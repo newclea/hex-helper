@@ -1,14 +1,19 @@
 from __future__ import annotations
 
 import json
+import socket
 import unittest
+from unittest.mock import MagicMock, patch
+import urllib.error
 
 from agent_config import AgentSettings
 from agent_text import (
+    AgentHttpRequest,
     AgentHttpResponse,
     AgentTransportFailure,
     MAX_AGENT_TEXT_CHARACTERS,
     TaijiDirectAgentProvider,
+    UrllibAgentHttpTransport,
     build_agent_provider,
 )
 
@@ -156,6 +161,55 @@ class TaijiDirectAgentProviderTests(unittest.TestCase):
 
         self.assertFalse(result.ok)
         self.assertEqual("not_configured", result.error_code)
+
+
+class UrllibAgentHttpTransportTests(unittest.TestCase):
+    def request(self) -> AgentHttpRequest:
+        return AgentHttpRequest(
+            endpoint="http://agent.example/app_create",
+            headers={"Authorization": "Bearer secret-token"},
+            body=b"{}",
+            timeout_seconds=10,
+        )
+
+    def test_post_uses_post_and_reads_success_body(self) -> None:
+        response = MagicMock()
+        response.__enter__.return_value = response
+        response.getcode.return_value = 200
+        response.read.return_value = b'{"retcode":0,"result":"ok"}'
+
+        with patch("urllib.request.urlopen", return_value=response) as urlopen:
+            result = UrllibAgentHttpTransport().post(self.request())
+
+        request = urlopen.call_args.args[0]
+        self.assertEqual("POST", request.get_method())
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(b'{"retcode":0,"result":"ok"}', result.body)
+
+    def test_http_error_body_is_not_read_or_returned(self) -> None:
+        error = urllib.error.HTTPError(
+            self.request().endpoint,
+            403,
+            "forbidden secret-token",
+            None,
+            None,
+        )
+
+        with patch("urllib.request.urlopen", side_effect=error):
+            result = UrllibAgentHttpTransport().post(self.request())
+
+        self.assertEqual(403, result.status_code)
+        self.assertEqual(b"", result.body)
+
+    def test_url_timeout_is_classified_without_exception_details(self) -> None:
+        error = urllib.error.URLError(socket.timeout("secret-token"))
+
+        with patch("urllib.request.urlopen", side_effect=error):
+            with self.assertRaises(AgentTransportFailure) as captured:
+                UrllibAgentHttpTransport().post(self.request())
+
+        self.assertEqual("timeout", captured.exception.error_code)
+        self.assertNotIn("secret-token", str(captured.exception))
 
 
 if __name__ == "__main__":
