@@ -9,7 +9,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock, call, patch
 
 from agent_config import AgentSettings
-from app import RecognitionApp, _parser
+from app import RecognitionApp, _is_offer_refresh_conflict, _parser
 from overlay_config import VoiceSettings
 from speech_policy import CompanionSpeechPolicy
 
@@ -22,6 +22,7 @@ def make_app() -> RecognitionApp:
     app._startup_greeting_until = None
     app.model = Mock()
     app.model.snapshot.return_value = {"phase": "GameStart"}
+    app.model.take_selection_commands.return_value = []
     app.product = Mock()
     app.product.present.return_value = {"state": "waiting"}
     app.product.champion_select_speech_names.return_value = []
@@ -48,6 +49,10 @@ class RecognitionAppSpeechTests(unittest.TestCase):
     def test_parser_accepts_scoped_speech_debug_mode(self) -> None:
         args = _parser().parse_args(["--debug-submode", "speech"])
         self.assertEqual(["speech"], args.debug_submode)
+
+    def test_parser_accepts_scoped_hex_refresh_debug_mode(self) -> None:
+        args = _parser().parse_args(["--debug-submode", "hex-refresh"])
+        self.assertEqual(["hex-refresh"], args.debug_submode)
 
     def test_greeting_start_publishes_fixed_startup_voice(self) -> None:
         app = make_app()
@@ -231,6 +236,54 @@ class RecognitionAppSpeechTests(unittest.TestCase):
                 "recommendation": {"augment": "巨人杀手", "position": "LEFT"},
             },
         )
+
+    def test_offer_round_conflict_restarts_worker_without_error_bubble(self) -> None:
+        app = make_app()
+        app.model.match_id = "lcu:1"
+        app.model.live_level = 7
+        app.model.offer_round = 2
+        app.model.offer_refreshing = False
+        app.model.completed_stage.return_value = 1
+
+        def apply_frame(_payload) -> None:
+            app.model.offer_refreshing = True
+            app.model.offer_round = None
+
+        app.model.apply_frame_result.side_effect = apply_frame
+        app._on_vision(
+            "frame_result",
+            {
+                "reason": "offer_round_conflict",
+                "accepted": False,
+                "recognition_debug": {
+                    "cards": [
+                        {"augment_id": "new-left"},
+                        {"augment_id": "new-center"},
+                        {"augment_id": "new-right"},
+                    ],
+                },
+            },
+        )
+
+        app.vision.restart_for_offer_refresh.assert_called_once_with()
+        app.window.set_view.assert_called_once()
+
+    def test_legacy_session_error_is_refresh_conflict_only_for_three_ids(self) -> None:
+        payload = {
+            "reason": "session_invalid_offer",
+            "recognition_debug": {
+                "cards": [
+                    {"augment_id": "new-left"},
+                    {"augment_id": "new-center"},
+                    {"augment_id": "new-right"},
+                ],
+            },
+        }
+
+        self.assertTrue(_is_offer_refresh_conflict(payload, True))
+        self.assertFalse(_is_offer_refresh_conflict(payload, False))
+        payload["recognition_debug"]["cards"][2]["augment_id"] = "new-left"
+        self.assertFalse(_is_offer_refresh_conflict(payload, True))
 
 
 if __name__ == "__main__":

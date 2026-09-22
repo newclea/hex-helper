@@ -81,6 +81,34 @@ STARTUP_OCR_STATES = frozenset({
 })
 
 
+def _recognized_ids(payload: Mapping[str, Any]) -> list[str]:
+    debug = payload.get("recognition_debug")
+    cards = debug.get("cards") if isinstance(debug, Mapping) else None
+    if not isinstance(cards, list):
+        return []
+    return [
+        str(card.get("augment_id") or "")
+        for card in cards
+        if isinstance(card, Mapping) and card.get("augment_id")
+    ]
+
+
+def _is_offer_refresh_conflict(
+    payload: Mapping[str, Any],
+    refreshing: bool,
+) -> bool:
+    ids = _recognized_ids(payload)
+    return (
+        refreshing
+        and payload.get("reason") in {
+            "offer_round_conflict",
+            "session_invalid_offer",
+        }
+        and len(ids) == 3
+        and len(set(ids)) == 3
+    )
+
+
 def _agent_context(
     snapshot: Mapping[str, Any],
     view: Mapping[str, Any],
@@ -404,6 +432,8 @@ class RecognitionApp:
 
     def _on_vision(self, kind: str, payload: Mapping[str, Any]) -> None:
         commands: list[dict[str, Any]] = []
+        restart_offer_worker = False
+        restart_context: tuple[str, int | None, int] | None = None
         with self._lock:
             source_match = payload.get("_vision_match_id")
             if source_match is not None and source_match != self.model.match_id:
@@ -427,6 +457,14 @@ class RecognitionApp:
                 self.model.apply_click_ack(payload)
             elif kind == "frame_result":
                 completed = self.model.completed_stage()
+                scoped_debug(
+                    "hex-refresh",
+                    "frame reason=%s accepted=%s level=%s completed=%s "
+                    "offer_round=%s refreshing=%s ids=%s",
+                    payload.get("reason"), payload.get("accepted"),
+                    self.model.live_level, completed, self.model.offer_round,
+                    self.model.offer_refreshing, _recognized_ids(payload),
+                )
                 self.diagnostics.record(payload, {
                     "match_id": self.model.match_id,
                     "champion": self.model.champion,
@@ -442,6 +480,22 @@ class RecognitionApp:
                     "mayhem_phase": self.model.mayhem_phase,
                 })
                 self.model.apply_frame_result(payload)
+                restart_offer_worker = _is_offer_refresh_conflict(
+                    payload,
+                    self.model.offer_refreshing,
+                )
+                if restart_offer_worker:
+                    restart_context = (
+                        str(self.model.match_id or ""),
+                        self.model.live_level,
+                        completed,
+                    )
+                scoped_debug(
+                    "hex-refresh",
+                    "applied reason=%s refreshing=%s restart=%s offer_round=%s",
+                    payload.get("reason"), self.model.offer_refreshing,
+                    restart_offer_worker, self.model.offer_round,
+                )
                 commands = self.model.take_selection_commands()
             elif kind == "mayhem_selection_state":
                 self.model.apply_mayhem_selection(payload)
@@ -449,6 +503,14 @@ class RecognitionApp:
                 self._sync_vision_mode(payload)
                 self.model.apply_live_client(payload)
             self._publish()
+        if restart_offer_worker:
+            requested = self.vision.restart_for_offer_refresh()
+            match_id, level, completed = restart_context or ("", None, 0)
+            scoped_debug(
+                "hex-refresh",
+                "worker restart requested=%s match=%s level=%s completed=%s",
+                requested, match_id, level, completed,
+            )
         # File I/O stays outside the model/UI lock. The supervisor validates
         # that the same match and child session still own this command.
         for command in commands:

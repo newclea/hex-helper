@@ -55,6 +55,7 @@ class FakeRawStream:
         self.frames = frames
         self.received = bytearray()
         self.aborted = False
+        self.closed = False
 
     def start(self):
         for index in range(200):
@@ -76,7 +77,7 @@ class FakeRawStream:
         self.aborted = True
 
     def close(self):
-        return None
+        self.closed = True
 
 
 class FailingStartStream(FakeRawStream):
@@ -165,6 +166,7 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
             [{"event": "started", "request_id": 1}, {"event": "finished", "request_id": 1}],
             scoped,
         )
+        self.assertTrue(self.streams[0].closed)
 
     def test_streaming_playback_starts_before_generation_returns(self):
         playback_started = threading.Event()
@@ -203,6 +205,7 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
         self.assertEqual("error", scoped[-1]["event"])
         self.assertFalse(any(event["event"] == "started" for event in scoped))
         self.assertIn("stage=start_stream", scoped[-1]["message"])
+        self.assertTrue(self.streams[0].closed)
 
     def test_start_prewarms_fixed_phrase_for_cached_playback(self):
         tts = FakeTts()

@@ -1249,7 +1249,12 @@ class RecognitionViewModel:
         )
         if isinstance(debug, Mapping):
             self.ocr_preview = _ocr_preview(debug.get("cards"), self._catalog)
-        processing_error = _ocr_processing_error(reason)
+        candidate_changed = (
+            isinstance(debug, Mapping)
+            and self._ocr_changes_offer(debug.get("cards"))
+        )
+        refresh_conflict = reason == "session_invalid_offer" and candidate_changed
+        processing_error = None if refresh_conflict else _ocr_processing_error(reason)
         legacy_rejected = processing_error is not None or reason in {
             "recognition_unknown",
             "low_confidence",
@@ -1304,7 +1309,7 @@ class RecognitionViewModel:
                 self.click_pending = False
                 return
 
-        if not accepted and isinstance(debug, Mapping) and self._ocr_changes_offer(debug.get("cards")):
+        if not accepted and candidate_changed:
             self.offer_refreshing = True
             self._ocr_pick_slot = None
             self._ocr_pick_hits = 0

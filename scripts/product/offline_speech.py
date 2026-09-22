@@ -231,7 +231,8 @@ class OfflineSpeechAdapter:
         event = message.get("event") if isinstance(message, dict) else None
         if event not in VALID_EVENTS:
             raise ValueError("unknown speech event")
-        failure: str | None = None
+        fatal_failure: str | None = None
+        request_failure: str | None = None
         with self._state_lock:
             if self._closed or not self._is_current_generation(process, generation):
                 return True
@@ -245,8 +246,8 @@ class OfflineSpeechAdapter:
                 event, request_id, self._current_request_id,
             )
             if event == "error" and request_id is None:
-                failure = str(message.get("message") or "unknown worker error")
-                self._fail(f"Offline speech worker error: {failure}")
+                fatal_failure = str(message.get("message") or "unknown worker error")
+                self._fail(f"Offline speech worker error: {fatal_failure}")
                 self._disable_locked()
                 self._ready.set()
             elif type(request_id) is not int:
@@ -255,14 +256,18 @@ class OfflineSpeechAdapter:
                 self._started_ok = True
                 self._started.set()
             elif request_id == self._current_request_id and event == "error":
-                failure = str(message.get("message") or "unknown worker error")
-                self._fail(f"Offline speech worker error: {failure}")
-                self._disable_locked()
+                request_failure = str(message.get("message") or "unknown worker error")
+                self._started.set()
+                self._completion_ok = False
+                self._completion.set()
             elif request_id == self._current_request_id:
                 self._started.set()
                 self._completion_ok = event == "finished"
                 self._completion.set()
-        if failure is None:
+        if request_failure is not None:
+            LOGGER.warning("Offline speech request failed: %s", request_failure)
+            return True
+        if fatal_failure is None:
             return True
         self._terminate_process(process)
         return False

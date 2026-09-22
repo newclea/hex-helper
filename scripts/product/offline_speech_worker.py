@@ -251,6 +251,8 @@ class OfflineSpeechEngine:
     ) -> None:
         stream = None
         stage = "create_stream"
+        failure: str | None = None
+        started = False
         playback_done = threading.Event()
         callback = self._make_streaming_audio_callback(control, state)
         try:
@@ -258,19 +260,17 @@ class OfflineSpeechEngine:
             stage = "start_stream"
             if not self._start_stream(control, stream):
                 return
+            started = True
             stage = "playback"
             self._wait_for_playback(control, stream, playback_done)
         except Exception as error:
             if self._is_current(control):
-                self._emit_error(
-                    control.request_id,
-                    f"offline speech failed stage={stage}: {error}",
-                )
-                self._clear_request(control)
+                failure = f"offline speech failed stage={stage}: {error}"
         finally:
             if stream is not None:
                 self._close_stream(stream)
             self._discard_playback_thread()
+        self._finish_playback(control, started, failure)
 
     def _begin_playback(self, control: _RequestControl, pcm: bytes, sample_rate: int) -> None:
         with self._lock:
@@ -288,6 +288,8 @@ class OfflineSpeechEngine:
     def _playback_owner(self, control: _RequestControl, pcm: bytes, sample_rate: int) -> None:
         stream = None
         stage = "create_stream"
+        failure: str | None = None
+        started = False
         if not self._is_current(control):
             self._discard_playback_thread()
             return
@@ -298,19 +300,17 @@ class OfflineSpeechEngine:
             stage = "start_stream"
             if not self._start_stream(control, stream):
                 return
+            started = True
             stage = "playback"
             self._wait_for_playback(control, stream, playback_done)
         except Exception as error:
             if self._is_current(control):
-                self._emit_error(
-                    control.request_id,
-                    f"offline speech failed stage={stage}: {error}",
-                )
-                self._clear_request(control)
+                failure = f"offline speech failed stage={stage}: {error}"
         finally:
             if stream is not None:
                 self._close_stream(stream)
             self._discard_playback_thread()
+        self._finish_playback(control, started, failure)
 
     def _create_stream(
         self,
@@ -376,8 +376,10 @@ class OfflineSpeechEngine:
 
     def _start_stream(self, control: _RequestControl, stream: Any) -> bool:
         with self._lock:
-            if not self._is_current_locked(control):
-                return False
+            current = self._is_current_locked(control)
+        if not current:
+            stream.abort()
+            return False
         stream.start()
         with self._lock:
             if not self._is_current_locked(control):
@@ -396,7 +398,18 @@ class OfflineSpeechEngine:
             if control.cancelled.is_set():
                 stream.abort()
                 return
-        if self._clear_request(control):
+
+    def _finish_playback(
+        self,
+        control: _RequestControl,
+        started: bool,
+        failure: str | None,
+    ) -> None:
+        if failure is not None:
+            if self._clear_request(control):
+                self._emit_error(control.request_id, failure)
+            return
+        if started and self._clear_request(control):
             self._emit({"event": "finished", "request_id": control.request_id})
 
     def _is_current(self, control: _RequestControl) -> bool:

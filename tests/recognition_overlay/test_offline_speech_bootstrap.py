@@ -59,6 +59,15 @@ class OfflineSpeechBootstrapTests(unittest.TestCase):
         self.assertIn("run_recognition_overlay.ps1", launcher)
         self.assertIn("-DebugSubmode speech", launcher)
 
+    def test_hex_refresh_debug_launcher_uses_scoped_mode(self) -> None:
+        root = Path(__file__).resolve().parents[2]
+        launcher = (root / "一键启动小猫-Debug-海克斯刷新.cmd").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("run_recognition_overlay.ps1", launcher)
+        self.assertIn("-DebugSubmode hex-refresh", launcher)
+
 
 if __name__ == "__main__":
     unittest.main()

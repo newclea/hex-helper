@@ -352,6 +352,7 @@ class VisionSupervisor:
         self._max_seconds = max_seconds
         self._capture_backend = capture_backend
         self._stop = threading.Event()
+        self._offer_refresh_restart = threading.Event()
         self._thread: threading.Thread | None = None
         self._process: subprocess.Popen[str] | None = None
         self._process_match_id: str | None = None
@@ -413,6 +414,12 @@ class VisionSupervisor:
         self._kill_job = None
         if job is not None:
             job.close()
+
+    def restart_for_offer_refresh(self) -> bool:
+        if self._stop.is_set():
+            return False
+        self._offer_refresh_restart.set()
+        return True
 
     @staticmethod
     def _terminate_process(process: subprocess.Popen[str]) -> None:
@@ -826,6 +833,11 @@ class VisionSupervisor:
                         # so an old child cannot update a newly restored match.
                         payload["_vision_match_id"] = launch_match_id
                     self._emit_payload(kind, payload)
+                    if self._offer_refresh_restart.is_set():
+                        self._offer_refresh_restart.clear()
+                        self._stop_process()
+                        closed_by_gate = True
+                        break
                     if kind == "selection_confirmation_ack" and self._handle_selection_ack(payload):
                         closed_by_gate = True
                         break

@@ -143,7 +143,7 @@ class OfflineSpeechAdapterTests(unittest.TestCase):
         self.assertTrue(adapter.speak("失败"))
         process.stdout.put({"event": "error", "request_id": 2, "message": "failed"})
         self.assertFalse(adapter.wait_finished(0.2))
-        self.assertFalse(adapter.speak("会话已停用"))
+        self.assertTrue(adapter.speak("下一条仍可播放"))
 
     def test_wait_started_tracks_real_worker_started_event(self):
         process = FakeProcess([{"event": "ready"}])
@@ -156,7 +156,7 @@ class OfflineSpeechAdapterTests(unittest.TestCase):
 
         self.assertTrue(adapter.wait_started(0.2))
 
-    def test_worker_error_logs_cause_and_disables_session(self):
+    def test_request_error_logs_cause_and_keeps_worker_available(self):
         process = FakeProcess([{"event": "ready"}])
         adapter, factory = self.make_adapter(process)
         self.assertTrue(adapter.speak("失败"))
@@ -170,11 +170,8 @@ class OfflineSpeechAdapterTests(unittest.TestCase):
             self.assertFalse(adapter.wait_finished(0.2))
 
         self.assertIn("audio device unavailable", "\n".join(captured.output))
-        deadline = time.monotonic() + 0.5
-        while process.terminate_count == 0 and time.monotonic() < deadline:
-            time.sleep(0.005)
-        self.assertEqual(1, process.terminate_count)
-        self.assertFalse(adapter.speak("不应重试"))
+        self.assertEqual(0, process.terminate_count)
+        self.assertTrue(adapter.speak("下一条重试"))
         factory.assert_called_once()
 
     def test_startup_error_logs_cause_and_disables_session(self):

@@ -6,7 +6,7 @@ param(
     [string]$Mode = 'KIWI',
     [ValidateRange(1, 86400)]
     [int]$MaxSeconds = 86400,
-    [ValidateSet('', 'game-result', 'speech')]
+    [ValidateSet('', 'game-result', 'hex-refresh', 'speech')]
     [string]$DebugSubmode = '',
     [switch]$LegacyUi
 )
