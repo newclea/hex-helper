@@ -438,13 +438,15 @@ FrameProcessResult AugmentFrameProcessor::Process(
   result.raw_detector = detector_.Detect(frame);
   result.stable_detector = confirmer_.Observe(result.raw_detector);
   result.rois = result.raw_detector.rois;
-  if (options.reread_offer && !result.raw_detector.visible) {
+  if (options.reread_offer && !result.raw_detector.visible &&
+      !options.allow_low_confidence_rois) {
     result.reason = "no_offer_on_screen";
     result.recommended_processing_hz = kIdleProcessingHz;
     return result;
   }
   const bool ocr_unconfirmed =
-      (ocr_unconfirmed_rois_ || options.reread_offer) &&
+      (ocr_unconfirmed_rois_ || options.reread_offer ||
+       options.allow_low_confidence_rois) &&
       result.raw_detector.rois.has_value();
 
   if (!result.raw_detector.visible && !ocr_unconfirmed) {

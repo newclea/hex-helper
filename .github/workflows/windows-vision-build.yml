@@ -1,0 +1,33 @@
+name: Windows vision build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - fix/death-force-ocr-engine
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build
+        shell: pwsh
+        run: ./scripts/build.ps1 -Configuration Release -Clean
+      - name: Test
+        shell: pwsh
+        run: >-
+          & "${env:ProgramFiles}/CMake/bin/ctest.exe"
+          --test-dir outputs/tmp/build
+          -C Release
+          -R "^augment_frame_processor_test$"
+          --output-on-failure
+      - name: Upload executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: lol-augment-assistant
+          path: outputs/tmp/build/bin/lol_augment_assistant.exe
+          if-no-files-found: error

@@ -19,6 +19,7 @@ namespace lol_assistant::app {
 struct FrameProcessOptions final {
   bool force_recognition{false};
   bool reread_offer{false};
+  bool allow_low_confidence_rois{false};
 };
 
 struct FrameProcessResult final {

@@ -2366,11 +2366,13 @@ void EmitIntervalMiss() {
     const std::optional<StaticReplayDiagnostic> &static_replay = std::nullopt,
     const bool force_recognition = false,
     const LiveFrameContext *const live_context = nullptr,
-    const bool reread_offer = false, const bool emit_always = false) {
+    const bool reread_offer = false, const bool emit_always = false,
+    const bool allow_low_confidence_rois = false) {
   const auto vision_started_at = std::chrono::steady_clock::now();
   const auto result = pipeline.processor->Process(
       frame, lol_assistant::app::FrameProcessOptions{force_recognition,
-                                                     reread_offer});
+                                                     reread_offer,
+                                                     allow_low_confidence_rois});
   const double vision_processing_latency_ms =
       std::chrono::duration<double, std::milli>(
           std::chrono::steady_clock::now() - vision_started_at)
@@ -3996,12 +3998,15 @@ void KeepCaptureResponsiveInBackground() {
         const bool interval_tick =
             snapshot && pipeline.snapshot_cause == "interval";
         const bool reread_offer = snapshot;
+        const bool allow_low_confidence_rois =
+            reread_offer && mayhem_scheduler.HighFrequencyActive(now);
         pipeline.snapshot_pending = false;
         pipeline.click_armed = false;
         static_cast<void>(
             ProcessFrame(pipeline, due_frame->captured.frame, std::nullopt,
                          force_recognition || reread_offer, &frame_context,
-                         reread_offer, interval_tick));
+                         reread_offer, interval_tick,
+                         allow_low_confidence_rois));
         last_held_frame = std::move(due_frame);
         capture_hold_until = std::chrono::steady_clock::now() +
                              kCaptureHoldAfterUse;

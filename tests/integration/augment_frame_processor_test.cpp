@@ -719,6 +719,19 @@ void TestClickRereadWithoutOfferDoesNotInventOcr() {
           "or run OCR");
 }
 
+void TestEligibleWindowRereadUsesLowConfidenceRois() {
+  ScriptedOcr ocr{{ExactSimpleScan()}};
+  FaultInjectingRuntime runtime;
+  AugmentFrameProcessor processor{ocr,    SimpleCandidates(), runtime,
+                                  "Ahri", std::nullopt,       DetectorConfig()};
+  const auto reread = processor.Process(
+      MakeFrame(1U, false), FrameProcessOptions{true, true, true});
+  Require(!reread.raw_detector.visible && reread.ocr_executed &&
+              ocr.calls() > 0U,
+          "an eligible selection window may OCR calibrated ROIs when the "
+          "screen detector misses the offer");
+}
+
 void TestForceRecognitionBypassesPersistenceBackoffWithoutSkippingStorage() {
   ScriptedOcr ocr{{ExactSimpleScan(), ExactSimpleScan()}};
   FaultInjectingRuntime runtime{
@@ -1197,6 +1210,7 @@ int main() {
     TestForceRecognitionBypassesStabilityButKeepsConsensusAndDuplicateGate();
     TestClickRereadReexecutesOcrWithoutRepersisting();
     TestClickRereadWithoutOfferDoesNotInventOcr();
+    TestEligibleWindowRereadUsesLowConfidenceRois();
     TestForceRecognitionKeepsRawDetectorAndUnknownFailClosed();
     TestForceRecognitionBypassesPersistenceBackoffWithoutSkippingStorage();
     TestRetryableRecognitionFailuresStopAtThreeScans();
