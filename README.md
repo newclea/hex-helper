@@ -70,7 +70,7 @@ Windows 实机验收步骤见 `docs/windows-gamebuddy-acceptance.md`。
   "agent": {
     "provider": "taiji_direct",
     "endpoint": "http://stream-server-online-openapi.turbotke.production.polaris:8080/openapi/app_platform/app_create",
-    "forward_service": "hyaide-application-22835",
+    "forward_service": "hyaide-application-22837",
     "token": "仅存放在测试机本地的 Token",
     "timeout_seconds": 10
   }
