@@ -1,0 +1,162 @@
+{
+  "metadata": {
+    "name": "melo-int8",
+    "model": "C:\\Users\\a4595\\hex-helper\\assets\\speech\\melo-tts-zh_en-int8\\model.int8.onnx",
+    "model_bytes": 53517430,
+    "sha256": "f085f5079e05f039b800aeb542f5253c26a303211b0c6465d0d9387977855a63",
+    "threads": 4,
+    "provider": "cpu",
+    "load_seconds": 2.378965399999288,
+    "sample_rate": 44100,
+    "runtime": "1.13.8",
+    "numpy": "1.26.4"
+  },
+  "results": [
+    {
+      "kind": "champions",
+      "trial": 1,
+      "text": "根据当前英雄强度，推荐选择妮蔻、亚索、盖伦三个英雄哦。",
+      "chinese_chars": 23,
+      "compute_seconds": 13.721219699997164,
+      "audio_seconds": 4.98281179138322,
+      "rtf": 2.7537102091082946,
+      "first_chunk_seconds": 3.9416723999966052,
+      "continuous_start_seconds": 11.959299924038826,
+      "chunks": [
+        {
+          "ready_seconds": 3.9416723999966052,
+          "audio_seconds": 1.7531065759637188
+        },
+        {
+          "ready_seconds": 13.712406500002544,
+          "audio_seconds": 3.229705215419501
+        }
+      ],
+      "rms": 0.05288049206137657,
+      "peak": 0.29633820056915283
+    },
+    {
+      "kind": "hex",
+      "trial": 1,
+      "text": "推荐选择珠光护手，当前玩法胜率优先。",
+      "chinese_chars": 16,
+      "compute_seconds": 10.431631799998286,
+      "audio_seconds": 3.4597732426303853,
+      "rtf": 3.015120086907013,
+      "first_chunk_seconds": 5.213778799996362,
+      "continuous_start_seconds": 8.685569701359386,
+      "chunks": [
+        {
+          "ready_seconds": 5.213778799996362,
+          "audio_seconds": 1.7414965986394557
+        },
+        {
+          "ready_seconds": 10.427066299998842,
+          "audio_seconds": 1.7182766439909296
+        }
+      ],
+      "rms": 0.03135554492473602,
+      "peak": 0.21039950847625732
+    },
+    {
+      "kind": "greeting",
+      "trial": 1,
+      "text": "召唤师你好，我是你的联盟专属陪玩悠米！快去开启一场紧张刺激的海克斯大乱斗吧。",
+      "chinese_chars": 35,
+      "compute_seconds": 19.294379899998603,
+      "audio_seconds": 6.5364172335600905,
+      "rtf": 2.9518280750095,
+      "first_chunk_seconds": 3.384149099998467,
+      "continuous_start_seconds": 16.03400424920618,
+      "chunks": [
+        {
+          "ready_seconds": 3.384149099998467,
+          "audio_seconds": 1.0332879818594105
+        },
+        {
+          "ready_seconds": 9.861490700001013,
+          "audio_seconds": 2.2175056689342405
+        },
+        {
+          "ready_seconds": 19.28479789999983,
+          "audio_seconds": 3.2856235827664397
+        }
+      ],
+      "rms": 0.053966205567121506,
+      "peak": 0.4684613347053528
+    },
+    {
+      "kind": "champions",
+      "trial": 2,
+      "text": "根据当前英雄强度，推荐选择妮蔻、亚索、盖伦三个英雄哦。",
+      "chinese_chars": 23,
+      "compute_seconds": 14.35081270000228,
+      "audio_seconds": 5.143219954648526,
+      "rtf": 2.7902389605235105,
+      "first_chunk_seconds": 4.190054799997597,
+      "continuous_start_seconds": 12.587996924038928,
+      "chunks": [
+        {
+          "ready_seconds": 4.190054799997597,
+          "audio_seconds": 1.7531065759637188
+        },
+        {
+          "ready_seconds": 14.341103500002646,
+          "audio_seconds": 3.3901133786848074
+        }
+      ],
+      "rms": 0.05453677102923393,
+      "peak": 0.313934862613678
+    },
+    {
+      "kind": "hex",
+      "trial": 2,
+      "text": "推荐选择珠光护手，当前玩法胜率优先。",
+      "chinese_chars": 16,
+      "compute_seconds": 10.138580200000433,
+      "audio_seconds": 3.2921995464852607,
+      "rtf": 3.0795764524128986,
+      "first_chunk_seconds": 5.08444139999483,
+      "continuous_start_seconds": 8.560845297503448,
+      "chunks": [
+        {
+          "ready_seconds": 5.08444139999483,
+          "audio_seconds": 1.573922902494331
+        },
+        {
+          "ready_seconds": 10.13476819999778,
+          "audio_seconds": 1.7182766439909296
+        }
+      ],
+      "rms": 0.029959160834550858,
+      "peak": 0.17954346537590027
+    },
+    {
+      "kind": "greeting",
+      "trial": 2,
+      "text": "召唤师你好，我是你的联盟专属陪玩悠米！快去开启一场紧张刺激的海克斯大乱斗吧。",
+      "chinese_chars": 35,
+      "compute_seconds": 15.370869099999254,
+      "audio_seconds": 6.5364172335600905,
+      "rtf": 2.3515740428992533,
+      "first_chunk_seconds": 2.989360300001863,
+      "continuous_start_seconds": 12.112221949206276,
+      "chunks": [
+        {
+          "ready_seconds": 2.989360300001863,
+          "audio_seconds": 1.0332879818594105
+        },
+        {
+          "ready_seconds": 9.131286999996519,
+          "audio_seconds": 2.2175056689342405
+        },
+        {
+          "ready_seconds": 15.363015599999926,
+          "audio_seconds": 3.2856235827664397
+        }
+      ],
+      "rms": 0.05336196348071098,
+      "peak": 0.4492000639438629
+    }
+  ]
+}

@@ -7,9 +7,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-MODEL_DIRECTORY = Path("assets/speech/melo-tts-zh_en-int8")
+MODEL_DIRECTORY = Path("assets/speech/melo-tts-zh_en")
 WHEEL_DIRECTORY = Path("vendor/speech/wheels/cp311-win_amd64")
 EXPECTED_WHEEL_FILES = (
+    "numpy-1.26.4-cp311-cp311-win_amd64.whl",
     "cffi-2.1.1-cp311-cp311-win_amd64.whl",
     "pycparser-3.0-py3-none-any.whl",
     "sherpa_onnx-1.13.8-cp311-cp311-win_amd64.whl",
@@ -17,7 +18,7 @@ EXPECTED_WHEEL_FILES = (
     "sounddevice-0.5.3-py3-none-win_amd64.whl",
 )
 REQUIRED_MODEL_FILES = (
-    "model.int8.onnx",
+    "model.onnx",
     "tokens.txt",
     "lexicon.txt",
     "date.fst",
@@ -39,7 +40,7 @@ TEXT_MODEL_FILES = frozenset(
     relative
     for relative in REQUIRED_MODEL_FILES
     if relative not in {
-        "model.int8.onnx",
+        "model.onnx",
         "date.fst",
         "new_heteronym.fst",
         "number.fst",
@@ -75,7 +76,7 @@ def resolve_offline_speech_paths(bundle_root: Path) -> OfflineSpeechPaths:
     for filename in EXPECTED_WHEEL_FILES:
         _require_file(wheel_dir / filename)
     return OfflineSpeechPaths(
-        model=model_root / "model.int8.onnx",
+        model=model_root / "model.onnx",
         tokens=model_root / "tokens.txt",
         lexicon=model_root / "lexicon.txt",
         data_dir=model_root / "dict",

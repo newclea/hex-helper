@@ -42,6 +42,12 @@ def make_app() -> RecognitionApp:
 
 
 class RecognitionAppSpeechTests(unittest.TestCase):
+    def test_hidden_offer_cancels_pending_and_playing_ocr_progress(self) -> None:
+        app = make_app()
+        app.product.present.return_value = {"state": "ocr_reading", "bubble_visible": False}
+        app._publish()
+        app.speech.cancel_kind.assert_called_once_with("ocr_progress")
+
     def test_parser_accepts_scoped_game_result_debug_mode(self) -> None:
         args = _parser().parse_args(["--debug-submode", "game-result"])
         self.assertEqual(["game-result"], args.debug_submode)
@@ -129,6 +135,22 @@ class RecognitionAppSpeechTests(unittest.TestCase):
         speech_view = app.speech_policy.update.call_args.args[0]
         self.assertEqual(["妮蔻", "亚索", "盖伦"], speech_view["recommended_champions"])
         self.assertNotIn("recommended_champions", visible)
+
+    def test_one_or_two_champions_reach_fixed_speech_policy(self) -> None:
+        for names in (["妮蔻"], ["妮蔻", "亚索"]):
+            with self.subTest(names=names):
+                app = make_app()
+                app.speech_policy = CompanionSpeechPolicy()
+                app.product.present.return_value = {
+                    "state": "champ_select", "bubble_visible": True,
+                }
+                app.product.champion_select_speech_names.return_value = names
+                app._publish()
+                app._publish()
+                app.speech.publish.assert_called_once()
+                message = app.speech.publish.call_args.args[0]
+                self.assertEqual("champ_select", message.kind)
+                self.assertIn("、".join(names), message.summary)
 
     def test_startup_gate_uses_window_greeting_boundary_after_slow_construction(self) -> None:
         app = make_app()

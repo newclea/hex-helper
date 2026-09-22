@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+import json
 from unittest.mock import patch
 
 from lcu_champ_select import (
@@ -28,6 +29,37 @@ class FakeTransport:
 
 
 class LcuGameResultTests(unittest.TestCase):
+    def test_player_team_result_with_empty_legacy_status(self) -> None:
+        for won in (True, False):
+            body = json.dumps({"gameId": 123, "myTeamStatus": "", "teams": [
+                {"isPlayerTeam": False, "isWinningTeam": not won},
+                {"isPlayerTeam": True, "isWinningTeam": won},
+            ]})
+            self.assertEqual((123, "WIN" if won else "LOSS", "teams.isWinningTeam"),
+                             parse_end_of_game_stats(body))
+
+    def test_ambiguous_or_untyped_team_data_does_not_guess_result(self) -> None:
+        for teams in ([{"isWinningTeam": True}],
+                      [{"isPlayerTeam": True, "isWinningTeam": "false"}],
+                      [{"isPlayerTeam": True, "isWinningTeam": True}] * 2):
+            self.assertIsNone(parse_end_of_game_stats(json.dumps({
+                "gameId": 123, "teams": teams}))[1])
+
+    def test_conflicting_results_are_rejected(self) -> None:
+        self.assertIsNone(parse_end_of_game_stats(json.dumps({
+            "gameId": 123, "myTeamStatus": "Win", "teams": [
+                {"isPlayerTeam": True, "isWinningTeam": False}]}))[1])
+
+    def test_lobby_still_reads_delayed_result(self) -> None:
+        transport = FakeTransport({
+            GAMEFLOW_PATH: LcuHttpResult(True, 200, '"Lobby"'),
+            END_OF_GAME_STATS_PATH: LcuHttpResult(True, 200,
+                '{"gameId":123,"teams":[{"isPlayerTeam":true,"isWinningTeam":true}]}'),
+        })
+        snapshot = read_lcu_snapshot(catalog=object(), transport=transport,
+            connection_factory=lambda: (LcuConnection(2999, "token"), "ok"))
+        self.assertEqual("WIN", snapshot.game_result)
+
     def tearDown(self) -> None:
         configure_debug_submodes(())
 

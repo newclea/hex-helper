@@ -118,3 +118,17 @@ git status --short
 - [ ] 将实机结果、包摘要和远端提交写入 `release-history.md`。
 
 详细 Windows 表单见 [Windows 实机验收](../windows-gamebuddy-acceptance.md)。
+
+## 2026-09-22 固定语音补充
+
+- [ ] REQ-VOICE-010：实局选人分别出现 1、2、3 个推荐英雄时，播报与气泡一致的短名；重复刷新同一内容不重复播报。
+- [ ] REQ-VOICE-011：已有旧 speech-runtime 的机器自动安装含 numpy 的新运行目录；断网启动仍可安装。
+- [ ] REQ-VOICE-012：仅打开小猫即播欢迎语，记录模型 ready 与音频 started 的耗时。
+- [ ] REQ-VOICE-012：实局 WIN / LOSS 分别播固定句，重复赛果不重播，未知赛果不猜测。
+- [ ] REQ-VOICE-013：重启后欢迎语、胜负句连续播放，无逐句合成等待；确认实际听感。缺失、损坏、模型变化的缓存回退已由单测覆盖。
+
+
+### 结算 / 存活误触发 / FP32 语音更新
+
+详见 [修复记录](../fixes-2026-09-22-result-ocr-speech.md)。257 项测试与资源校验通过；
+下一局实机胜负播报和 FP32 声卡听感尚待联调。首次探测 3～6 级限时，原始 visible 不再绕过门控。

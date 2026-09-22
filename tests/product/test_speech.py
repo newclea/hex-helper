@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import unittest
-from dataclasses import FrozenInstanceError
+from dataclasses import FrozenInstanceError, replace
 from unittest.mock import Mock
 
 from speech import SpeechMessage, SpeechPriority, SpeechQueue, SpeechService, should_interrupt
@@ -37,6 +37,19 @@ class SpeechMessageTests(unittest.TestCase):
 
 
 class SpeechQueueTests(unittest.TestCase):
+    def test_discard_ocr_preserves_other_pending_messages(self) -> None:
+        queue = SpeechQueue()
+        queue.publish(replace(message("ocr"), kind="ocr_progress"), 1)
+        queue.publish(message("recommendation"), 1)
+        queue.discard_kind("ocr_progress")
+        self.assertEqual("recommendation", queue.next(1).kind)
+        self.assertIsNone(queue.next(1))
+
+    def test_game_result_interrupts_obsolete_normal_speech(self) -> None:
+        result = replace(message("win", SpeechPriority.HIGH), kind="game_result")
+        self.assertTrue(should_interrupt(message("ocr"), result))
+        self.assertFalse(should_interrupt(result, result))
+
     def test_duplicate_and_expired_messages_are_rejected(self) -> None:
         queue = SpeechQueue()
         self.assertTrue(queue.publish(message("same"), 1.0))

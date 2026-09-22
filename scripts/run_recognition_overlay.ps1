@@ -45,7 +45,7 @@ function Test-SpeechBundle {
 
 function Initialize-SpeechRuntime {
     $runtimeParent = Join-Path $env:LOCALAPPDATA 'LoLRecognitionOverlay\speech-runtime'
-    $runtimeDirectory = Join-Path $runtimeParent '1.13.8-py311'
+    $runtimeDirectory = Join-Path $runtimeParent '1.13.8-py311-numpy1.26.4'
     $successStamp = Join-Path $runtimeDirectory '.installed'
     if (-not (Test-Path -LiteralPath $successStamp -PathType Leaf)) {
         New-Item -ItemType Directory -Path $runtimeDirectory -Force | Out-Null
@@ -55,7 +55,7 @@ function Initialize-SpeechRuntime {
             '-m', 'pip', 'install', '--no-index', '--disable-pip-version-check',
             '--no-deps', '--find-links', $wheelDirectory, '--target', $runtimeDirectory,
             'sherpa-onnx==1.13.8', 'sherpa-onnx-core==1.13.8',
-            'sounddevice==0.5.3', 'cffi==2.1.1', 'pycparser==3.0'
+            'sounddevice==0.5.3', 'cffi==2.1.1', 'pycparser==3.0', 'numpy==1.26.4'
         )
         & $python.File @installArguments | Out-Host
         if ($LASTEXITCODE -ne 0) {

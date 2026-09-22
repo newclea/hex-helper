@@ -68,7 +68,7 @@ from agent_text import build_agent_provider
 from overlay_config import load_agent_settings, load_voice_settings, update_overlay_config
 from offline_speech import OfflineSpeechAdapter
 from speech import SpeechMessage, SpeechService
-from speech_policy import CompanionSpeechPolicy
+from speech_policy import CompanionSpeechPolicy, OCR_STATES
 from scoped_debug import SUPPORTED_DEBUG_SUBMODES, configure_debug_submodes, scoped_debug
 
 
@@ -318,6 +318,8 @@ class RecognitionApp:
         presented = self._startup_presentation(view, now)
         self.window.set_view(presented)
         speech_view = self._speech_view(snapshot, presented)
+        if speech_view.get("bubble_visible") is False or speech_view.get("state") not in OCR_STATES:
+            self.speech.cancel_kind("ocr_progress")
         self._publish_speech(self.speech_policy.update(speech_view, now))
         self.agent_speech.update(
             presented,
@@ -332,7 +334,7 @@ class RecognitionApp:
         if presented.get("state") != "champ_select" or self.product is None:
             return presented
         names = self.product.champion_select_speech_names(snapshot)
-        if len(names) != 3:
+        if not 1 <= len(names) <= 3:
             return presented
         return {**presented, "recommended_champions": names}
 

@@ -159,6 +159,9 @@ def make_window(
     )
     window._root = FakeRoot()
     window._canvas = FakeCanvas()
+    # These unit tests use fake widgets, not a native Windows window or cursor.
+    window._pointer_over_action = Mock(return_value=False)
+    window._set_click_through = Mock()
     window._view["refresh_available"] = refresh_available
     return window
 

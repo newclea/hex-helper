@@ -438,8 +438,11 @@ class RecognitionViewModel:
         result_game_id = _int(
             context.get("gameId"), minimum=1, maximum=18_446_744_073_709_551_615
         )
-        same_game = self._game_id is None or result_game_id == self._game_id
+        same_game = self._game_id is not None and result_game_id == self._game_id
         if self._entered_live_match and same_game and result in {"WIN", "LOSS"}:
+            if self.game_result != result:
+                logging.info("game result accepted game_id=%s result=%s source=%s",
+                             result_game_id, result, context.get("gameResultRaw"))
             self.game_result = result
 
     def apply_vision_status(self, status: str, note: str | None = None) -> None:
@@ -914,7 +917,7 @@ class RecognitionViewModel:
         initial = (
             self.completed_stage() == 0
             and self.live_level is not None
-            and self.live_level >= 3
+            and 3 <= self.live_level < 7
             and self.live_is_dead is not True
         )
         death_probe = self.live_is_dead is True and self._death_ocr_allowed
@@ -1022,9 +1025,10 @@ class RecognitionViewModel:
             level=self.live_level,
             is_dead=self.live_is_dead,
             round_closed=self._round_ocr_closed,
-            offer_visible=self.offer_visible and not self._round_ocr_closed,
+            offer_visible=self.offer_visible and len(self.offer) == 3 and not self._round_ocr_closed,
             seconds_since_respawn=self.seconds_since_respawn(),
             death_scan_allowed=self._death_ocr_allowed,
+            initial_probe_active=self._probe_active(),
         )
 
     def mark_left_click(self) -> None:
@@ -1133,9 +1137,18 @@ class RecognitionViewModel:
             and (not stage_present or observed_stage == context["stage"])
             and (not context.get("source") or border.get("source") == context["source"])
         )
+        scan_allowed = self.vision_allowed()
+        debug_cards = payload.get("recognition_debug")
+        complete_cards = (
+            self._catalog.complete_offer(debug_cards.get("cards"))
+            if isinstance(debug_cards, Mapping) else None
+        )
+        proven_offer = payload.get("accepted") is True and complete_cards is not None
         self.offer_visible = False
         if isinstance(raw_detector, Mapping):
-            self.offer_visible = raw_detector.get("visible") is True or preserve_obscured
+            self.offer_visible = (
+                raw_detector.get("visible") is True and (scan_allowed or proven_offer)
+            ) or preserve_obscured
             if self.offer_visible:
                 self._offer_seen_at = time.monotonic()
             self.detector_reason = _text(raw_detector.get("reason"), limit=48)

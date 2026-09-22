@@ -1,0 +1,218 @@
+{
+  "metadata": {
+    "name": "piper-xiaoya-fp32",
+    "model": "C:\\Users\\a4595\\hex-helper\\outputs\\tts-benchmark-2026-09-22\\piper-download\\vits-piper-zh_CN-xiao_ya-medium\\zh_CN-xiao_ya-medium.onnx",
+    "model_bytes": 63222141,
+    "sha256": "c8882021fe2da5440870c4d18a45ffd8036ee3219660b0eef8a1f57cc3f0c166",
+    "threads": 4,
+    "provider": "cpu",
+    "load_seconds": 1.611468100003549,
+    "sample_rate": 22050,
+    "runtime": "1.13.8",
+    "numpy": "1.26.4"
+  },
+  "results": [
+    {
+      "kind": "champions",
+      "trial": 1,
+      "text": "根据当前英雄强度，推荐选择妮蔻、亚索、盖伦三个英雄哦。",
+      "chinese_chars": 23,
+      "compute_seconds": 0.3877712999965297,
+      "audio_seconds": 6.408888888888889,
+      "rtf": 0.06050523058198279,
+      "first_chunk_seconds": 0.12938220000069123,
+      "continuous_start_seconds": 0.12938220000069123,
+      "chunks": [
+        {
+          "ready_seconds": 0.12938220000069123,
+          "audio_seconds": 2.2332879818594105
+        },
+        {
+          "ready_seconds": 0.14745330000005197,
+          "audio_seconds": 0.041768707482993196
+        },
+        {
+          "ready_seconds": 0.3660521999991033,
+          "audio_seconds": 3.9480725623582766
+        },
+        {
+          "ready_seconds": 0.38252279999869643,
+          "audio_seconds": 0.18575963718820862
+        }
+      ],
+      "rms": 0.06468087434768677,
+      "peak": 0.38789162039756775
+    },
+    {
+      "kind": "hex",
+      "trial": 1,
+      "text": "推荐选择珠光护手，当前玩法胜率优先。",
+      "chinese_chars": 16,
+      "compute_seconds": 0.4642226999931154,
+      "audio_seconds": 4.504036281179138,
+      "rtf": 0.10306815287721968,
+      "first_chunk_seconds": 0.21502309999777935,
+      "continuous_start_seconds": 0.21502309999777935,
+      "chunks": [
+        {
+          "ready_seconds": 0.21502309999777935,
+          "audio_seconds": 2.131655328798186
+        },
+        {
+          "ready_seconds": 0.24263369999971474,
+          "audio_seconds": 0.041768707482993196
+        },
+        {
+          "ready_seconds": 0.4357017000002088,
+          "audio_seconds": 2.1332426303854874
+        },
+        {
+          "ready_seconds": 0.4609126999930595,
+          "audio_seconds": 0.19736961451247165
+        }
+      ],
+      "rms": 0.07526200264692307,
+      "peak": 0.5695703625679016
+    },
+    {
+      "kind": "greeting",
+      "trial": 1,
+      "text": "召唤师你好，我是你的联盟专属陪玩悠米！快去开启一场紧张刺激的海克斯大乱斗吧。",
+      "chinese_chars": 35,
+      "compute_seconds": 0.8283324000003631,
+      "audio_seconds": 8.361179138321996,
+      "rtf": 0.09906884977548766,
+      "first_chunk_seconds": 0.14915470000414643,
+      "continuous_start_seconds": 0.14915470000414643,
+      "chunks": [
+        {
+          "ready_seconds": 0.14915470000414643,
+          "audio_seconds": 1.379546485260771
+        },
+        {
+          "ready_seconds": 0.17233909999777097,
+          "audio_seconds": 0.041768707482993196
+        },
+        {
+          "ready_seconds": 0.42638630000146804,
+          "audio_seconds": 2.64702947845805
+        },
+        {
+          "ready_seconds": 0.45087680000142427,
+          "audio_seconds": 0.1509297052154195
+        },
+        {
+          "ready_seconds": 0.7997331000005943,
+          "audio_seconds": 3.9793650793650794
+        },
+        {
+          "ready_seconds": 0.8230941000001621,
+          "audio_seconds": 0.16253968253968254
+        }
+      ],
+      "rms": 0.0780346542596817,
+      "peak": 0.565618634223938
+    },
+    {
+      "kind": "champions",
+      "trial": 2,
+      "text": "根据当前英雄强度，推荐选择妮蔻、亚索、盖伦三个英雄哦。",
+      "chinese_chars": 23,
+      "compute_seconds": 0.6027494000009028,
+      "audio_seconds": 6.538503401360544,
+      "rtf": 0.09218461213547455,
+      "first_chunk_seconds": 0.2080223000011756,
+      "continuous_start_seconds": 0.2080223000011756,
+      "chunks": [
+        {
+          "ready_seconds": 0.2080223000011756,
+          "audio_seconds": 2.1658049886621313
+        },
+        {
+          "ready_seconds": 0.23818510000273818,
+          "audio_seconds": 0.046439909297052155
+        },
+        {
+          "ready_seconds": 0.5717961999980616,
+          "audio_seconds": 4.140498866213152
+        },
+        {
+          "ready_seconds": 0.5975500999993528,
+          "audio_seconds": 0.18575963718820862
+        }
+      ],
+      "rms": 0.06378670036792755,
+      "peak": 0.3468608558177948
+    },
+    {
+      "kind": "hex",
+      "trial": 2,
+      "text": "推荐选择珠光护手，当前玩法胜率优先。",
+      "chinese_chars": 16,
+      "compute_seconds": 0.45657029999711085,
+      "audio_seconds": 4.566077097505669,
+      "rtf": 0.09999180702544937,
+      "first_chunk_seconds": 0.19961489999695914,
+      "continuous_start_seconds": 0.19961489999695914,
+      "chunks": [
+        {
+          "ready_seconds": 0.19961489999695914,
+          "audio_seconds": 1.9473015873015873
+        },
+        {
+          "ready_seconds": 0.22422830000141403,
+          "audio_seconds": 0.17414965986394557
+        },
+        {
+          "ready_seconds": 0.4262633999969694,
+          "audio_seconds": 2.247256235827664
+        },
+        {
+          "ready_seconds": 0.45342550000350457,
+          "audio_seconds": 0.19736961451247165
+        }
+      ],
+      "rms": 0.07427269220352173,
+      "peak": 0.5174677968025208
+    },
+    {
+      "kind": "greeting",
+      "trial": 2,
+      "text": "召唤师你好，我是你的联盟专属陪玩悠米！快去开启一场紧张刺激的海克斯大乱斗吧。",
+      "chinese_chars": 35,
+      "compute_seconds": 0.8690138000019942,
+      "audio_seconds": 8.58952380952381,
+      "rtf": 0.10117135935271027,
+      "first_chunk_seconds": 0.15624660000321455,
+      "continuous_start_seconds": 0.15624660000321455,
+      "chunks": [
+        {
+          "ready_seconds": 0.15624660000321455,
+          "audio_seconds": 1.369750566893424
+        },
+        {
+          "ready_seconds": 0.18513220000022557,
+          "audio_seconds": 0.044081632653061226
+        },
+        {
+          "ready_seconds": 0.4517776000066078,
+          "audio_seconds": 2.905260770975057
+        },
+        {
+          "ready_seconds": 0.4807739000025322,
+          "audio_seconds": 0.044081632653061226
+        },
+        {
+          "ready_seconds": 0.8378673000042909,
+          "audio_seconds": 4.063809523809524
+        },
+        {
+          "ready_seconds": 0.8632820000057109,
+          "audio_seconds": 0.16253968253968254
+        }
+      ],
+      "rms": 0.07813739031553268,
+      "peak": 0.5696404576301575
+    }
+  ]
+}

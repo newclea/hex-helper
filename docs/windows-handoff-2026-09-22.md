@@ -1,5 +1,22 @@
 # Windows 联调交接（2026-09-22）
 
+> 最新修复（优先于下文历史快照）：LCU 结算支持 `teams[].isPlayerTeam/isWinningTeam`，
+> 大厅继续获取延迟结算，严格匹配已进入对局的 gameId。首次 OCR 限 3～6 级/90 秒；
+> 原始可见标记不能绕过门控，气泡消失取消过期识别语音。
+> 生产模型已改为 `assets/speech/melo-tts-zh_en/model.onnx` FP32/8 线程，固定 WAV 已重新生成；
+> 缓存欢迎语先播、模型后台加载。257 项测试及资源校验通过。
+> 真模型+实时静音输出：ready 0.613 秒、动态首段 0.644 秒（不含声卡延迟）。
+> 当前游戏仍在运行，未重启 Overlay；本局结束后重新启动小猫使改动生效。
+> 详情与限制见 `fixes-2026-09-22-result-ocr-speech.md`。
+
+> 最新续接：固定欢迎语和胜负句已预生成并接入跨启动 WAV 缓存，位于 `assets/speech/fixed/`；
+> 就绪后约 0.3～0.4 秒开始播放整段音频，244 项测试通过。默认 TTS 线程数已改为 4。
+
+> 晚间本机续接更新（`8c3b2bc` 之上的未提交改动）：选人 1～3 人播报已修复；
+> numpy 已入离线包并安装；worker 主线程预加载 native 依赖，解决合成回调内首次导入 numpy 卡住；
+> 欢迎语取消整句预热，按需流式播放。六段固定语音实机播放协议通过，238 项自动化通过。
+> 下文“尚未改”的语音事项是原交接快照，最新证据见 `project-management/implementation-status.md` 末节。
+
 面向：在 Windows 上打开小猫 + LoL 继续联调 / 开发的同学。  
 仓库：`https://github.com/newclea/hex-helper`  
 当前联调主干：`github/main` @ `0e94286`（`fix: recover same-round hex refresh and speech playback`）

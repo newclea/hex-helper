@@ -98,6 +98,10 @@ class SpeechQueue:
     def unmute(self) -> None:
         self._muted = False
 
+    def discard_kind(self, kind: str) -> None:
+        self._heap = [entry for entry in self._heap if entry[2].kind != kind]
+        heapq.heapify(self._heap)
+
     def _discard_expired(self, now: float) -> None:
         self._heap = [entry for entry in self._heap if entry[2].expires_at > now]
         heapq.heapify(self._heap)
@@ -115,6 +119,8 @@ class SpeechQueue:
 
 
 def should_interrupt(current: SpeechMessage, incoming: SpeechMessage) -> bool:
+    if incoming.kind == "game_result" and current.priority < incoming.priority:
+        return True
     return current.priority == SpeechPriority.LOW and incoming.priority == SpeechPriority.HIGH
 
 
@@ -184,6 +190,15 @@ class SpeechService:
             self._condition.notify_all()
         if enabled:
             self.preload()
+
+    def cancel_kind(self, kind: str) -> None:
+        with self._condition:
+            self._queue.discard_kind(kind)
+            if self._current is not None and self._current.kind == kind:
+                self._dispatch_generation += 1
+                self._cancel_adapter("state_no_longer_active")
+                self._current = None
+                self._condition.notify_all()
 
     def preload(self) -> None:
         with self._condition:

@@ -16,7 +16,7 @@ from offline_speech_assets import (
 
 class OfflineSpeechAssetTests(unittest.TestCase):
     def make_bundle(self, root: Path) -> None:
-        model_root = root / "assets" / "speech" / "melo-tts-zh_en-int8"
+        model_root = root / "assets" / "speech" / "melo-tts-zh_en"
         for relative in REQUIRED_MODEL_FILES:
             path = model_root / relative
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -28,7 +28,7 @@ class OfflineSpeechAssetTests(unittest.TestCase):
 
     def write_manifest(self, root: Path) -> Path:
         artifact_roots = (
-            root / "assets" / "speech" / "melo-tts-zh_en-int8",
+            root / "assets" / "speech" / "melo-tts-zh_en",
             root / "vendor" / "speech" / "wheels" / "cp311-win_amd64",
         )
         files = sorted(path for base in artifact_roots for path in base.rglob("*") if path.is_file())
@@ -45,7 +45,7 @@ class OfflineSpeechAssetTests(unittest.TestCase):
             root = Path(temp)
             self.make_bundle(root)
             paths = resolve_offline_speech_paths(root)
-            self.assertEqual("model.int8.onnx", paths.model.name)
+            self.assertEqual("model.onnx", paths.model.name)
             self.assertEqual("tokens.txt", paths.tokens.name)
             self.assertEqual("lexicon.txt", paths.lexicon.name)
             self.assertEqual("dict", paths.data_dir.name)
@@ -56,9 +56,9 @@ class OfflineSpeechAssetTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             self.make_bundle(root)
-            missing = root / "assets" / "speech" / "melo-tts-zh_en-int8" / "model.int8.onnx"
+            missing = root / "assets" / "speech" / "melo-tts-zh_en" / "model.onnx"
             missing.unlink()
-            with self.assertRaisesRegex(ValueError, "model.int8.onnx"):
+            with self.assertRaisesRegex(ValueError, "model.onnx"):
                 resolve_offline_speech_paths(root)
 
     def test_manifest_accepts_matching_sha256(self) -> None:
@@ -72,7 +72,7 @@ class OfflineSpeechAssetTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             self.make_bundle(root)
-            model_root = root / "assets" / "speech" / "melo-tts-zh_en-int8"
+            model_root = root / "assets" / "speech" / "melo-tts-zh_en"
             for relative in TEXT_MODEL_FILES:
                 (model_root / relative).write_bytes(b"first line\nsecond line\n")
             manifest = self.write_manifest(root)
@@ -85,27 +85,27 @@ class OfflineSpeechAssetTests(unittest.TestCase):
             root = Path(temp)
             self.make_bundle(root)
             model_path = (
-                root / "assets" / "speech" / "melo-tts-zh_en-int8" / "model.int8.onnx"
+                root / "assets" / "speech" / "melo-tts-zh_en" / "model.onnx"
             )
             model_path.write_bytes(b"binary\ncontent\n")
             manifest = self.write_manifest(root)
             model_path.write_bytes(b"binary\r\ncontent\r\n")
             errors = verify_manifest(root, manifest)
-            self.assertTrue(any("model.int8.onnx" in error for error in errors))
+            self.assertTrue(any("model.onnx" in error for error in errors))
 
     def test_manifest_rejects_missing_changed_and_parent_paths(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             self.make_bundle(root)
             manifest = self.write_manifest(root)
-            model_root = root / "assets" / "speech" / "melo-tts-zh_en-int8"
-            (model_root / "model.int8.onnx").unlink()
+            model_root = root / "assets" / "speech" / "melo-tts-zh_en"
+            (model_root / "model.onnx").unlink()
             (model_root / "tokens.txt").write_text("changed", encoding="utf-8")
             digest = hashlib.sha256(b"escape").hexdigest()
             with manifest.open("a", encoding="utf-8") as stream:
                 stream.write(f"{digest}  ../escape\n")
             errors = verify_manifest(root, manifest)
-            self.assertTrue(any("model.int8.onnx" in error for error in errors))
+            self.assertTrue(any("model.onnx" in error for error in errors))
             self.assertTrue(any("tokens.txt" in error for error in errors))
             self.assertTrue(any("../escape" in error for error in errors))
 
@@ -123,7 +123,7 @@ class OfflineSpeechAssetTests(unittest.TestCase):
             root = Path(temp)
             self.make_bundle(root)
             manifest = self.write_manifest(root)
-            model_root = root / "assets" / "speech" / "melo-tts-zh_en-int8"
+            model_root = root / "assets" / "speech" / "melo-tts-zh_en"
             wheel_root = root / "vendor" / "speech" / "wheels" / "cp311-win_amd64"
             (model_root / "unexpected.txt").write_text("extra", encoding="utf-8")
             (wheel_root / "numpy-extra.whl").write_text("extra", encoding="utf-8")

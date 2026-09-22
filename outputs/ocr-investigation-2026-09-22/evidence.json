@@ -1,0 +1,218 @@
+[
+  {
+    "source_file": "C:\\Users\\a4595\\AppData\\Local\\LoLRecognitionOverlay\\ocr_diagnostics.jsonl.1",
+    "logged_at_utc": "2026-09-22T14:57:37.147899+00:00",
+    "context": {
+      "phase": "InProgress",
+      "game_mode": "KIWI",
+      "live_level": 9,
+      "live_is_dead": false,
+      "confirmed_count": 0,
+      "completed_stage": 0
+    },
+    "recognized_count": 0,
+    "reason": "recognition_unknown",
+    "accepted": false,
+    "raw_detector": {
+      "frame_id": 17313,
+      "visible": true,
+      "confidence": 0.985094,
+      "reason": "visible"
+    },
+    "stable_detector": {
+      "frame_id": 17313,
+      "visible": true,
+      "confidence": 0.985094,
+      "reason": "stable_visible"
+    }
+  },
+  {
+    "source_file": "C:\\Users\\a4595\\AppData\\Local\\LoLRecognitionOverlay\\ocr_diagnostics.jsonl.1",
+    "logged_at_utc": "2026-09-22T14:57:37.479338+00:00",
+    "context": {
+      "phase": "InProgress",
+      "game_mode": "KIWI",
+      "live_level": 9,
+      "live_is_dead": false,
+      "confirmed_count": 0,
+      "completed_stage": 0
+    },
+    "recognized_count": 0,
+    "reason": "recognition_unknown",
+    "accepted": false,
+    "raw_detector": {
+      "frame_id": 17329,
+      "visible": true,
+      "confidence": 0.983064,
+      "reason": "visible"
+    },
+    "stable_detector": {
+      "frame_id": 17329,
+      "visible": true,
+      "confidence": 0.983064,
+      "reason": "stable_visible"
+    }
+  },
+  {
+    "source_file": "C:\\Users\\a4595\\AppData\\Local\\LoLRecognitionOverlay\\ocr_diagnostics.jsonl.1",
+    "logged_at_utc": "2026-09-22T14:57:37.821750+00:00",
+    "context": {
+      "phase": "InProgress",
+      "game_mode": "KIWI",
+      "live_level": 9,
+      "live_is_dead": false,
+      "confirmed_count": 0,
+      "completed_stage": 0
+    },
+    "recognized_count": 0,
+    "reason": "recognition_unknown",
+    "accepted": false,
+    "raw_detector": {
+      "frame_id": 17347,
+      "visible": true,
+      "confidence": 0.982458,
+      "reason": "visible"
+    },
+    "stable_detector": {
+      "frame_id": 17347,
+      "visible": true,
+      "confidence": 0.982458,
+      "reason": "stable_visible"
+    }
+  },
+  {
+    "source_file": "C:\\Users\\a4595\\AppData\\Local\\LoLRecognitionOverlay\\ocr_diagnostics.jsonl.1",
+    "logged_at_utc": "2026-09-22T14:58:07.079264+00:00",
+    "context": {
+      "phase": "InProgress",
+      "game_mode": "KIWI",
+      "live_level": 10,
+      "live_is_dead": false,
+      "confirmed_count": 0,
+      "completed_stage": 0
+    },
+    "recognized_count": 0,
+    "reason": "recognition_unknown",
+    "accepted": false,
+    "raw_detector": {
+      "frame_id": 18932,
+      "visible": true,
+      "confidence": 0.984462,
+      "reason": "visible"
+    },
+    "stable_detector": {
+      "frame_id": 18932,
+      "visible": true,
+      "confidence": 0.983044,
+      "reason": "stable_visible"
+    }
+  },
+  {
+    "source_file": "C:\\Users\\a4595\\AppData\\Local\\LoLRecognitionOverlay\\ocr_diagnostics.jsonl.1",
+    "logged_at_utc": "2026-09-22T14:58:07.316180+00:00",
+    "context": {
+      "phase": "InProgress",
+      "game_mode": "KIWI",
+      "live_level": 10,
+      "live_is_dead": true,
+      "confirmed_count": 0,
+      "completed_stage": 0
+    },
+    "recognized_count": 0,
+    "reason": "recognition_unknown",
+    "accepted": false,
+    "raw_detector": {
+      "frame_id": 18942,
+      "visible": true,
+      "confidence": 0.955106,
+      "reason": "visible"
+    },
+    "stable_detector": {
+      "frame_id": 18942,
+      "visible": true,
+      "confidence": 0.955106,
+      "reason": "stable_visible"
+    }
+  },
+  {
+    "source_file": "C:\\Users\\a4595\\AppData\\Local\\LoLRecognitionOverlay\\ocr_diagnostics.jsonl.1",
+    "logged_at_utc": "2026-09-22T14:58:07.545306+00:00",
+    "context": {
+      "phase": "InProgress",
+      "game_mode": "KIWI",
+      "live_level": 10,
+      "live_is_dead": true,
+      "confirmed_count": 0,
+      "completed_stage": 0
+    },
+    "recognized_count": 0,
+    "reason": "recognition_unknown",
+    "accepted": false,
+    "raw_detector": {
+      "frame_id": 18954,
+      "visible": true,
+      "confidence": 0.981323,
+      "reason": "visible"
+    },
+    "stable_detector": {
+      "frame_id": 18954,
+      "visible": true,
+      "confidence": 0.955106,
+      "reason": "stable_visible"
+    }
+  },
+  {
+    "source_file": "C:\\Users\\a4595\\AppData\\Local\\LoLRecognitionOverlay\\ocr_diagnostics.jsonl.1",
+    "logged_at_utc": "2026-09-22T14:58:07.773395+00:00",
+    "context": {
+      "phase": "InProgress",
+      "game_mode": "KIWI",
+      "live_level": 10,
+      "live_is_dead": true,
+      "confirmed_count": 0,
+      "completed_stage": 0
+    },
+    "recognized_count": 0,
+    "reason": "recognition_unknown",
+    "accepted": false,
+    "raw_detector": {
+      "frame_id": 18966,
+      "visible": true,
+      "confidence": 0.982256,
+      "reason": "visible"
+    },
+    "stable_detector": {
+      "frame_id": 18966,
+      "visible": true,
+      "confidence": 0.955106,
+      "reason": "stable_visible"
+    }
+  },
+  {
+    "source_file": "C:\\Users\\a4595\\AppData\\Local\\LoLRecognitionOverlay\\ocr_diagnostics.jsonl.1",
+    "logged_at_utc": "2026-09-22T14:58:07.991806+00:00",
+    "context": {
+      "phase": "InProgress",
+      "game_mode": "KIWI",
+      "live_level": 10,
+      "live_is_dead": true,
+      "confirmed_count": 0,
+      "completed_stage": 0
+    },
+    "recognized_count": 0,
+    "reason": "recognition_unknown",
+    "accepted": false,
+    "raw_detector": {
+      "frame_id": 18976,
+      "visible": true,
+      "confidence": 0.981125,
+      "reason": "visible"
+    },
+    "stable_detector": {
+      "frame_id": 18976,
+      "visible": true,
+      "confidence": 0.955106,
+      "reason": "stable_visible"
+    }
+  }
+]

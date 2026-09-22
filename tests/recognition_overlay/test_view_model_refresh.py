@@ -45,6 +45,23 @@ class FakeCatalog:
 
 
 class ViewModelRefreshTests(unittest.TestCase):
+    def test_complete_accepted_offer_can_recover_outside_death_window(self) -> None:
+        with TemporaryDirectory() as directory:
+            model = RecognitionViewModel(catalog=FakeCatalog(),
+                store=HistoryStore(Path(directory) / "history.jsonl"))
+            model.phase = "InProgress"
+            model._apply_live_player({"level": 9, "isDead": False})
+            self.assertFalse(model.vision_allowed())
+            model.apply_frame_result({
+                "accepted": True, "raw_detector": {"visible": True},
+                "recognition_debug": {"cards": [
+                    {"slot": slot, "augment_id": str(index), "display_name": f"name{index}"}
+                    for index, slot in enumerate(("LEFT", "CENTER", "RIGHT"))]},
+            })
+            self.assertTrue(model.offer_visible)
+            self.assertEqual(3, len(model.offer))
+            self.assertTrue(model.vision_allowed())
+
     def test_legacy_round_conflict_stays_in_refreshing_state(self) -> None:
         with TemporaryDirectory() as directory:
             model = RecognitionViewModel(

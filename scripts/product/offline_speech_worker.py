@@ -12,12 +12,13 @@ from pathlib import Path
 from typing import Any, Callable, TextIO
 
 from offline_speech_assets import OfflineSpeechPaths, resolve_offline_speech_paths
+from fixed_speech_cache import FixedSpeechCache
+from speech_policy import STARTUP_GREETING
 
 
-PREWARM_TEXTS = (
-    "召唤师你好，我是你的联盟专属陪玩悠米！"
-    "快去开启一场紧张刺激的海克斯大乱斗吧。",
-)
+# Stream the greeting on demand. Whole-phrase prewarming holds the synthesis
+# lock and delays the first audible segment on slower CPUs.
+PREWARM_TEXTS: tuple[str, ...] = ()
 MAX_CACHE_ITEMS = 16
 SPEECH_BREAKS = frozenset("，,。！？!?；;")
 
@@ -40,7 +41,8 @@ def build_sherpa_tts(paths: OfflineSpeechPaths) -> Any:
     )
     model = sherpa_onnx.OfflineTtsModelConfig(
         vits=vits,
-        num_threads=2,
+        # FP32 / eight threads: measured RTF 0.369 on the 13900HX.
+        num_threads=8,
         debug=False,
         provider="cpu",
     )
@@ -91,12 +93,16 @@ class OfflineSpeechEngine:
         tts_factory: Callable[[OfflineSpeechPaths], Any] = build_sherpa_tts,
         raw_output_stream_factory: Callable[..., Any] = create_raw_output_stream,
         prewarm_texts: tuple[str, ...] = PREWARM_TEXTS,
+        fixed_cache: FixedSpeechCache | None = None,
     ) -> None:
         self._paths = paths
         self._emit = emit
         self._tts_factory = tts_factory
         self._raw_output_stream_factory = raw_output_stream_factory
         self._prewarm_texts = prewarm_texts
+        self._fixed_cache = fixed_cache or FixedSpeechCache(
+            paths.model.parent.parent / "fixed", paths.model,
+        )
         self._lock = threading.RLock()
         self._synthesis_lock = threading.Lock()
         self._cache_lock = threading.Lock()
@@ -106,13 +112,29 @@ class OfflineSpeechEngine:
         self._playback_threads: set[threading.Thread] = set()
         self._generation_threads: set[threading.Thread] = set()
         self._closed = False
+        self._started = False
+        self._model_ready = threading.Event()
+        self._model_error: Exception | None = None
 
     def start(self) -> bool:
         with self._lock:
-            if self._tts is not None:
+            if self._started:
                 return True
             if self._closed:
                 return False
+        # The bundled greeting is playable without waiting for ONNX session
+        # creation. Load the dynamic voice in parallel with cached playback.
+        cached = self._cached_audio(STARTUP_GREETING)
+        if cached is not None:
+            self._audio_cache[STARTUP_GREETING] = cached
+            with self._lock:
+                self._started = True
+                thread = threading.Thread(target=self._load_model_in_background,
+                                          name="offline-speech-model", daemon=True)
+                self._generation_threads.add(thread)
+            self._emit({"event": "ready"})
+            thread.start()
+            return True
         try:
             tts = self._tts_factory(self._paths)
         except Exception as error:
@@ -122,16 +144,28 @@ class OfflineSpeechEngine:
             if self._closed:
                 return False
             self._tts = tts
+            self._started = True
+            self._model_ready.set()
         self._emit({"event": "ready"})
         self._start_prewarm()
         return True
+
+    def _load_model_in_background(self) -> None:
+        try:
+            self._tts = self._tts_factory(self._paths)
+        except Exception as error:
+            self._model_error = error
+        finally:
+            self._model_ready.set()
+            with self._lock:
+                self._generation_threads.discard(threading.current_thread())
 
     def speak(self, request_id: int, text: str) -> bool:
         if type(request_id) is not int or not isinstance(text, str) or not text.strip():
             self._emit_error(request_id, "speech text must not be empty")
             return False
         with self._lock:
-            if self._closed or self._tts is None:
+            if self._closed or not self._started:
                 self._emit_error(request_id, "offline speech engine is not ready")
                 return False
             old_control = self._invalidate_current_locked()
@@ -174,6 +208,13 @@ class OfflineSpeechEngine:
             if cached is not None:
                 self._begin_playback(control, *cached)
             else:
+                while not self._model_ready.wait(0.05):
+                    if not self._is_current(control):
+                        return
+                if not self._is_current(control):
+                    return
+                if self._model_error is not None:
+                    raise RuntimeError(f"model initialization failed: {self._model_error}")
                 self._generate_streaming(control, text)
         except Exception as error:
             if self._is_current(control):
@@ -208,6 +249,8 @@ class OfflineSpeechEngine:
                     self._begin_playback(control, *cached)
                     return
                 for segment in _speech_segments(text):
+                    if not self._is_current(control):
+                        return
                     audio = self._tts.generate(segment, sid=0, speed=1.0, callback=receive)
                     full_pcm.extend(array("f", audio.samples).tobytes())
             if not self._is_current(control):
@@ -471,7 +514,8 @@ class OfflineSpeechEngine:
 
     def _cached_audio(self, text: str) -> tuple[bytes, int] | None:
         with self._cache_lock:
-            return self._audio_cache.get(text)
+            cached = self._audio_cache.get(text)
+        return cached if cached is not None else self._fixed_cache.read(text)
 
     def _cache_audio(self, text: str, pcm: bytes, sample_rate: int) -> None:
         with self._cache_lock:
@@ -479,6 +523,11 @@ class OfflineSpeechEngine:
             while len(self._audio_cache) > MAX_CACHE_ITEMS:
                 oldest = next(iter(self._audio_cache))
                 del self._audio_cache[oldest]
+        try:
+            self._fixed_cache.write(text, pcm, sample_rate)
+        except (OSError, ValueError):
+            # A read-only bundle or failed cache write must not stop playback.
+            pass
 
     @staticmethod
     def _close_stream(stream: Any) -> None:
@@ -578,6 +627,13 @@ def run_protocol(
         engine.close()
 
 
+def initialize_native_dependencies() -> None:
+    # Initialize on the main thread before sherpa's synthesis callback can
+    # trigger a lazy NumPy import on Windows.
+    import numpy
+    import sounddevice
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run the GameBuddy offline speech worker")
     parser.add_argument("--bundle-root", type=Path, required=True)
@@ -586,8 +642,9 @@ def main(argv: list[str] | None = None) -> int:
     try:
         sys.stdin.reconfigure(encoding="utf-8", errors="strict")
         try:
+            initialize_native_dependencies()
             paths = resolve_offline_speech_paths(arguments.bundle_root)
-        except ValueError as error:
+        except (ImportError, OSError, ValueError) as error:
             emitter = _write_emitter(protocol_stream)
             emitter({"event": "error", "message": str(error)})
             return 1

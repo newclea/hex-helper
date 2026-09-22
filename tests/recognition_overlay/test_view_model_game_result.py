@@ -49,6 +49,17 @@ class ViewModelGameResultTests(unittest.TestCase):
         self.model.apply_lcu(lcu_event("EndOfGame", 123, "WIN"))
         self.assertIsNone(self.model.snapshot()["game_result"])
 
+    def test_missing_live_game_id_cannot_accept_a_stale_result(self) -> None:
+        self.model.apply_lcu(lcu_event("InProgress", None))
+        self.model.apply_lcu(lcu_event("Lobby", 999, "WIN"))
+        self.assertIsNone(self.model.snapshot()["game_result"])
+
+    def test_delayed_result_after_return_to_lobby(self) -> None:
+        self.model.apply_lcu(lcu_event("InProgress", 123))
+        self.model.apply_lcu(lcu_event("EndOfGame", 123))
+        self.model.apply_lcu(lcu_event("Lobby", 123, "WIN"))
+        self.assertEqual("WIN", self.model.snapshot()["game_result"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -16,6 +16,8 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from offline_speech_assets import OfflineSpeechPaths
+from fixed_speech_cache import FixedSpeechCache
+from speech_policy import STARTUP_GREETING
 from offline_speech_worker import (
     OfflineSpeechEngine,
     PlaybackAbort,
@@ -150,6 +152,31 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
         self.assertEqual(1, len(calls))
         self.assertEqual([{"event": "ready"}], self.events)
 
+    def test_cached_greeting_plays_while_model_is_still_loading(self):
+        root = Path(self.temp.name)
+        paths = fake_paths(root)
+        paths.model.write_bytes(b"test model")
+        cache = FixedSpeechCache(root / "fixed", paths.model)
+        cache.write(STARTUP_GREETING, array("f", (0.1,) * 100).tobytes(), 24000)
+        release = threading.Event()
+        entered = threading.Event()
+        def load(paths):
+            entered.set()
+            release.wait(2)
+            return self.tts
+        self.engine._fixed_cache = cache
+        self.engine._tts_factory = load
+        try:
+            self.assertTrue(self.engine.start())
+            self.assertTrue(entered.wait(1))
+            self.assertIsNone(self.engine._tts)
+            self.assertTrue(self.engine.speak(1, STARTUP_GREETING))
+            self.wait_for(lambda: any(e["event"] == "finished" for e in self.events))
+            self.assertIsNone(self.engine._tts)
+            self.assertEqual([], self.tts.calls)
+        finally:
+            release.set()
+
     def test_speak_streams_float32_chunks_and_emits_started_then_finished_for_request(self):
         self.tts.audio = FakeAudio(samples=tuple(index / 2048 for index in range(1025)))
         self.engine.start()
@@ -224,6 +251,30 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
         self.wait_for(lambda: {"event": "finished", "request_id": 1} in self.events)
 
         self.assertEqual(1, len(tts.calls))
+
+    def test_fixed_disk_cache_plays_without_synthesis(self):
+        root = Path(self.temp.name)
+        paths = fake_paths(root)
+        paths.model.write_bytes(b"model")
+        cache = FixedSpeechCache(root / "fixed", paths.model)
+        cache.write(STARTUP_GREETING, array("f", [0.25] * 1024).tobytes(), 24000)
+        self.engine._fixed_cache = cache
+        self.engine.start()
+        self.engine.speak(1, STARTUP_GREETING)
+        self.wait_for(lambda: {"event": "finished", "request_id": 1} in self.events)
+        self.assertEqual([], self.tts.calls)
+
+    def test_missing_fixed_cache_is_synthesized_and_saved(self):
+        root = Path(self.temp.name)
+        paths = fake_paths(root)
+        paths.model.write_bytes(b"model")
+        cache = FixedSpeechCache(root / "fixed", paths.model)
+        self.engine._fixed_cache = cache
+        self.engine.start()
+        self.engine.speak(1, STARTUP_GREETING)
+        self.wait_for(lambda: {"event": "finished", "request_id": 1} in self.events)
+        self.assertTrue(self.tts.calls)
+        self.assertIsNotNone(cache.read(STARTUP_GREETING))
 
     def test_dynamic_text_is_generated_in_short_playable_segments(self):
         self.assertEqual(
@@ -433,11 +484,11 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
 
         self.assertEqual([], constructed)
 
-    def test_worker_source_does_not_require_numpy_or_sounddevice_play(self):
+    def test_worker_preloads_numpy_and_uses_raw_output_stream(self):
         import offline_speech_worker
 
         source = inspect.getsource(offline_speech_worker)
-        self.assertNotIn("import numpy", source)
+        self.assertIn("import numpy", source)
         self.assertNotIn("sounddevice.play", source)
         self.assertIn("RawOutputStream", source)
 
@@ -475,6 +526,7 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
                 "import os, sys",
                 f"sys.path.insert(0, {str(worker_dir)!r})",
                 "import offline_speech_worker as worker",
+                "worker.initialize_native_dependencies = lambda: None",
                 "worker.resolve_offline_speech_paths = lambda root: object()",
                 "def fake_run(paths, input_stream, output_stream):",
                 "    os.write(1, b'\\x80native-log\\n')",
@@ -505,6 +557,7 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
                 "import json, sys",
                 f"sys.path.insert(0, {str(worker_dir)!r})",
                 "import offline_speech_worker as worker",
+                "worker.initialize_native_dependencies = lambda: None",
                 "worker.resolve_offline_speech_paths = lambda root: object()",
                 "def fake_run(paths, input_stream, output_stream):",
                 "    command = json.loads(input_stream.readline())",

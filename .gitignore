@@ -1,0 +1,5 @@
+__pycache__/
+*.py[cod]
+outputs/tts-benchmark-2026-09-22/models/
+outputs/tts-benchmark-2026-09-22/piper-download/
+outputs/ocr-investigation-2026-09-22/regression-output.txt

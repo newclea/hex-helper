@@ -24,6 +24,9 @@ HIGH_SUMMARIES = {
     "ocr_error": "这次识别没有成功，可以点击猫咪重试。",
     "recommendation_unavailable": "三张海克斯已识别，但当前推荐数据不足。",
 }
+WIN_GREETING = "耶，赢啦！"
+LOSS_GREETING = "惜败惜败，再开一局吧。"
+FIXED_SPEECH_TEXTS = (STARTUP_GREETING, WIN_GREETING, LOSS_GREETING)
 
 
 def recommendation_summary(view: Mapping[str, Any]) -> str | None:
@@ -52,7 +55,7 @@ class CompanionSpeechPolicy:
         self._ocr_announced = False
         self._sequence = 0
         self._startup_announced = False
-        self._last_game_result_key: str | None = None
+        self._announced_result_matches: set[str] = set()
 
     def startup(self, now: float) -> tuple[SpeechMessage, ...]:
         if self._startup_announced:
@@ -71,6 +74,7 @@ class CompanionSpeechPolicy:
     def update(self, view: Mapping[str, Any], now: float) -> tuple[SpeechMessage, ...]:
         game_result = self._game_result_message(view, now)
         if game_result:
+            self._update_ocr_state("", now)
             return game_result
         state = str(view.get("state") or "")
         if view.get("bubble_visible") is False:
@@ -120,10 +124,11 @@ class CompanionSpeechPolicy:
     ) -> tuple[str | None, SpeechPriority, str]:
         if state == "champ_select":
             recommendations = view.get("recommended_champions")
-            if isinstance(recommendations, list) and len(recommendations) == 3:
+            if isinstance(recommendations, list) and 1 <= len(recommendations) <= 3:
                 names = [str(item).strip() for item in recommendations]
                 if all(names):
-                    summary = f"根据当前英雄强度，推荐选择{'、'.join(names)}三个英雄哦。"
+                    count = {1: "这个", 2: "两个", 3: "三个"}[len(names)]
+                    summary = f"根据当前英雄强度，推荐选择{'、'.join(names)}{count}英雄哦。"
                     return summary, SpeechPriority.NORMAL, f"champ_select:{':'.join(names)}"
         if state in HIGH_SUMMARIES:
             return HIGH_SUMMARIES[state], SpeechPriority.HIGH, state
@@ -141,10 +146,10 @@ class CompanionSpeechPolicy:
         if result not in {"WIN", "LOSS"} or not match_id:
             return ()
         key = f"game_result:{match_id}:{result}"
-        if key == self._last_game_result_key:
+        if match_id in self._announced_result_matches:
             return ()
-        self._last_game_result_key = key
-        summary = "耶，赢啦！" if result == "WIN" else "惜败惜败，再开一局吧。"
+        self._announced_result_matches.add(match_id)
+        summary = WIN_GREETING if result == "WIN" else LOSS_GREETING
         scoped_debug("game-result", "match_id=%s result=%s announced=false", match_id, result)
         return (self._message("game_result", summary, SpeechPriority.HIGH, key, now),)
 

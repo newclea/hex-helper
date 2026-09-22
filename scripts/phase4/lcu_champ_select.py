@@ -266,8 +266,7 @@ def parse_end_of_game_stats(body: str) -> tuple[int | None, str | None, str | No
     if type(game_id) is not int or not 1 <= game_id <= 18_446_744_073_709_551_615:
         game_id = None
     raw_status = data.get("myTeamStatus")
-    if not isinstance(raw_status, str):
-        return game_id, None, None
+    raw_status = raw_status if isinstance(raw_status, str) else ""
     normalized = raw_status.strip().upper()
     results = {
         "WIN": "WIN",
@@ -278,7 +277,18 @@ def parse_end_of_game_stats(body: str) -> tuple[int | None, str | None, str | No
         "LOST": "LOSS",
         "DEFEAT": "LOSS",
     }
-    return game_id, results.get(normalized), raw_status[:32]
+    result = results.get(normalized)
+    # Modern EOG responses can leave myTeamStatus empty. Identify the local
+    # player's team explicitly; never assume the first team is ours.
+    teams = data.get("teams")
+    player_teams = [team for team in teams if isinstance(team, Mapping)
+                    and team.get("isPlayerTeam") is True] if isinstance(teams, list) else []
+    if len(player_teams) == 1 and type(player_teams[0].get("isWinningTeam")) is bool:
+        team_result = "WIN" if player_teams[0]["isWinningTeam"] else "LOSS"
+        if result is not None and result != team_result:
+            return game_id, None, "conflicting_result"
+        return game_id, team_result, "teams.isWinningTeam"
+    return game_id, result, raw_status[:32] or None
 
 
 def parse_champ_select_session(
@@ -620,7 +630,7 @@ def read_lcu_snapshot(
             game_id = parse_gameflow_game_id(game_response.body, phase=phase)
         elif game_response.error_code == "auth_rejected" and provider is not None:
             provider.invalidate()
-    elif phase in POST_GAME_PHASES:
+    elif phase in POST_GAME_PHASES or phase in {"Lobby", "Matchmaking", "ReadyCheck"}:
         result_response = client.get(connection, END_OF_GAME_STATS_PATH)
         game_result_status = result_response.status_code
         if result_response.ok:

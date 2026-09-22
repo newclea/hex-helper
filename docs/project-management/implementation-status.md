@@ -103,3 +103,51 @@ PYTHONPATH=scripts/product:scripts/recognition_overlay \
 - 边界：Windows 多屏和真实语音仍待验收，代码推送不等于实机发布通过。
 
 本轮离线语音和死亡 OCR 改动尚未推送；推送后需另行记录两个远端完整 SHA。
+
+## 2026-09-22 Windows 固定语音修复（本地未提交）
+
+- 基线：`main` @ `8c3b2bc`，本节记录该基线之上的工作区改动。
+- REQ-VOICE-010：选人语音支持 1～3 个英雄，policy 和 app 发布链路均有回归覆盖。
+- REQ-VOICE-011：新增 numpy 1.26.4 wheel 和 SHA-256 清单，离线安装六个固定版本依赖到
+  `%LOCALAPPDATA%\LoLRecognitionOverlay\speech-runtime\1.13.8-py311-numpy1.26.4`。
+- Windows 实测发现：numpy 在 sherpa 合成回调线程中首次导入会卡住。
+  worker 改为主线程初始化 numpy / sounddevice，欢迎语改为按需流式合成，取消默认整句预热。
+- REQ-VOICE-012：欢迎语仍由启动动画触发；赛果按 match_id 去重，旧赛果回流或更正不重复播报。
+- 自动化：设置 `PYTHONPATH=scripts\product;scripts\recognition_overlay;scripts\phase4` 后，
+  `py -3.11 -B -m unittest discover -s tests -p "test_*.py"`：238 项通过。
+  `py -3.11 -B scripts/product/offline_speech_assets.py --verify` 通过；本次改动差异检查通过。
+- 本机真实播放：Python 3.11、Realtek 耳机默认设备，通过 OfflineSpeechAdapter 启动真实 worker，
+  欢迎语、1／2／3 人选人句、WIN、LOSS 六段全部返回 started / finished 成功。
+  worker ready 2.95 秒；请求到 started：欢迎语 2.12 秒、选人 3.38～3.50 秒、赛果 0.81／2.14 秒。
+- 边界：上述是本机播放协议与设备测试，不代替用户听感确认；实际 LoL 选人及赛果事件联调待验收。
+  未修改 Agent 配置，未提交、推送或生成发布包。
+
+### 13900HX 线程对比与默认值调整
+
+- 用户要求增加线程；对同一句 23 汉字推荐语，以当前分句和 callback 方式各合成两次，不播放音频。
+- 2 线程：18.910 / 14.368 秒；4 线程：15.944 / 15.246 秒；
+  8 线程：16.821 / 17.393 秒；12 线程：16.755 / 16.768 秒。
+- 默认改为 4 线程，本轮平均 15.60 秒、约 1.47 字/秒；相对 2 线程平均 16.64 秒缩短约 6%。
+  每组只有两次，运行顺序和系统负载可能影响结果，不能视为稳定性能保证。
+- 35 项 worker / adapter 测试通过：上述 PYTHONPATH 加 `tests` 后运行
+  `py -3.11 -B -m unittest product.test_offline_speech_worker product.test_offline_speech`。
+- 重启小猫后生效；本次调整不解决生成速度慢于播放速度造成的全部停顿。
+
+### 固定音频持久缓存
+
+- REQ-VOICE-013：已预生成欢迎语、胜利、失败三个完整 PCM16 WAV 到 `assets/speech/fixed/`。
+  worker 优先读磁盘缓存并整段播放，跨进程复用；动态选人文案仍使用原合成链路。
+- 文件名按模型 SHA-256、文案、sid、语速及格式版本计算；缺失、无效 WAV、截断音频回退合成。
+  成功合成后原子写回固定句缓存；无写权限不阻断播放。
+- `scripts/product/prepare_fixed_speech.py` 可离线生成和验证三个缓存，不播放声音。
+- 244 项自动化通过，离线模型与依赖资源校验通过。新增测试覆盖跨实例复用、模型/文案变更、
+  损坏/截断回退、动态文本不落盘、缓存命中不调用 TTS、缺失后补回。
+- 真实 worker 播放三个缓存全部 started / finished 成功；worker ready 5.468 秒，
+  就绪后欢迎语/胜利/失败请求到 started 分别为 0.429 / 0.397 / 0.312 秒。
+  仍需用户确认听感；启动模型加载时间仍存在，未声称窗口出现即可立刻出声。
+
+
+### 结算 / 存活误触发 / FP32 语音更新
+
+详见 [修复记录](../fixes-2026-09-22-result-ocr-speech.md)。257 项测试与资源校验通过；
+下一局实机胜负播报和 FP32 声卡听感尚待联调。首次探测 3～6 级限时，原始 visible 不再绕过门控。

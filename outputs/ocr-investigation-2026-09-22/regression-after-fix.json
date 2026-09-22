@@ -1,0 +1,40 @@
+[
+  {
+    "completed": 0,
+    "level": 9,
+    "is_dead": false,
+    "death_sequence": 0,
+    "ocr_allowed_before_frame": false,
+    "ocr_allowed_after_frame": false,
+    "accepted_cards": 0,
+    "view": {
+      "state": "in_game",
+      "message": "已记下 0 张海克斯，等待下一轮三选一。",
+      "options": [],
+      "match_id": "local:0c297384616e43e3961a80d9e61247a0",
+      "game_result": null,
+      "bubble_visible": false,
+      "refresh_available": false
+    },
+    "speech_after_two_seconds": []
+  },
+  {
+    "completed": 1,
+    "level": 9,
+    "is_dead": false,
+    "death_sequence": 0,
+    "ocr_allowed_before_frame": false,
+    "ocr_allowed_after_frame": false,
+    "accepted_cards": 0,
+    "view": {
+      "state": "in_game",
+      "message": "已记下 1 张海克斯，等待下一轮三选一。",
+      "options": [],
+      "match_id": "local:40263f1f30464dbf9b296d127d173c4c",
+      "game_result": null,
+      "bubble_visible": false,
+      "refresh_available": false
+    },
+    "speech_after_two_seconds": []
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "completed": 0,
+    "level": 9,
+    "is_dead": false,
+    "death_sequence": 0,
+    "ocr_allowed_before_frame": true,
+    "ocr_allowed_after_frame": true,
+    "accepted_cards": 0,
+    "view": {
+      "state": "ocr_reading",
+      "message": "已识别 0/3。\n左侧、中间、右侧尚未读齐，正在自动重试。可点击猫咪重识。",
+      "refresh_available": true,
+      "options": [],
+      "match_id": "local:69af16ac69ed4868abd282cb212e5e1d",
+      "game_result": null,
+      "bubble_visible": true
+    },
+    "speech_after_two_seconds": [
+      "正在识别海克斯，请稍候。"
+    ]
+  },
+  {
+    "completed": 1,
+    "level": 9,
+    "is_dead": false,
+    "death_sequence": 0,
+    "ocr_allowed_before_frame": false,
+    "ocr_allowed_after_frame": true,
+    "accepted_cards": 0,
+    "view": {
+      "state": "ocr_reading",
+      "message": "已识别 0/3。\n左侧、中间、右侧尚未读齐，正在自动重试。可点击猫咪重识。",
+      "refresh_available": true,
+      "options": [],
+      "match_id": "local:d53750757ed24360b46b90296785af47",
+      "game_result": null,
+      "bubble_visible": true
+    },
+    "speech_after_two_seconds": [
+      "正在识别海克斯，请稍候。"
+    ]
+  }
+]

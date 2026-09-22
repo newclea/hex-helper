@@ -31,10 +31,24 @@ class CompanionSpeechPolicyTests(unittest.TestCase):
         )
         self.assertEqual((), policy.update(view, 1.1))
 
-    def test_champion_select_waits_until_three_recommendations_exist(self) -> None:
-        policy = CompanionSpeechPolicy()
-        view = {"state": "champ_select", "recommended_champions": ["妮蔻", "亚索"]}
-        self.assertEqual((), policy.update(view, 1.0))
+    def test_champion_select_speaks_one_or_two_recommendations_once(self) -> None:
+        for names, expected in (
+            (["妮蔻"], "根据当前英雄强度，推荐选择妮蔻这个英雄哦。"),
+            (["妮蔻", "亚索"], "根据当前英雄强度，推荐选择妮蔻、亚索两个英雄哦。"),
+        ):
+            with self.subTest(names=names):
+                policy = CompanionSpeechPolicy()
+                view = {"state": "champ_select", "recommended_champions": names}
+                self.assertEqual(expected, policy.update(view, 1.0)[0].summary)
+                self.assertEqual((), policy.update(view, 2.0))
+
+    def test_empty_or_invalid_recommendations_stay_silent(self) -> None:
+        for names in ([], [""], ["妮蔻", " "], ["妮蔻"] * 4):
+            with self.subTest(names=names):
+                policy = CompanionSpeechPolicy()
+                self.assertEqual((), policy.update(
+                    {"state": "champ_select", "recommended_champions": names}, 1.0
+                ))
 
     def test_hex_recommendation_is_left_to_agent_source(self) -> None:
         policy = CompanionSpeechPolicy()
@@ -69,6 +83,15 @@ class CompanionSpeechPolicyTests(unittest.TestCase):
         result = policy.update({"match_id": "lcu:2", "game_result": "LOSS"}, 2.0)
 
         self.assertEqual("惜败惜败，再开一局吧。", result[0].summary)
+
+    def test_result_replay_or_correction_does_not_repeat_a_match(self) -> None:
+        policy = CompanionSpeechPolicy()
+        policy.update({"match_id": "lcu:1", "game_result": "WIN"}, 1.0)
+        policy.update({"match_id": "lcu:2", "game_result": "LOSS"}, 2.0)
+        for result in ("WIN", "LOSS"):
+            self.assertEqual((), policy.update(
+                {"match_id": "lcu:1", "game_result": result}, 40.0
+            ))
 
     def test_unknown_game_result_stays_silent(self) -> None:
         policy = CompanionSpeechPolicy()

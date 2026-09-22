@@ -97,7 +97,7 @@ class ViewModelDeathGateTests(unittest.TestCase):
 
         self.assertTrue(self.model.vision_allowed())
 
-    def test_raw_detector_visibility_overrides_ineligible_death(self) -> None:
+    def test_raw_detector_visibility_cannot_override_ineligible_death(self) -> None:
         self.model.selected = [confirmed(1), confirmed(2)]
         self.model._apply_live_player(player(8, True))
         self.assertEqual([], self.model.offer)
@@ -109,9 +109,34 @@ class ViewModelDeathGateTests(unittest.TestCase):
             "recognition_debug": {"cards": []},
         })
 
-        self.assertTrue(self.model.offer_visible)
+        self.assertFalse(self.model.offer_visible)
         self.assertEqual([], self.model.offer)
+        self.assertFalse(self.model.vision_allowed())
+
+    def test_alive_level_nine_unknown_frame_cannot_open_gate(self) -> None:
+        for picks in ([], [confirmed(1)]):
+            with self.subTest(picks=len(picks)):
+                self.model._start_new_match()
+                self.model.phase = "InProgress"
+                self.model.selected = picks
+                self.model._apply_live_player(player(9, False))
+                self.assertFalse(self.model.vision_allowed())
+                self.model.apply_frame_result({
+                    "accepted": False, "reason": "recognition_unknown",
+                    "raw_detector": {"visible": True},
+                    "recognition_debug": {"cards": []},
+                })
+                self.assertFalse(self.model.offer_visible)
+                self.assertFalse(self.model.vision_allowed())
+                self.assertFalse(self.model.snapshot()["offer_visible"])
+
+    def test_initial_alive_probe_expires(self) -> None:
+        self.model.phase = "InProgress"
+        self.model._apply_live_player(player(3, False))
         self.assertTrue(self.model.vision_allowed())
+        self.model._probe_until = 0.0
+        self.model._apply_live_player(player(3, False))
+        self.assertFalse(self.model.vision_allowed())
 
     def test_stale_cards_without_detector_visibility_do_not_override_gate(self) -> None:
         self.model.selected = [confirmed(1), confirmed(2)]

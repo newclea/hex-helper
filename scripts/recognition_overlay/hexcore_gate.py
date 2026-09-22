@@ -95,6 +95,7 @@ def hexcore_ocr_open(
     offer_visible: bool = False,
     seconds_since_respawn: float | None = None,
     death_scan_allowed: bool = False,
+    initial_probe_active: bool = True,
 ) -> bool:
     if type(completed) is not int or completed < 0:
         return False
@@ -114,6 +115,7 @@ def hexcore_ocr_open(
         not round_closed
         and completed == 0
         and type(level) is int
-        and level >= HEXCORE_LEVELS[0]
+        and HEXCORE_LEVELS[0] <= level < HEXCORE_LEVELS[1]
+        and initial_probe_active
         and is_dead is not True
     )

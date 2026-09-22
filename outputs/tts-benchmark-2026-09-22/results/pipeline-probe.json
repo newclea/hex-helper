@@ -1,0 +1,57 @@
+{
+  "output": "real-time silent sink; no hardware playback",
+  "events": [
+    {
+      "event": "ready",
+      "from_launch_seconds": 0.6127
+    },
+    {
+      "event": "started",
+      "request_id": 1,
+      "from_launch_seconds": 0.6143,
+      "from_request_seconds": 0.001
+    },
+    {
+      "event": "finished",
+      "request_id": 1,
+      "from_launch_seconds": 9.3641,
+      "from_request_seconds": 8.7509
+    },
+    {
+      "event": "started",
+      "request_id": 2,
+      "from_launch_seconds": 9.3686,
+      "from_request_seconds": 0.0042
+    },
+    {
+      "event": "finished",
+      "request_id": 2,
+      "from_launch_seconds": 10.4187,
+      "from_request_seconds": 1.0543
+    },
+    {
+      "event": "started",
+      "request_id": 3,
+      "from_launch_seconds": 10.4287,
+      "from_request_seconds": 0.0098
+    },
+    {
+      "event": "finished",
+      "request_id": 3,
+      "from_launch_seconds": 13.0587,
+      "from_request_seconds": 2.6398
+    },
+    {
+      "event": "started",
+      "request_id": 4,
+      "from_launch_seconds": 13.7026,
+      "from_request_seconds": 0.6437
+    },
+    {
+      "event": "finished",
+      "request_id": 4,
+      "from_launch_seconds": 20.1891,
+      "from_request_seconds": 7.1302
+    }
+  ]
+}
