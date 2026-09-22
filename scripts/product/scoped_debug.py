@@ -6,7 +6,7 @@ import logging
 from typing import Iterable
 
 
-SUPPORTED_DEBUG_SUBMODES = frozenset({"game-result"})
+SUPPORTED_DEBUG_SUBMODES = frozenset({"game-result", "speech"})
 _enabled_submodes: frozenset[str] = frozenset()
 
 

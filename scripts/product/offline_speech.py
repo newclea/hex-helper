@@ -8,8 +8,11 @@ import os
 import subprocess
 import sys
 import threading
+import time
 from pathlib import Path
 from typing import Callable, Sequence
+
+from scoped_debug import scoped_debug
 
 
 LOGGER = logging.getLogger(__name__)
@@ -30,6 +33,7 @@ class OfflineSpeechAdapter:
         self._bundle_root = bundle_root or Path(__file__).resolve().parents[2]
         self._process: subprocess.Popen | None = None
         self._reader: threading.Thread | None = None
+        self._stderr_reader: threading.Thread | None = None
         self._ready = threading.Event()
         self._started = threading.Event()
         self._completion = threading.Event()
@@ -47,7 +51,9 @@ class OfflineSpeechAdapter:
 
     def start(self) -> bool:
         if os.environ.get("GAMEBUDDY_OFFLINE_SPEECH_DISABLED") == "1":
+            scoped_debug("speech", "offline worker disabled by environment")
             return False
+        started_at = time.monotonic()
         with self._state_lock:
             if self._closed or self._unavailable:
                 return False
@@ -65,6 +71,10 @@ class OfflineSpeechAdapter:
             self._fail("Offline speech worker did not become ready")
             self._terminate_process(process)
             return False
+        scoped_debug(
+            "speech", "offline worker ready elapsed_ms=%d",
+            int((time.monotonic() - started_at) * 1000),
+        )
         return True
 
     def speak(self, text: str) -> bool:
@@ -78,7 +88,12 @@ class OfflineSpeechAdapter:
             self._started.clear()
             self._completion_ok = False
             self._completion.clear()
-        return self._write({"command": "speak", "request_id": request_id, "text": text})
+        written = self._write({"command": "speak", "request_id": request_id, "text": text})
+        scoped_debug(
+            "speech", "worker command request_id=%d command=speak chars=%d written=%s",
+            request_id, len(text), written,
+        )
+        return written
 
     def wait_started(self, timeout: float | None = None) -> bool | None:
         if not self._started.wait(timeout):
@@ -94,6 +109,7 @@ class OfflineSpeechAdapter:
         with self._state_lock:
             request_id = self._current_request_id
         if request_id is not None and self._is_running() and self._ready_ok:
+            scoped_debug("speech", "worker command request_id=%d command=cancel", request_id)
             self._write({"command": "cancel", "request_id": request_id})
 
     def close(self) -> None:
@@ -123,6 +139,7 @@ class OfflineSpeechAdapter:
             self._terminate_process(process)
         self._close_output(process)
         self._join_reader()
+        self._join_stderr_reader()
 
     def _launch_process(self) -> bool:
         self._ready.clear()
@@ -135,7 +152,7 @@ class OfflineSpeechAdapter:
                 self._worker_command(),
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
                 text=True,
                 encoding="utf-8",
                 bufsize=1,
@@ -154,7 +171,35 @@ class OfflineSpeechAdapter:
             daemon=True,
         )
         self._reader.start()
+        self._stderr_reader = threading.Thread(
+            target=self._read_stderr,
+            args=(process, generation),
+            daemon=True,
+        )
+        self._stderr_reader.start()
+        scoped_debug("speech", "offline worker launched generation=%d", generation)
         return True
+
+    def _read_stderr(self, process: subprocess.Popen, generation: int) -> None:
+        stream = getattr(process, "stderr", None)
+        if stream is None:
+            return
+        binary_stream = getattr(stream, "buffer", stream)
+        try:
+            while True:
+                raw_line = binary_stream.readline()
+                if raw_line in {b"", ""}:
+                    return
+                if not self._is_current_generation(process, generation):
+                    return
+                if isinstance(raw_line, bytes):
+                    line = raw_line.decode("utf-8", errors="backslashreplace")
+                else:
+                    line = str(raw_line)
+                if line.strip():
+                    scoped_debug("speech", "worker stderr %s", line.strip()[:1000])
+        except (OSError, TypeError, ValueError) as error:
+            scoped_debug("speech", "worker stderr reader failed error=%s", error)
 
     def _worker_command(self) -> list[str]:
         if self._command is None:
@@ -195,6 +240,10 @@ class OfflineSpeechAdapter:
                 self._ready.set()
                 return True
             request_id = message.get("request_id")
+            scoped_debug(
+                "speech", "worker event event=%s request_id=%s current_request_id=%s",
+                event, request_id, self._current_request_id,
+            )
             if event == "error" and request_id is None:
                 failure = str(message.get("message") or "unknown worker error")
                 self._fail(f"Offline speech worker error: {failure}")
@@ -265,6 +314,7 @@ class OfflineSpeechAdapter:
             self._close_input(process)
             self._close_output(process)
             self._join_reader()
+            self._join_stderr_reader()
 
     def _kill_process(self, process: subprocess.Popen) -> None:
         try:
@@ -275,6 +325,12 @@ class OfflineSpeechAdapter:
 
     def _join_reader(self) -> None:
         reader = self._reader
+        if reader is None or reader is threading.current_thread():
+            return
+        reader.join(timeout=CLOSE_TIMEOUT_SECONDS)
+
+    def _join_stderr_reader(self) -> None:
+        reader = self._stderr_reader
         if reader is None or reader is threading.current_thread():
             return
         reader.join(timeout=CLOSE_TIMEOUT_SECONDS)
@@ -301,6 +357,12 @@ class OfflineSpeechAdapter:
         if process.stdout is not None:
             try:
                 process.stdout.close()
+            except (OSError, ValueError):
+                pass
+        error_stream = getattr(process, "stderr", None)
+        if error_stream is not None:
+            try:
+                error_stream.close()
             except (OSError, ValueError):
                 pass
 

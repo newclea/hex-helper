@@ -79,6 +79,11 @@ class FakeRawStream:
         return None
 
 
+class FailingStartStream(FakeRawStream):
+    def start(self):
+        raise RuntimeError("device start failed")
+
+
 class BlockingTts(FakeTts):
     def __init__(self):
         super().__init__()
@@ -186,6 +191,18 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
         self.assertTrue(playback_started.wait(1.0))
         release_generation.set()
         self.wait_for(lambda: {"event": "finished", "request_id": 1} in self.events)
+
+    def test_started_is_not_emitted_when_audio_stream_start_fails(self):
+        self.engine.close()
+        self.engine = self.make_engine(self.tts, FailingStartStream)
+        self.engine.start()
+        self.engine.speak(1, "播放失败")
+        self.wait_for(lambda: any(item["event"] == "error" for item in self.events))
+
+        scoped = [event for event in self.events if "request_id" in event]
+        self.assertEqual("error", scoped[-1]["event"])
+        self.assertFalse(any(event["event"] == "started" for event in scoped))
+        self.assertIn("stage=start_stream", scoped[-1]["message"])
 
     def test_start_prewarms_fixed_phrase_for_cached_playback(self):
         tts = FakeTts()
@@ -353,7 +370,7 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
         self.engine = self.make_engine(self.tts, GuardedStream)
         self.engine.start()
         self.engine.speak(1, "播放")
-        self.wait_for(lambda: bool(self.streams))
+        self.wait_for(lambda: {"event": "started", "request_id": 1} in self.events)
         self.engine.cancel(1)
         self.assertTrue(abort_entered.wait(1.0))
         close_thread = threading.Thread(target=self.engine.close)

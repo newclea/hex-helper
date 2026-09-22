@@ -289,11 +289,24 @@ class RecognitionApp:
         now = self._clock()
         presented = self._startup_presentation(view, now)
         self.window.set_view(presented)
-        self._publish_speech(self.speech_policy.update(presented, now))
+        speech_view = self._speech_view(snapshot, presented)
+        self._publish_speech(self.speech_policy.update(speech_view, now))
         self.agent_speech.update(
             presented,
             _agent_context(snapshot, presented),
         )
+
+    def _speech_view(
+        self,
+        snapshot: Mapping[str, Any],
+        presented: Mapping[str, Any],
+    ) -> Mapping[str, Any]:
+        if presented.get("state") != "champ_select" or self.product is None:
+            return presented
+        names = self.product.champion_select_speech_names(snapshot)
+        if len(names) != 3:
+            return presented
+        return {**presented, "recommended_champions": names}
 
     def _startup_presentation(self, view: Mapping[str, Any], now: float) -> Mapping[str, Any]:
         if view.get("state") not in STARTUP_OCR_STATES:

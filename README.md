@@ -92,8 +92,10 @@ py -3.11 -B scripts\recognition_overlay\agent_probe.py --prompt "请只回复：
 ## 定向 Debug 模式
 
 正常使用继续双击 `一键启动小猫.cmd`。排查赛果读取时双击
-`一键启动小猫-Debug-赛果.cmd`，它会启动相同的完整程序，但只额外记录
-`DEBUG[game-result]` 诊断行，不会改变 LCU 请求、推荐、界面或语音行为。
+`一键启动小猫-Debug-赛果.cmd`，只额外记录 `DEBUG[game-result]`。排查完整语音链路时双击
+`一键启动小猫-Debug-语音.cmd`，只额外记录 `DEBUG[speech]`，包括排队、Agent 请求、worker、
+合成等待、音频流开始、完成、取消、超时和原生日志。两个入口都会启动相同的完整程序，
+不会改变 LCU 请求、推荐、界面或语音行为。
 诊断日志仍位于 `%LOCALAPPDATA%\LoLRecognitionOverlay\overlay.log`。
 
 ## 海克斯 OCR 时机

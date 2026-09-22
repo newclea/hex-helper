@@ -11,7 +11,7 @@ from strategy_store import StrategyStore
 
 
 class ProductControllerTextTests(unittest.TestCase):
-    def test_champion_select_exposes_same_structured_names_as_bubble_source(self) -> None:
+    def test_champion_select_keeps_speech_names_out_of_bubble_view(self) -> None:
         engine = Mock()
         engine.champion_select_recommendations.return_value = ["妮蔻推荐", "亚索推荐", "盖伦推荐"]
         engine.champion_select_recommendation_names.return_value = ["妮蔻", "亚索", "盖伦"]
@@ -20,15 +20,18 @@ class ProductControllerTextTests(unittest.TestCase):
                 engine=engine,
                 store=StrategyStore(Path(directory) / "strategy.json"),
             )
-            view = controller.present({
+            snapshot = {
                 "phase": "ChampSelect",
                 "match_id": "lcu:1",
                 "champion": "万花通灵 妮蔻",
                 "bench": ["封魔剑魂 永恩", "疾风剑豪 亚索", "德玛西亚之力 盖伦"],
-            })
+            }
+            view = controller.present(snapshot)
+            names = controller.champion_select_speech_names(snapshot)
 
-        self.assertEqual(["妮蔻", "亚索", "盖伦"], view["recommended_champions"])
+        self.assertEqual(["妮蔻", "亚索", "盖伦"], names)
         self.assertEqual("妮蔻推荐\n亚索推荐\n盖伦推荐", view["message"])
+        self.assertNotIn("recommended_champions", view)
 
     def test_real_champion_recommendations_are_limited_to_three_visible_names(self) -> None:
         engine = RecommendationEngine.load(Path("data/recommendation"))
@@ -37,14 +40,15 @@ class ProductControllerTextTests(unittest.TestCase):
                 engine=engine,
                 store=StrategyStore(Path(directory) / "strategy.json"),
             )
-            view = controller.present({
+            snapshot = {
                 "phase": "ChampSelect",
                 "match_id": "lcu:1",
                 "champion": "万花通灵 妮蔻",
                 "bench": ["疾风剑豪 亚索", "德玛西亚之力 盖伦", "封魔剑魂 永恩"],
-            })
+            }
+            view = controller.present(snapshot)
+            names = controller.champion_select_speech_names(snapshot)
 
-        names = view["recommended_champions"]
         self.assertEqual(3, len(names))
         self.assertTrue(all(name in view["message"] for name in names))
 
@@ -102,6 +106,27 @@ class ProductControllerTextTests(unittest.TestCase):
         self.assertFalse(view["bubble_visible"])
         self.assertEqual([], view["options"])
         self.assertNotEqual("ocr_error", view["state"])
+
+    def test_unconfirmed_offer_keeps_existing_bubble_message(self) -> None:
+        engine = RecommendationEngine.load(Path("data/recommendation"))
+        with TemporaryDirectory() as directory:
+            controller = ProductController(
+                engine=engine,
+                store=StrategyStore(Path(directory) / "strategy.json"),
+            )
+            message = "三张名字已读到，结果尚未确认。若迟迟没有结果，可点击猫咪重试。"
+            view = controller.present({
+                "phase": "InProgress",
+                "match_id": "unchanged-bubble",
+                "champion": "万花通灵 妮蔻",
+                "game_mode": "KIWI",
+                "offer_visible": True,
+                "offer": [],
+                "ocr_feedback": {"state": "ocr_confirming", "message": message},
+            })
+
+        self.assertEqual("ocr_confirming", view["state"])
+        self.assertEqual(message, view["message"])
 
 
 if __name__ == "__main__":

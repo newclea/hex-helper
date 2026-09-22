@@ -221,6 +221,34 @@ class CompletionSequenceAdapter(FakeAdapter):
         return outcome
 
 
+class DelayedPlaybackAdapter(FakeAdapter):
+    def __init__(self, start_delay: float, playback_delay: float) -> None:
+        super().__init__()
+        self.start_delay = start_delay
+        self.playback_delay = playback_delay
+        self.spoken_at: float | None = None
+
+    def speak(self, text: str) -> bool:
+        self.spoken_at = __import__("time").monotonic()
+        return super().speak(text)
+
+    def wait_started(self, timeout=None) -> bool | None:
+        now = __import__("time").monotonic()
+        if self.spoken_at is not None and now - self.spoken_at >= self.start_delay:
+            return True
+        return None
+
+    def wait_finished(self, timeout=None) -> bool | None:
+        time = __import__("time")
+        if timeout:
+            time.sleep(timeout)
+        now = time.monotonic()
+        total = self.start_delay + self.playback_delay
+        if self.spoken_at is not None and now - self.spoken_at >= total:
+            return True
+        return None
+
+
 class SpeechServiceTests(unittest.TestCase):
     def test_terminal_error_clears_current_and_dispatches_next(self) -> None:
         import time
@@ -271,6 +299,28 @@ class SpeechServiceTests(unittest.TestCase):
 
         self.assertEqual(["first", "second"], adapter.spoken)
         self.assertGreaterEqual(adapter.cancelled, 1)
+
+    def test_playback_timeout_starts_after_real_audio_start(self) -> None:
+        import time
+
+        adapter = DelayedPlaybackAdapter(start_delay=0.04, playback_delay=0.02)
+        service = SpeechService(
+            adapter,
+            clock=time.monotonic,
+            start_timeout_seconds=0.08,
+            playback_timeout_seconds=0.03,
+        )
+        now = time.monotonic()
+        service.publish(message("long-start", expires_at=now + 1.0))
+        deadline = time.monotonic() + 0.5
+        while not adapter.spoken and time.monotonic() < deadline:
+            time.sleep(0.005)
+        while service._current is not None and time.monotonic() < deadline:
+            time.sleep(0.005)
+
+        self.assertEqual(["long-start"], adapter.spoken)
+        self.assertEqual(0, adapter.cancelled)
+        service.close()
 
     def test_adapter_preloads_in_background_and_failure_does_not_raise(self) -> None:
         import time

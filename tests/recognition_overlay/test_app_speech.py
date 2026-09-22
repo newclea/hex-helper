@@ -24,6 +24,7 @@ def make_app() -> RecognitionApp:
     app.model.snapshot.return_value = {"phase": "GameStart"}
     app.product = Mock()
     app.product.present.return_value = {"state": "waiting"}
+    app.product.champion_select_speech_names.return_value = []
     app.window = Mock()
     app.speech_policy = Mock()
     app.speech_policy.update.return_value = ("update-message",)
@@ -43,6 +44,10 @@ class RecognitionAppSpeechTests(unittest.TestCase):
     def test_parser_accepts_scoped_game_result_debug_mode(self) -> None:
         args = _parser().parse_args(["--debug-submode", "game-result"])
         self.assertEqual(["game-result"], args.debug_submode)
+
+    def test_parser_accepts_scoped_speech_debug_mode(self) -> None:
+        args = _parser().parse_args(["--debug-submode", "speech"])
+        self.assertEqual(["speech"], args.debug_submode)
 
     def test_greeting_start_publishes_fixed_startup_voice(self) -> None:
         app = make_app()
@@ -106,6 +111,19 @@ class RecognitionAppSpeechTests(unittest.TestCase):
         app.window.set_view.assert_called_once_with({"state": "waiting"})
         app.speech_policy.update.assert_called_once_with({"state": "waiting"}, 5.0)
         app.speech.publish.assert_called_once_with("update-message")
+
+    def test_champion_names_are_added_only_to_speech_view(self) -> None:
+        app = make_app()
+        visible = {"state": "champ_select", "message": "原有气泡", "bubble_visible": True}
+        app.product.present.return_value = visible
+        app.product.champion_select_speech_names.return_value = ["妮蔻", "亚索", "盖伦"]
+
+        app._publish()
+
+        app.window.set_view.assert_called_once_with(visible)
+        speech_view = app.speech_policy.update.call_args.args[0]
+        self.assertEqual(["妮蔻", "亚索", "盖伦"], speech_view["recommended_champions"])
+        self.assertNotIn("recommended_champions", visible)
 
     def test_startup_gate_uses_window_greeting_boundary_after_slow_construction(self) -> None:
         app = make_app()

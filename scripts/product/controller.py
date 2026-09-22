@@ -148,6 +148,16 @@ class ProductController:
             view["refresh_available"] = False
         return view
 
+    def champion_select_speech_names(self, snapshot: Mapping[str, Any]) -> list[str]:
+        if str(snapshot.get("phase") or "").strip() != "ChampSelect":
+            return []
+        current_hero = str(snapshot.get("champion") or "").strip() or None
+        bench = [str(item) for item in snapshot.get("bench") or [] if str(item).strip()]
+        return self.engine.champion_select_recommendation_names(
+            current_hero=current_hero,
+            bench=bench,
+        )
+
     @staticmethod
     def _message_blocks(recommendation: Any, plan: Any, rows: list[str]) -> list[dict[str, str]]:
         blocks = [
@@ -182,14 +192,9 @@ class ProductController:
             bench=bench,
             seed=self._match_id or "",
         )
-        recommendations = self.engine.champion_select_recommendation_names(
-            current_hero=current_hero,
-            bench=bench,
-        )
         return {
             "state": "champ_select",
             "message": "\n".join(lines) if lines else "正在读取可选英雄，稍后为你推荐~",
-            "recommended_champions": recommendations,
             "options": [],
         }
 

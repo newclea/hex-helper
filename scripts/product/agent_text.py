@@ -14,6 +14,7 @@ import urllib.request
 import uuid
 
 from agent_config import AgentSettings
+from scoped_debug import scoped_debug
 
 
 LOGGER = logging.getLogger(__name__)
@@ -123,6 +124,10 @@ class TaijiDirectAgentProvider:
         if request is None:
             return _failure(query_id, "invalid_request")
         started_at = self._clock()
+        scoped_debug(
+            "speech", "agent request started query_id=%s timeout_ms=%d",
+            query_id, int(self._settings.timeout_seconds * 1000),
+        )
         try:
             response = self._transport.post(request)
         except AgentTransportFailure as error:
@@ -184,6 +189,10 @@ class TaijiDirectAgentProvider:
             status_code,
             elapsed_ms,
             error_code or "none",
+        )
+        scoped_debug(
+            "speech", "agent request finished query_id=%s status=%s elapsed_ms=%d error=%s",
+            query_id, status_code, elapsed_ms, error_code or "none",
         )
 
 

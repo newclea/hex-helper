@@ -86,6 +86,13 @@ class LcuGameResultTests(unittest.TestCase):
         self.assertEqual("game-result", log.call_args.args[1])
         self.assertEqual("WIN", log.call_args.args[2])
 
+    def test_speech_debug_is_independent_from_game_result_debug(self) -> None:
+        configure_debug_submodes(("speech",))
+        with patch("scoped_debug.logging.info") as log:
+            scoped_debug("game-result", "result=%s", "WIN")
+            scoped_debug("speech", "event=%s", "started")
+        log.assert_called_once_with("DEBUG[%s] event=%s", "speech", "started")
+
 
 if __name__ == "__main__":
     unittest.main()

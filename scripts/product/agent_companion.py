@@ -10,6 +10,7 @@ from typing import Any, Callable, Mapping
 from agent_text import AgentTextProvider
 from speech import SpeechMessage, SpeechPriority
 from speech_policy import recommendation_summary
+from scoped_debug import scoped_debug
 
 
 LOGGER = logging.getLogger(__name__)
@@ -61,6 +62,10 @@ class HexRecommendationAgentSpeech:
         if request is None:
             return
         generation, request_context, fallback = request
+        scoped_debug(
+            "speech", "agent speech requested generation=%d fallback_chars=%d",
+            generation, len(fallback),
+        )
         try:
             self._submit(lambda: self._generate(generation, request_context, fallback))
         except Exception:
@@ -124,6 +129,7 @@ class HexRecommendationAgentSpeech:
             result = self._provider.generate(_hex_prompt(context), context)
         except Exception:
             LOGGER.exception("agent companion request failed error=internal_error")
+            scoped_debug("speech", "agent speech failed generation=%d error=internal_error", generation)
             self._publish_if_current(generation, fallback, "local")
             return
         if not result.ok:
@@ -131,6 +137,10 @@ class HexRecommendationAgentSpeech:
                 "agent companion request finished query_id=%s error=%s",
                 result.query_id,
                 result.error_code or "unknown",
+            )
+            scoped_debug(
+                "speech", "agent speech failed generation=%d query_id=%s error=%s",
+                generation, result.query_id, result.error_code or "unknown",
             )
             self._publish_if_current(generation, fallback, "local")
             return
@@ -155,4 +165,10 @@ class HexRecommendationAgentSpeech:
         with self._lock:
             current = not self._closed and self._generation == generation
             if current:
+                scoped_debug(
+                    "speech", "agent speech publish generation=%d source=%s chars=%d",
+                    generation, source, len(text),
+                )
                 self._publish(message)
+            else:
+                scoped_debug("speech", "agent speech stale generation=%d", generation)

@@ -52,6 +52,13 @@ class OfflineSpeechBootstrapTests(unittest.TestCase):
         self.assertEqual(self.EXPECTED_WHEELS, actual)
         self.assertFalse(any("numpy" in name.lower() for name in actual))
 
+    def test_speech_debug_launcher_uses_scoped_mode(self) -> None:
+        root = Path(__file__).resolve().parents[2]
+        launcher = (root / "一键启动小猫-Debug-语音.cmd").read_text(encoding="utf-8")
+
+        self.assertIn("run_recognition_overlay.ps1", launcher)
+        self.assertIn("-DebugSubmode speech", launcher)
+
 
 if __name__ == "__main__":
     unittest.main()

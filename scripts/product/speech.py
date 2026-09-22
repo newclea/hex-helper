@@ -10,9 +10,12 @@ from dataclasses import dataclass
 from enum import IntEnum
 from typing import Callable, Protocol
 
+from scoped_debug import scoped_debug
+
 
 LOGGER = logging.getLogger(__name__)
-DEFAULT_PLAYBACK_TIMEOUT_SECONDS = 15.0
+DEFAULT_START_TIMEOUT_SECONDS = 45.0
+DEFAULT_PLAYBACK_TIMEOUT_SECONDS = 30.0
 PLAYBACK_POLL_SECONDS = 0.1
 
 
@@ -121,6 +124,7 @@ class SpeechService:
         adapter: SpeechAdapter,
         enabled: bool = True,
         clock: Callable[[], float] = time.monotonic,
+        start_timeout_seconds: float = DEFAULT_START_TIMEOUT_SECONDS,
         playback_timeout_seconds: float = DEFAULT_PLAYBACK_TIMEOUT_SECONDS,
     ) -> None:
         self._adapter = adapter
@@ -130,6 +134,7 @@ class SpeechService:
         self._current: SpeechMessage | None = None
         self._closed = False
         self._enabled = enabled
+        self._start_timeout_seconds = max(0.01, start_timeout_seconds)
         self._playback_timeout_seconds = max(0.01, playback_timeout_seconds)
         self._dispatch_generation = 0
         self._adapter_available: bool | None = None
@@ -146,7 +151,7 @@ class SpeechService:
             if accepted and self._current is not None:
                 if should_interrupt(self._current, message):
                     self._dispatch_generation += 1
-                    self._cancel_adapter()
+                    self._cancel_adapter("high_priority_interrupt")
             if accepted:
                 LOGGER.info(
                     "speech queued id=%s kind=%s priority=%s",
@@ -154,7 +159,16 @@ class SpeechService:
                     message.kind,
                     message.priority.name,
                 )
+                scoped_debug(
+                    "speech", "queue accepted id=%s kind=%s priority=%s chars=%d",
+                    message.message_id, message.kind, message.priority.name, len(message.summary),
+                )
                 self._condition.notify()
+            else:
+                scoped_debug(
+                    "speech", "queue rejected id=%s kind=%s enabled=%s",
+                    message.message_id, message.kind, self._enabled,
+                )
             return accepted
 
     def set_enabled(self, enabled: bool) -> None:
@@ -166,7 +180,7 @@ class SpeechService:
                 self._enabled = False
                 self._dispatch_generation += 1
                 self._queue.mute()
-                self._cancel_adapter()
+                self._cancel_adapter("voice_disabled")
             self._condition.notify_all()
         if enabled:
             self.preload()
@@ -183,7 +197,7 @@ class SpeechService:
                 return
             self._closed = True
             self._dispatch_generation += 1
-            self._cancel_adapter()
+            self._cancel_adapter("service_close")
             self._condition.notify_all()
         self._thread.join(timeout=2.0)
         self._close_adapter()
@@ -196,14 +210,23 @@ class SpeechService:
             if dispatch is None:
                 return
             message, generation = dispatch
+            scoped_debug(
+                "speech", "dispatch id=%s kind=%s generation=%d",
+                message.message_id, message.kind, generation,
+            )
             if not self._ensure_adapter() or not self._dispatch_is_valid(message, generation):
+                scoped_debug(
+                    "speech", "dispatch dropped id=%s kind=%s adapter_available=%s",
+                    message.message_id, message.kind, self._adapter_available,
+                )
                 self._clear_current()
                 continue
             if not self._speak(message.summary):
+                scoped_debug("speech", "command failed id=%s kind=%s", message.message_id, message.kind)
                 self._clear_current()
                 continue
             if not self._dispatch_is_valid(message, generation):
-                self._cancel_adapter()
+                self._cancel_adapter("dispatch_invalidated")
                 self._clear_current()
                 continue
             if self._wait_for_speech(message):
@@ -232,11 +255,18 @@ class SpeechService:
     def _ensure_adapter(self) -> bool:
         with self._adapter_start_lock:
             if self._adapter_available is None:
+                started_at = time.monotonic()
+                scoped_debug("speech", "adapter start requested")
                 try:
                     self._adapter_available = self._adapter.start()
                 except Exception:
                     LOGGER.exception("speech adapter start failed")
                     self._adapter_available = False
+                scoped_debug(
+                    "speech", "adapter start finished available=%s elapsed_ms=%d",
+                    self._adapter_available,
+                    int((time.monotonic() - started_at) * 1000),
+                )
             return self._adapter_available
 
     def _start_preload(self) -> None:
@@ -248,20 +278,57 @@ class SpeechService:
         self._preload_thread.start()
 
     def _wait_for_speech(self, message: SpeechMessage) -> bool:
-        deadline = time.monotonic() + self._playback_timeout_seconds
-        started_logged = False
+        wait_started_at = time.monotonic()
+        deadline = wait_started_at + self._start_timeout_seconds
+        scoped_debug(
+            "speech", "waiting start id=%s kind=%s timeout_ms=%d",
+            message.message_id, message.kind, int(self._start_timeout_seconds * 1000),
+        )
         while True:
-            if not started_logged:
-                started_logged = self._log_started_if_ready(message)
+            completion = self._speech_completion(0)
+            if completion is not None:
+                return self._terminal_before_start(message, completion, wait_started_at)
+            if self._speech_started(0):
+                started_at = time.monotonic()
+                LOGGER.info("speech started id=%s kind=%s", message.message_id, message.kind)
+                scoped_debug(
+                    "speech", "started id=%s kind=%s wait_ms=%d",
+                    message.message_id, message.kind, int((started_at - wait_started_at) * 1000),
+                )
+                return self._wait_for_completion(message, started_at)
             remaining = deadline - time.monotonic()
             if remaining <= 0:
-                LOGGER.warning("speech timed out id=%s kind=%s", message.message_id, message.kind)
-                self._cancel_adapter()
+                LOGGER.warning("speech start timed out id=%s kind=%s", message.message_id, message.kind)
+                scoped_debug("speech", "timeout id=%s kind=%s phase=start", message.message_id, message.kind)
+                self._cancel_adapter("start_timeout")
                 return False
             completion = self._speech_completion(min(PLAYBACK_POLL_SECONDS, remaining))
             if completion is not None:
-                if not started_logged:
-                    self._log_started_if_ready(message)
+                return self._terminal_before_start(message, completion, wait_started_at)
+            with self._condition:
+                if self._closed:
+                    return False
+
+    def _wait_for_completion(self, message: SpeechMessage, started_at: float) -> bool:
+        timeout = self._playback_timeout(message)
+        deadline = started_at + timeout
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                LOGGER.warning("speech playback timed out id=%s kind=%s", message.message_id, message.kind)
+                scoped_debug(
+                    "speech", "timeout id=%s kind=%s phase=playback elapsed_ms=%d",
+                    message.message_id, message.kind, int((time.monotonic() - started_at) * 1000),
+                )
+                self._cancel_adapter("playback_timeout")
+                return False
+            completion = self._speech_completion(min(PLAYBACK_POLL_SECONDS, remaining))
+            if completion is not None:
+                elapsed_ms = int((time.monotonic() - started_at) * 1000)
+                scoped_debug(
+                    "speech", "completed id=%s kind=%s ok=%s playback_ms=%d",
+                    message.message_id, message.kind, completion, elapsed_ms,
+                )
                 if not completion:
                     LOGGER.warning("speech failed id=%s kind=%s", message.message_id, message.kind)
                 return completion
@@ -269,11 +336,24 @@ class SpeechService:
                 if self._closed:
                     return False
 
-    def _log_started_if_ready(self, message: SpeechMessage) -> bool:
-        if not self._speech_started(0):
-            return False
-        LOGGER.info("speech started id=%s kind=%s", message.message_id, message.kind)
-        return True
+    def _terminal_before_start(
+        self,
+        message: SpeechMessage,
+        completion: bool,
+        wait_started_at: float,
+    ) -> bool:
+        elapsed_ms = int((time.monotonic() - wait_started_at) * 1000)
+        scoped_debug(
+            "speech", "completed before start id=%s kind=%s ok=%s elapsed_ms=%d",
+            message.message_id, message.kind, completion, elapsed_ms,
+        )
+        if not completion:
+            LOGGER.warning("speech failed id=%s kind=%s", message.message_id, message.kind)
+        return completion
+
+    def _playback_timeout(self, message: SpeechMessage) -> float:
+        del message
+        return self._playback_timeout_seconds
 
     def _clear_current(self) -> None:
         with self._condition:
@@ -300,7 +380,14 @@ class SpeechService:
             LOGGER.exception("speech adapter start wait failed")
             return False
 
-    def _cancel_adapter(self) -> None:
+    def _cancel_adapter(self, reason: str) -> None:
+        current = self._current
+        scoped_debug(
+            "speech", "cancel requested reason=%s id=%s kind=%s",
+            reason,
+            current.message_id if current is not None else "",
+            current.kind if current is not None else "",
+        )
         try:
             self._adapter.cancel()
         except Exception:
