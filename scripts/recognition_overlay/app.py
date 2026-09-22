@@ -63,12 +63,13 @@ from cat_overlay import CatOverlayWindow
 from controller import ProductController, default_recommendation_root
 from recommendation_engine import RecommendationEngine
 from strategy_store import StrategyStore
-from agent_companion import ChampionSelectAgentSpeech
+from agent_companion import HexRecommendationAgentSpeech
 from agent_text import build_agent_provider
 from overlay_config import load_agent_settings, load_voice_settings, update_overlay_config
 from offline_speech import OfflineSpeechAdapter
 from speech import SpeechMessage, SpeechService
 from speech_policy import CompanionSpeechPolicy
+from scoped_debug import SUPPORTED_DEBUG_SUBMODES, configure_debug_submodes, scoped_debug
 
 
 _single_instance_handle: int | None = None
@@ -80,16 +81,39 @@ STARTUP_OCR_STATES = frozenset({
 })
 
 
-def _agent_context(snapshot: Mapping[str, Any]) -> dict[str, object]:
-    context: dict[str, object] = {}
+def _agent_context(
+    snapshot: Mapping[str, Any],
+    view: Mapping[str, Any],
+) -> dict[str, object]:
+    context: dict[str, object] = {
+        "match_id": str(snapshot.get("match_id") or "")[:64],
+        "offer_round": snapshot.get("offer_round"),
+    }
     champion = str(snapshot.get("champion") or "").strip()
     if champion:
         context["champion"] = champion[:32]
-    raw_bench = snapshot.get("bench")
-    if isinstance(raw_bench, list):
-        bench = [str(item).strip()[:32] for item in raw_bench[:10] if str(item).strip()]
-        if bench:
-            context["bench"] = bench
+    offer = snapshot.get("offer")
+    if isinstance(offer, list):
+        choices = [
+            str(item.get("name") or "").strip()[:64]
+            for item in offer[:3]
+            if isinstance(item, Mapping) and str(item.get("name") or "").strip()
+        ]
+        if choices:
+            context["choices"] = choices
+    selected = snapshot.get("selected")
+    if isinstance(selected, list):
+        context["selected_augments"] = [
+            str(item.get("name") or "").strip()[:64]
+            for item in selected[:4]
+            if isinstance(item, Mapping) and str(item.get("name") or "").strip()
+        ]
+    recommendation = view.get("recommendation")
+    if isinstance(recommendation, Mapping):
+        context["recommendation"] = {
+            "augment": str(recommendation.get("augment") or "")[:64],
+            "position": str(recommendation.get("position") or "")[:16],
+        }
     return context
 
 
@@ -138,6 +162,13 @@ def _parser() -> argparse.ArgumentParser:
         "--recommendation-data",
         type=Path,
         help="directory containing fun_builds/win_rates/kiwi_augments JSON",
+    )
+    parser.add_argument(
+        "--debug-submode",
+        action="append",
+        choices=tuple(sorted(SUPPORTED_DEBUG_SUBMODES)),
+        default=[],
+        help="enable diagnostics for one feature without changing behavior",
     )
     return parser
 
@@ -207,7 +238,7 @@ class RecognitionApp:
         agent_settings = load_agent_settings(
             overlay_config_path(), legacy_overlay_config_path()
         )
-        self.agent_speech = ChampionSelectAgentSpeech(
+        self.agent_speech = HexRecommendationAgentSpeech(
             build_agent_provider(agent_settings),
             self.speech.publish,
             clock=self._clock,
@@ -260,8 +291,8 @@ class RecognitionApp:
         self.window.set_view(presented)
         self._publish_speech(self.speech_policy.update(presented, now))
         self.agent_speech.update(
-            str(presented.get("state") or ""),
-            _agent_context(snapshot),
+            presented,
+            _agent_context(snapshot, presented),
         )
 
     def _startup_presentation(self, view: Mapping[str, Any], now: float) -> Mapping[str, Any]:
@@ -278,6 +309,7 @@ class RecognitionApp:
 
     def _on_greeting_start(self, now: float) -> None:
         self._startup_greeting_until = now + GREETING_SECONDS
+        self._publish_speech(self.speech_policy.startup(now))
 
     def _publish_speech(self, messages: tuple[SpeechMessage, ...]) -> None:
         for message in messages:
@@ -342,6 +374,19 @@ class RecognitionApp:
                 snapshot.get("match_id"),
                 snapshot.get("champion"),
             )
+            if isinstance(context, Mapping) and context.get("gameflowPhase") in {
+                "PreEndOfGame", "WaitingForStats", "EndOfGame"
+            }:
+                scoped_debug(
+                    "game-result",
+                    "phase=%s game_id=%s raw_status=%s normalized=%s endpoint_status=%s error=%s",
+                    context.get("gameflowPhase"),
+                    context.get("gameId"),
+                    context.get("gameResultRaw"),
+                    context.get("gameResult"),
+                    context.get("gameResultEndpointStatus"),
+                    context.get("gameResultEndpointError") or "none",
+                )
             self._publish()
 
     def _on_vision(self, kind: str, payload: Mapping[str, Any]) -> None:
@@ -547,9 +592,10 @@ def _keep_recognition_responsive() -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
+    args = _parser().parse_args(argv)
+    configure_debug_submodes(args.debug_submode)
     _configure_logging()
     _keep_recognition_responsive()
-    args = _parser().parse_args(argv)
     if not _single_instance():
         logging.warning("another overlay instance is already running")
         _message_box("无法启动第二个识别窗口；请先关掉已经运行的窗口再重试。")

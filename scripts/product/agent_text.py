@@ -176,7 +176,8 @@ class TaijiDirectAgentProvider:
         error_code: str | None,
     ) -> None:
         elapsed_ms = max(0, int((self._clock() - started_at) * 1000))
-        LOGGER.info(
+        log = LOGGER.warning if error_code is not None else LOGGER.info
+        log(
             "agent request finished provider=taiji_direct query_id=%s status=%s "
             "elapsed_ms=%d error=%s",
             query_id,

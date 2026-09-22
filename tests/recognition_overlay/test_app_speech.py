@@ -9,7 +9,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock, call, patch
 
 from agent_config import AgentSettings
-from app import RecognitionApp
+from app import RecognitionApp, _parser
 from overlay_config import VoiceSettings
 from speech_policy import CompanionSpeechPolicy
 
@@ -28,6 +28,7 @@ def make_app() -> RecognitionApp:
     app.speech_policy = Mock()
     app.speech_policy.update.return_value = ("update-message",)
     app.speech_policy.tick.return_value = ("tick-message",)
+    app.speech_policy.startup.return_value = ()
     app.speech = Mock()
     app.agent_speech = Mock()
     app.reread = Mock()
@@ -39,6 +40,20 @@ def make_app() -> RecognitionApp:
 
 
 class RecognitionAppSpeechTests(unittest.TestCase):
+    def test_parser_accepts_scoped_game_result_debug_mode(self) -> None:
+        args = _parser().parse_args(["--debug-submode", "game-result"])
+        self.assertEqual(["game-result"], args.debug_submode)
+
+    def test_greeting_start_publishes_fixed_startup_voice(self) -> None:
+        app = make_app()
+        app.speech_policy = CompanionSpeechPolicy()
+
+        app._on_greeting_start(10.0)
+        app._on_greeting_start(11.0)
+
+        app.speech.publish.assert_called_once()
+        self.assertEqual("startup", app.speech.publish.call_args.args[0].kind)
+
     def test_adapter_start_failure_does_not_break_app(self) -> None:
         adapter = Mock()
         adapter.start.return_value = False
@@ -53,7 +68,7 @@ class RecognitionAppSpeechTests(unittest.TestCase):
             "OcrDiagnostics", "HistoryStore", "RecognitionViewModel", "RecommendationEngine",
             "StrategyStore", "ProductController", "CatOverlayWindow", "LcuChampSelectPoller",
             "EnvironmentLcuConnectionProvider", "LiveClientPoller", "AutoRereadMonitor",
-            "VisionSupervisor", "build_agent_provider", "ChampionSelectAgentSpeech",
+            "VisionSupervisor", "build_agent_provider", "HexRecommendationAgentSpeech",
         )
         with ExitStack() as stack:
             stack.enter_context(patch("app.load_voice_settings", return_value=VoiceSettings()))
@@ -68,6 +83,7 @@ class RecognitionAppSpeechTests(unittest.TestCase):
             app = RecognitionApp(args)
             app.product.present.return_value = {
                 "state": "champ_select", "bubble_visible": True,
+                "recommended_champions": ["妮蔻", "亚索", "盖伦"],
             }
             app._publish()
             deadline = time.monotonic() + 1.0
@@ -78,7 +94,7 @@ class RecognitionAppSpeechTests(unittest.TestCase):
         offline_adapter.assert_called_once_with(bundle_root=bundle_root)
         mocks["CatOverlayWindow"].assert_called_once()
         mocks["build_agent_provider"].assert_called_once_with(agent_settings)
-        mocks["ChampionSelectAgentSpeech"].assert_called_once_with(
+        mocks["HexRecommendationAgentSpeech"].assert_called_once_with(
             mocks["build_agent_provider"].return_value,
             app.speech.publish,
             clock=app._clock,
@@ -168,23 +184,34 @@ class RecognitionAppSpeechTests(unittest.TestCase):
 
         self.assertEqual(["speech", "poller"], order[:2])
 
-    def test_publish_updates_agent_speech_with_champion_context(self) -> None:
+    def test_publish_updates_agent_speech_with_recommendation_context(self) -> None:
         app = make_app()
         app.model.snapshot.return_value = {
-            "phase": "ChampSelect",
+            "phase": "InProgress",
+            "match_id": "lcu:1",
             "champion": "阿狸",
-            "bench": ["阿狸", "盖伦"],
+            "offer_round": 2,
+            "offer": [{"name": "巨人杀手"}, {"name": "珠光护手"}, {"name": "掷骰狂人"}],
+            "selected": [{"name": "裁决使"}],
         }
         app.product.present.return_value = {
-            "state": "champ_select",
+            "state": "recommendation",
             "bubble_visible": True,
+            "recommendation": {"augment": "巨人杀手", "position": "LEFT"},
         }
 
         app._publish()
 
         app.agent_speech.update.assert_called_once_with(
-            "champ_select",
-            {"champion": "阿狸", "bench": ["阿狸", "盖伦"]},
+            app.product.present.return_value,
+            {
+                "match_id": "lcu:1",
+                "offer_round": 2,
+                "champion": "阿狸",
+                "choices": ["巨人杀手", "珠光护手", "掷骰狂人"],
+                "selected_augments": ["裁决使"],
+                "recommendation": {"augment": "巨人杀手", "position": "LEFT"},
+            },
         )
 
 

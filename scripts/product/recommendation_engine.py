@@ -321,45 +321,29 @@ class RecommendationEngine:
         recommendation order is deterministic and independent of it.
         """
 
-        candidates: list[str] = []
-        candidate_labels: dict[str, str] = {}
-        seen: set[str] = set()
-        for hero in ([current_hero] if current_hero else []) + list(bench):
-            key = self._resolve_hero_key(str(hero or ""))
-            if key and key not in seen:
-                seen.add(key)
-                candidates.append(key)
-                candidate_labels[key] = str(hero).strip()
-        if not candidates:
+        candidate_labels, winner, fun_candidates = self._champion_select_candidates(
+            current_hero, bench
+        )
+        if not candidate_labels:
             return []
 
         def label(key: str) -> str:
             return self.hero_display_name(candidate_labels[key])
 
-        ranked = sorted(
-            candidates,
-            key=lambda key: (
-                -len(self._plans_by_hero.get(key, [])),
-                key not in self._hero_win_rates,
-                -self._hero_win_rates.get(key, 0.0),
-                label(key),
-            ),
-        )
         lines: list[str] = []
-        known = [key for key in candidates if key in self._hero_win_rates]
-        winner = min(known, key=lambda key: (-self._hero_win_rates[key], label(key))) if known else None
         if winner is not None:
             rate = f"{self._hero_win_rates[winner]:.2f}".rstrip("0").rstrip(".")
-            scope = "胜率最高" if len(known) == len(candidates) else "已知胜率最高"
+            known_count = sum(key in self._hero_win_rates for key in candidate_labels)
+            scope = "胜率最高" if known_count == len(candidate_labels) else "已知胜率最高"
             lines.append(f"{label(winner)}胜率有{rate}%，可选英雄里{scope}，追求取胜优选！")
-        fun_candidates = [key for key in ranked if key != winner and self._plans_by_hero.get(key)][:3]
         for index, key in enumerate(fun_candidates):
             plans = sorted(
                 self._plans_by_hero.get(key, []),
                 key=lambda plan: (plan.name, plan.id),
             )
             examples = "和".join(f"[{plan.name}]" for plan in plans[:2])
-            ending = ("新玩法，可以试试~", "创意，值得一试~", "玩法，欢乐对局快开始咯！")[index]
+            endings = ("新玩法，可以试试~", "创意，值得一试~", "玩法，欢乐对局快开始咯！")
+            ending = endings[index]
             lines.append(f"{label(key)}有{examples}{ending}")
         # With a single useful candidate, retain its fun paths without a
         # duplicate hero line or the previous lengthy core explanations.
@@ -371,6 +355,46 @@ class RecommendationEngine:
         if not lines:
             lines.append("可选英雄暂无可靠的胜率或趣味玩法资料，选喜欢的英雄吧~")
         return lines
+
+    def champion_select_recommendation_names(
+        self,
+        *,
+        current_hero: str | None,
+        bench: Sequence[str],
+    ) -> list[str]:
+        labels, winner, fun_candidates = self._champion_select_candidates(current_hero, bench)
+        keys = ([winner] if winner is not None else []) + fun_candidates
+        return [self.hero_display_name(labels[key]) for key in keys]
+
+    def _champion_select_candidates(
+        self,
+        current_hero: str | None,
+        bench: Sequence[str],
+    ) -> tuple[dict[str, str], str | None, list[str]]:
+        labels: dict[str, str] = {}
+        for hero in ([current_hero] if current_hero else []) + list(bench):
+            key = self._resolve_hero_key(str(hero or ""))
+            if key and key not in labels:
+                labels[key] = str(hero).strip()
+        ranked = sorted(
+            labels,
+            key=lambda key: (
+                -len(self._plans_by_hero.get(key, [])),
+                key not in self._hero_win_rates,
+                -self._hero_win_rates.get(key, 0.0),
+                self.hero_display_name(labels[key]),
+            ),
+        )
+        known = [key for key in labels if key in self._hero_win_rates]
+        winner = min(
+            known,
+            key=lambda key: (-self._hero_win_rates[key], self.hero_display_name(labels[key])),
+        ) if known else None
+        maximum_fun = 2 if winner is not None else 3
+        fun = [
+            key for key in ranked if key != winner and self._plans_by_hero.get(key)
+        ][:maximum_fun]
+        return labels, winner, fun
 
     def hero_display_name(self, hero: str) -> str:
         label = self._hero_labels.get(self._resolve_hero_key(hero), hero)

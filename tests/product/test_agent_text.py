@@ -151,6 +151,7 @@ class TaijiDirectAgentProviderTests(unittest.TestCase):
             result = provider.generate("hello")
 
         self.assertFalse(result.ok)
+        self.assertTrue(captured.output[0].startswith("WARNING:agent_text:"))
         self.assertNotIn("secret-token", repr(provider))
         self.assertNotIn("secret-token", "\n".join(captured.output))
 

@@ -6,6 +6,8 @@ param(
     [string]$Mode = 'KIWI',
     [ValidateRange(1, 86400)]
     [int]$MaxSeconds = 86400,
+    [ValidateSet('', 'game-result')]
+    [string]$DebugSubmode = '',
     [switch]$LegacyUi
 )
 
@@ -94,6 +96,9 @@ if (-not [string]::IsNullOrWhiteSpace($VisionExe)) {
     $arguments += @('--vision-exe', (Resolve-Path -LiteralPath $VisionExe).Path)
 }
 $arguments += @('--mode', $Mode, '--max-seconds', "$MaxSeconds")
+if (-not [string]::IsNullOrWhiteSpace($DebugSubmode)) {
+    $arguments += @('--debug-submode', $DebugSubmode)
+}
 if ($LegacyUi) {
     $arguments += '--legacy-ui'
 }

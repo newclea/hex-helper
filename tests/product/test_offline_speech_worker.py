@@ -195,12 +195,12 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
             self.events.append,
             tts_factory=lambda paths: tts,
             raw_output_stream_factory=lambda **kwargs: FakeRawStream(**kwargs),
-            prewarm_texts=("正在为你查看可选英雄。",),
+            prewarm_texts=("召唤师你好，我是你的联盟专属陪玩悠米！",),
         )
         self.engine.start()
         self.wait_for(lambda: len(tts.calls) == 1)
 
-        self.engine.speak(1, "正在为你查看可选英雄。")
+        self.engine.speak(1, "召唤师你好，我是你的联盟专属陪玩悠米！")
         self.wait_for(lambda: {"event": "finished", "request_id": 1} in self.events)
 
         self.assertEqual(1, len(tts.calls))
@@ -495,7 +495,7 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
             )
         )
         command = json.dumps(
-            {"command": "speak", "text": "正在为你查看可选英雄。"},
+            {"command": "speak", "text": "召唤师你好，我是你的联盟专属陪玩悠米！"},
             ensure_ascii=False,
         ).encode("utf-8") + b"\n"
         environment = {**os.environ, "PYTHONIOENCODING": "gbk:surrogateescape"}
@@ -510,7 +510,7 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
         )
 
         event = json.loads(completed.stdout.decode("utf-8"))
-        self.assertEqual("正在为你查看可选英雄。", event["text"])
+        self.assertEqual("召唤师你好，我是你的联盟专属陪玩悠米！", event["text"])
 
 
 if __name__ == "__main__":

@@ -233,6 +233,7 @@ class RecognitionViewModel:
         self.phase: str | None = None
         self._entered_live_match = False
         self._awaiting_new_champ_select = False
+        self.game_result: str | None = None
         self.champion: str | None = None
         self.live_champion: str | None = None
         self.game_mode: str | None = None
@@ -307,6 +308,7 @@ class RecognitionViewModel:
             "lcu_status": self.lcu_status,
             "lcu_reason": self.lcu_reason,
             "phase": self.phase,
+            "game_result": self.game_result,
             "champion": self.champion,
             "game_mode": self.game_mode,
             "bench": list(self.bench),
@@ -378,6 +380,7 @@ class RecognitionViewModel:
                 self._adopt_game_id(game_id)
         if phase in IN_GAME_PHASES:
             self._entered_live_match = True
+            self.game_result = None
         elif not starts_new_match and (
             previous in IN_GAME_PHASES
             or (previous == "ChampSelect" and phase in OUT_OF_GAME_PHASES)
@@ -388,6 +391,7 @@ class RecognitionViewModel:
             self._awaiting_new_champ_select = True
         if phase in OUT_OF_GAME_PHASES:
             self._dismiss_visual_offer()
+            self._apply_game_result(context)
         if phase != "ChampSelect":
             self.bench = []
         else:
@@ -412,6 +416,9 @@ class RecognitionViewModel:
             elif self.live_champion is None:
                 self.champion = None
             return
+        self._apply_champion_context(context)
+
+    def _apply_champion_context(self, context: Mapping[str, Any]) -> None:
         champion_id = _int(context.get("championId"), minimum=1, maximum=10_000)
         named = _text(context.get("championName"), limit=32)
         if named:
@@ -425,6 +432,15 @@ class RecognitionViewModel:
             # Never show or bind the previous match's hero while a new ARAM
             # assignment is still loading.
             self.champion = None
+
+    def _apply_game_result(self, context: Mapping[str, Any]) -> None:
+        result = _text(context.get("gameResult"), limit=8)
+        result_game_id = _int(
+            context.get("gameId"), minimum=1, maximum=18_446_744_073_709_551_615
+        )
+        same_game = self._game_id is None or result_game_id == self._game_id
+        if self._entered_live_match and same_game and result in {"WIN", "LOSS"}:
+            self.game_result = result
 
     def apply_vision_status(self, status: str, note: str | None = None) -> None:
         if status == "识别中":
@@ -1871,6 +1887,7 @@ class RecognitionViewModel:
         self.match_id = match_id or f"local:{uuid4().hex}"
         self._entered_live_match = False
         self._awaiting_new_champ_select = False
+        self.game_result = None
         self.offer_visible = False
         self.offer_refreshing = False
         self._offer_display_only = False

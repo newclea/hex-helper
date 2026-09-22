@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import Mock
 
 from controller import ProductController
 from recommendation_engine import RecommendationEngine
@@ -10,6 +11,43 @@ from strategy_store import StrategyStore
 
 
 class ProductControllerTextTests(unittest.TestCase):
+    def test_champion_select_exposes_same_structured_names_as_bubble_source(self) -> None:
+        engine = Mock()
+        engine.champion_select_recommendations.return_value = ["妮蔻推荐", "亚索推荐", "盖伦推荐"]
+        engine.champion_select_recommendation_names.return_value = ["妮蔻", "亚索", "盖伦"]
+        with TemporaryDirectory() as directory:
+            controller = ProductController(
+                engine=engine,
+                store=StrategyStore(Path(directory) / "strategy.json"),
+            )
+            view = controller.present({
+                "phase": "ChampSelect",
+                "match_id": "lcu:1",
+                "champion": "万花通灵 妮蔻",
+                "bench": ["封魔剑魂 永恩", "疾风剑豪 亚索", "德玛西亚之力 盖伦"],
+            })
+
+        self.assertEqual(["妮蔻", "亚索", "盖伦"], view["recommended_champions"])
+        self.assertEqual("妮蔻推荐\n亚索推荐\n盖伦推荐", view["message"])
+
+    def test_real_champion_recommendations_are_limited_to_three_visible_names(self) -> None:
+        engine = RecommendationEngine.load(Path("data/recommendation"))
+        with TemporaryDirectory() as directory:
+            controller = ProductController(
+                engine=engine,
+                store=StrategyStore(Path(directory) / "strategy.json"),
+            )
+            view = controller.present({
+                "phase": "ChampSelect",
+                "match_id": "lcu:1",
+                "champion": "万花通灵 妮蔻",
+                "bench": ["疾风剑豪 亚索", "德玛西亚之力 盖伦", "封魔剑魂 永恩"],
+            })
+
+        names = view["recommended_champions"]
+        self.assertEqual(3, len(names))
+        self.assertTrue(all(name in view["message"] for name in names))
+
     def test_recommendation_keeps_message_and_adds_blocks(self) -> None:
         engine = RecommendationEngine.load(Path("data/recommendation"))
         with TemporaryDirectory() as directory:

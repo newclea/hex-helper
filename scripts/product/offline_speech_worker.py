@@ -14,7 +14,10 @@ from typing import Any, Callable, TextIO
 from offline_speech_assets import OfflineSpeechPaths, resolve_offline_speech_paths
 
 
-PREWARM_TEXTS = ("正在为你查看可选英雄。",)
+PREWARM_TEXTS = (
+    "召唤师你好，我是你的联盟专属陪玩悠米！"
+    "快去开启一场紧张刺激的海克斯大乱斗吧。",
+)
 MAX_CACHE_ITEMS = 16
 SPEECH_BREAKS = frozenset("，,。！？!?；;")
 

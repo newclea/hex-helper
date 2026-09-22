@@ -135,6 +135,8 @@ class ProductController:
         self._last_snapshot = dict(snapshot)
         self._sync_context(snapshot)
         view = self._present(snapshot)
+        view["match_id"] = str(snapshot.get("match_id") or "")
+        view["game_result"] = snapshot.get("game_result")
         phase = str(snapshot.get("phase") or "").strip()
         visible = phase == "ChampSelect" or (
             phase in IN_GAME_PHASES and snapshot.get("offer_visible") is True
@@ -170,44 +172,96 @@ class ProductController:
         blocks.extend({"text": row} for row in rows if not row.startswith(prefixes))
         return blocks
 
-    def _present(self, snapshot: Mapping[str, Any]) -> dict[str, Any]:
-        phase = str(snapshot.get("phase") or "").strip()
-        if phase == "ChampSelect":
-            lines = self.engine.champion_select_recommendations(
-                current_hero=str(snapshot.get("champion") or "").strip() or None,
-                bench=[str(item) for item in snapshot.get("bench") or [] if str(item).strip()],
-                seed=self._match_id or "",
-            )
+    def _champ_select_view(self, snapshot: Mapping[str, Any]) -> dict[str, Any]:
+        current_hero = str(snapshot.get("champion") or "").strip() or None
+        bench = [
+            str(item) for item in snapshot.get("bench") or [] if str(item).strip()
+        ]
+        lines = self.engine.champion_select_recommendations(
+            current_hero=current_hero,
+            bench=bench,
+            seed=self._match_id or "",
+        )
+        recommendations = self.engine.champion_select_recommendation_names(
+            current_hero=current_hero,
+            bench=bench,
+        )
+        return {
+            "state": "champ_select",
+            "message": "\n".join(lines) if lines else "正在读取可选英雄，稍后为你推荐~",
+            "recommended_champions": recommendations,
+            "options": [],
+        }
+
+    def _inactive_view(
+        self,
+        snapshot: Mapping[str, Any],
+        phase: str,
+    ) -> dict[str, Any] | None:
+        if not self._hero:
             return {
-                "state": "champ_select",
-                "message": "\n".join(lines) if lines else "正在读取可选英雄，稍后为你推荐~",
+                "state": "waiting",
+                "message": "正在读取本局英雄。海克斯出现后可切换查看推荐。",
                 "options": [],
             }
-        if not self._hero:
-            return {"state": "waiting", "message": "正在读取本局英雄。海克斯出现后可切换查看推荐。", "options": []}
         mode = str(snapshot.get("game_mode") or "").strip().upper()
-        if self.configured_mode.upper() not in {"KIWI", "KIWI_JADE"} or mode not in SUPPORTED_GAME_MODES:
+        configured = self.configured_mode.upper() in {"KIWI", "KIWI_JADE"}
+        if not configured or mode not in SUPPORTED_GAME_MODES:
             detail = "正在确认对局模式" if not mode else f"当前模式为 {mode}"
-            return {"state": "unsupported_mode", "message": f"{detail}，只有海克斯大乱斗才会给出推荐。", "options": []}
+            return {
+                "state": "unsupported_mode",
+                "message": f"{detail}，只有海克斯大乱斗才会给出推荐。",
+                "options": [],
+            }
         visible = phase in IN_GAME_PHASES and snapshot.get("offer_visible") is True
         if not visible:
             count = len(self._selected(snapshot))
-            return {"state": "in_game", "message": f"已记下 {count} 张海克斯，等待下一轮三选一。", "options": []}
+            return {
+                "state": "in_game",
+                "message": f"已记下 {count} 张海克斯，等待下一轮三选一。",
+                "options": [],
+            }
+        return None
+
+    def _ocr_status_view(self, snapshot: Mapping[str, Any]) -> dict[str, Any] | None:
         feedback = snapshot.get("ocr_feedback")
         if isinstance(feedback, Mapping) and feedback.get("state") == "ocr_error":
-            return {"state": "ocr_error", "message": str(feedback.get("message") or "本轮结果处理失败，可点击猫咪重试，详情已记入日志。"),
-                    "refresh_available": True, "options": []}
+            message = str(
+                feedback.get("message")
+                or "本轮结果处理失败，可点击猫咪重试，详情已记入日志。"
+            )
+            return {
+                "state": "ocr_error", "message": message,
+                "refresh_available": True, "options": [],
+            }
         if snapshot.get("offer_refreshing") is True:
             detail = str(feedback.get("message") or "") if isinstance(feedback, Mapping) else ""
-            return {"state": "ocr_updating", "message": detail or "海克斯候选已变化，正在重新确认三张名字。",
-                    "refresh_available": True, "options": []}
+            return {
+                "state": "ocr_updating",
+                "message": detail or "海克斯候选已变化，正在重新确认三张名字。",
+                "refresh_available": True, "options": [],
+            }
+        if self._choices(snapshot):
+            return None
+        state = str(feedback.get("state")) if isinstance(feedback, Mapping) else "ocr_reading"
+        message = str(feedback.get("message") or "") if isinstance(feedback, Mapping) else ""
+        return {
+            "state": state if state in {"ocr_reading", "ocr_confirming"} else "ocr_reading",
+            "message": message or "看到海克斯卡片了，正在确认三张名字。可点击猫咪重试。",
+            "refresh_available": True, "options": [],
+        }
+
+    def _present(self, snapshot: Mapping[str, Any]) -> dict[str, Any]:
+        phase = str(snapshot.get("phase") or "").strip()
+        if phase == "ChampSelect":
+            return self._champ_select_view(snapshot)
+        inactive = self._inactive_view(snapshot, phase)
+        if inactive is not None:
+            return inactive
+        ocr_status = self._ocr_status_view(snapshot)
+        if ocr_status is not None:
+            return ocr_status
         choices = self._choices(snapshot)
-        if not choices:
-            state = str(feedback.get("state")) if isinstance(feedback, Mapping) else "ocr_reading"
-            message = str(feedback.get("message") or "") if isinstance(feedback, Mapping) else ""
-            return {"state": state if state in {"ocr_reading", "ocr_confirming"} else "ocr_reading",
-                    "message": message or "看到海克斯卡片了，正在确认三张名字。可点击猫咪重试。",
-                    "refresh_available": True, "options": []}
         options = self._options(snapshot)
         available = {option.id for option in options if option.available}
         if self._strategy_id not in available:
@@ -220,8 +274,13 @@ class ProductController:
             selected_augments=self._selected(snapshot),
         )
         if recommendation is None:
-            return {"state": "recommendation_unavailable", "message": "已读到三张海克斯，当前英雄的推荐数据不足。",
-                    "options": tabs, "active_strategy_id": self._strategy_id, "refresh_available": False}
+            return {
+                "state": "recommendation_unavailable",
+                "message": "已读到三张海克斯，当前英雄的推荐数据不足。",
+                "options": tabs,
+                "active_strategy_id": self._strategy_id,
+                "refresh_available": False,
+            }
         plan = self.engine.strategy_plan(self._hero, self._strategy_id or "")
         rows = [f"当前推荐 {recommendation.augment}（{recommendation.position}）"]
         if plan is not None:
@@ -259,7 +318,10 @@ class ProductController:
         return {
             "state": "recommendation", "message": message,
             "message_blocks": message_blocks,
-            "introduction": f"针对{self.engine.hero_display_name(self._hero)}，有下面几套玩法可供选择哟~",
+            "introduction": (
+                f"针对{self.engine.hero_display_name(self._hero)}，"
+                "有下面几套玩法可供选择哟~"
+            ),
             "recommendation": recommendation.as_dict(), "refresh_available": False,
             "options": tabs, "active_strategy_id": self._strategy_id,
         }

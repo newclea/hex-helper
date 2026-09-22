@@ -1,29 +1,41 @@
-"""Generate one disposable Agent speech message per champion-select entry."""
+"""Generate Agent speech for each visible hex recommendation."""
 
 from __future__ import annotations
 
 import logging
 import threading
 import time
-from typing import Callable, Mapping
+from typing import Any, Callable, Mapping
 
 from agent_text import AgentTextProvider
 from speech import SpeechMessage, SpeechPriority
+from speech_policy import recommendation_summary
 
 
 LOGGER = logging.getLogger(__name__)
-CHAMPION_SELECT_PROMPT = (
-    "请随机生成一句适合英雄联盟选英雄阶段播报的轻松鼓励语。"
-    "只输出一句中文，不超过三十个汉字，不要使用Markdown，不要解释。"
+HEX_RECOMMENDATION_PROMPT = (
+    "请根据当前英雄、三张候选海克斯和推荐结果，生成一句自然的中文陪玩口播。"
+    "必须明确说出推荐的海克斯，只输出一句话，不要使用Markdown，不要解释。"
 )
 AGENT_SPEECH_LIFETIME_SECONDS = 30.0
 
 
 def _submit_daemon(task: Callable[[], None]) -> None:
-    threading.Thread(target=task, name="champ-select-agent", daemon=True).start()
+    threading.Thread(target=task, name="hex-recommendation-agent", daemon=True).start()
 
 
-class ChampionSelectAgentSpeech:
+def _hex_prompt(context: Mapping[str, object]) -> str:
+    champion = str(context.get("champion") or "当前英雄")
+    choices = "、".join(str(item) for item in context.get("choices") or [])
+    recommendation = context.get("recommendation")
+    augment = ""
+    if isinstance(recommendation, Mapping):
+        augment = str(recommendation.get("augment") or "")
+    detail = f"当前英雄：{champion}；候选：{choices}；推荐：{augment}。"
+    return HEX_RECOMMENDATION_PROMPT + detail
+
+
+class HexRecommendationAgentSpeech:
     def __init__(
         self,
         provider: AgentTextProvider,
@@ -36,23 +48,23 @@ class ChampionSelectAgentSpeech:
         self._clock = clock
         self._submit = submit
         self._lock = threading.Lock()
-        self._inside_champion_select = False
+        self._active_key: str | None = None
         self._closed = False
         self._generation = 0
 
     def update(
         self,
-        state: str,
+        view: Mapping[str, Any],
         context: Mapping[str, object] | None = None,
     ) -> None:
-        request = self._begin_request(state, context)
+        request = self._begin_request(view, context)
         if request is None:
             return
-        generation, request_context = request
+        generation, request_context, fallback = request
         try:
-            self._submit(lambda: self._generate(generation, request_context))
+            self._submit(lambda: self._generate(generation, request_context, fallback))
         except Exception:
-            LOGGER.warning("agent companion worker start failed")
+            LOGGER.exception("agent companion worker start failed")
 
     def close(self) -> None:
         with self._lock:
@@ -60,56 +72,87 @@ class ChampionSelectAgentSpeech:
                 return
             self._closed = True
             self._generation += 1
-            self._inside_champion_select = False
+            self._active_key = None
 
     def _begin_request(
         self,
-        state: str,
+        view: Mapping[str, Any],
         context: Mapping[str, object] | None,
-    ) -> tuple[int, dict[str, object]] | None:
+    ) -> tuple[int, dict[str, object], str] | None:
+        state = str(view.get("state") or "")
+        key = self._recommendation_key(view, context) if state == "recommendation" else None
+        fallback = recommendation_summary(view) if key is not None else None
         with self._lock:
             if self._closed:
                 return None
-            if state != "champ_select":
-                if self._inside_champion_select:
+            if key is None or fallback is None:
+                if self._active_key is not None:
                     self._generation += 1
-                self._inside_champion_select = False
+                self._active_key = None
                 return None
-            if self._inside_champion_select:
+            if key == self._active_key:
                 return None
-            self._inside_champion_select = True
+            self._active_key = key
             self._generation += 1
-            return self._generation, dict(context or {})
+            return self._generation, dict(context or {}), fallback
 
-    def _generate(self, generation: int, context: Mapping[str, object]) -> None:
+    @staticmethod
+    def _recommendation_key(
+        view: Mapping[str, Any],
+        context: Mapping[str, object] | None,
+    ) -> str | None:
+        recommendation = view.get("recommendation")
+        if not isinstance(recommendation, Mapping):
+            return None
+        augment = str(recommendation.get("augment") or "").strip()
+        if not augment:
+            return None
+        values = context or {}
+        return ":".join((
+            str(values.get("match_id") or ""),
+            str(values.get("offer_round") or ""),
+            augment,
+        ))
+
+    def _generate(
+        self,
+        generation: int,
+        context: Mapping[str, object],
+        fallback: str,
+    ) -> None:
         try:
-            result = self._provider.generate(CHAMPION_SELECT_PROMPT, context)
+            result = self._provider.generate(_hex_prompt(context), context)
         except Exception:
-            LOGGER.warning("agent companion request failed error=internal_error")
+            LOGGER.exception("agent companion request failed error=internal_error")
+            self._publish_if_current(generation, fallback, "local")
             return
         if not result.ok:
-            LOGGER.info(
+            LOGGER.warning(
                 "agent companion request finished query_id=%s error=%s",
                 result.query_id,
                 result.error_code or "unknown",
             )
+            self._publish_if_current(generation, fallback, "local")
             return
+        if result.text.strip().upper() == "OFF":
+            LOGGER.info("agent companion returned off query_id=%s", result.query_id)
+            self._publish_if_current(generation, fallback, "local")
+            return
+        self._publish_if_current(generation, result.text, "agent")
+
+    def _publish_if_current(self, generation: int, text: str, source: str) -> None:
         now = self._clock()
         message = SpeechMessage(
-            message_id=f"agent-champ-select-{generation}",
-            source="agent",
-            kind="champ_select_agent",
-            summary=result.text,
-            priority=SpeechPriority.LOW,
-            dedupe_key=f"agent:champ_select:{generation}",
+            message_id=f"hex-recommendation-{generation}",
+            source=source,
+            kind="hex_recommendation",
+            summary=text,
+            priority=SpeechPriority.HIGH,
+            dedupe_key=f"hex-recommendation:{generation}",
             created_at=now,
             expires_at=now + AGENT_SPEECH_LIFETIME_SECONDS,
         )
         with self._lock:
-            current = (
-                not self._closed
-                and self._inside_champion_select
-                and self._generation == generation
-            )
+            current = not self._closed and self._generation == generation
             if current:
                 self._publish(message)

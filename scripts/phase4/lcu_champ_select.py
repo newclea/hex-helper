@@ -39,14 +39,16 @@ MAXIMUM_LOG_CANDIDATES = 16
 MAXIMUM_BENCH_CHAMPIONS = 16
 GAMEFLOW_PATH = "/lol-gameflow/v1/gameflow-phase"
 GAMEFLOW_SESSION_PATH = "/lol-gameflow/v1/session"
+END_OF_GAME_STATS_PATH = "/lol-end-of-game/v1/eog-stats-block"
 CHAMP_SELECT_SESSION_PATH = "/lol-champ-select/v1/session"
 CURRENT_CHAMPION_PATH = "/lol-champ-select/v1/current-champion"
 SUBSET_CHAMPIONS_PATH = "/lol-lobby-team-builder/champ-select/v1/subset-champion-list"
 ALLOWED_PATHS = frozenset(
-    {GAMEFLOW_PATH, GAMEFLOW_SESSION_PATH, CHAMP_SELECT_SESSION_PATH,
+    {GAMEFLOW_PATH, GAMEFLOW_SESSION_PATH, END_OF_GAME_STATS_PATH, CHAMP_SELECT_SESSION_PATH,
      CURRENT_CHAMPION_PATH, SUBSET_CHAMPIONS_PATH}
 )
 LCU_STATUSES = frozenset({"READY", "PARTIAL", "UNAVAILABLE", "INVALID_RESPONSE"})
+POST_GAME_PHASES = frozenset({"PreEndOfGame", "WaitingForStats", "EndOfGame"})
 
 
 @dataclass(frozen=True)
@@ -96,6 +98,10 @@ class LcuContextSnapshot:
     bench_enabled: bool | None = None
     bench: tuple[BenchChampion, ...] = ()
     game_id: int | None = None
+    game_result: str | None = None
+    game_result_raw: str | None = None
+    game_result_status: int | None = None
+    game_result_error: str | None = None
 
     def identity(self) -> tuple[Any, ...]:
         return (
@@ -106,6 +112,10 @@ class LcuContextSnapshot:
             self.bench_enabled,
             tuple((item.champion_id, item.name) for item in self.bench),
             self.game_id,
+            self.game_result,
+            self.game_result_raw,
+            self.game_result_status,
+            self.game_result_error,
         )
 
 
@@ -243,6 +253,32 @@ def parse_gameflow_game_id(body: str, *, phase: str) -> int | None:
     if type(game_id) is not int or not 1 <= game_id <= 18_446_744_073_709_551_615:
         return None
     return game_id
+
+
+def parse_end_of_game_stats(body: str) -> tuple[int | None, str | None, str | None]:
+    try:
+        data = json.loads(body)
+    except json.JSONDecodeError:
+        return None, None, None
+    if not isinstance(data, Mapping):
+        return None, None, None
+    game_id = data.get("gameId")
+    if type(game_id) is not int or not 1 <= game_id <= 18_446_744_073_709_551_615:
+        game_id = None
+    raw_status = data.get("myTeamStatus")
+    if not isinstance(raw_status, str):
+        return game_id, None, None
+    normalized = raw_status.strip().upper()
+    results = {
+        "WIN": "WIN",
+        "VICTORY": "WIN",
+        "WON": "WIN",
+        "LOSS": "LOSS",
+        "LOSE": "LOSS",
+        "LOST": "LOSS",
+        "DEFEAT": "LOSS",
+    }
+    return game_id, results.get(normalized), raw_status[:32]
 
 
 def parse_champ_select_session(
@@ -574,17 +610,58 @@ def read_lcu_snapshot(
     if phase is None:
         return LcuContextSnapshot(status="INVALID_RESPONSE", reason="gameflow_invalid_response")
     game_id = None
+    game_result = None
+    game_result_raw = None
+    game_result_status = None
+    game_result_error = None
     if phase in {"ChampSelect", "GameStart", "InProgress", "Reconnect"}:
         game_response = client.get(connection, GAMEFLOW_SESSION_PATH)
         if game_response.ok:
             game_id = parse_gameflow_game_id(game_response.body, phase=phase)
         elif game_response.error_code == "auth_rejected" and provider is not None:
             provider.invalidate()
+    elif phase in POST_GAME_PHASES:
+        result_response = client.get(connection, END_OF_GAME_STATS_PATH)
+        game_result_status = result_response.status_code
+        if result_response.ok:
+            game_id, game_result, game_result_raw = parse_end_of_game_stats(
+                result_response.body
+            )
+        else:
+            game_result_error = result_response.error_code or "unknown"
+            if result_response.error_code == "auth_rejected" and provider is not None:
+                provider.invalidate()
     if phase != "ChampSelect":
         return LcuContextSnapshot(
-            status="READY", reason="ok", gameflow_phase=phase, game_id=game_id
+            status="READY",
+            reason="ok",
+            gameflow_phase=phase,
+            game_id=game_id,
+            game_result=game_result,
+            game_result_raw=game_result_raw,
+            game_result_status=game_result_status,
+            game_result_error=game_result_error,
         )
 
+    return _read_champ_select_snapshot(
+        catalog=catalog,
+        client=client,
+        connection=connection,
+        provider=provider,
+        phase=phase,
+        game_id=game_id,
+    )
+
+
+def _read_champ_select_snapshot(
+    *,
+    catalog: ChampionCatalog,
+    client: LcuHttpsTransport,
+    connection: LcuConnection,
+    provider: EnvironmentLcuConnectionProvider | None,
+    phase: str,
+    game_id: int | None,
+) -> LcuContextSnapshot:
     session_response = client.get(connection, CHAMP_SELECT_SESSION_PATH)
     if session_response.ok:
         session = parse_champ_select_session(session_response.body, catalog)
@@ -605,31 +682,9 @@ def read_lcu_snapshot(
             bench = session.bench
             subset_failure = None
             if session.allow_subset_champion_picks:
-                # In Mayhem's initial 15-second pick, championId/current-
-                # champion are 0 and benchChampions is empty. The two actual
-                # cards are already in this separate endpoint. The general
-                # pickable-champion-ids endpoint contains the owned roster and
-                # must never be substituted for the on-screen candidate set.
-                subset_response = client.get(connection, SUBSET_CHAMPIONS_PATH)
-                subset = (
-                    parse_subset_champions(subset_response.body, catalog)
-                    if subset_response.ok else None
+                bench, subset_failure = _read_subset_bench(
+                    catalog, client, connection, provider, champion_id, bench
                 )
-                if subset is not None:
-                    seen = {champion_id} if champion_id is not None else set()
-                    combined = []
-                    for item in (*bench, *subset):
-                        if item.champion_id not in seen:
-                            seen.add(item.champion_id)
-                            combined.append(item)
-                    bench = tuple(combined[:MAXIMUM_BENCH_CHAMPIONS])
-                else:
-                    subset_failure = (
-                        "subset_invalid_response" if subset_response.ok
-                        else "subset_unavailable"
-                    )
-                    if subset_response.error_code == "auth_rejected" and provider is not None:
-                        provider.invalidate()
             status = "READY" if champion_id is not None or bench else "PARTIAL"
             reason_text = "ok" if status == "READY" else subset_failure or "champion_unavailable"
             return LcuContextSnapshot(
@@ -667,6 +722,35 @@ def read_lcu_snapshot(
     )
 
 
+def _read_subset_bench(
+    catalog: ChampionCatalog,
+    client: LcuHttpsTransport,
+    connection: LcuConnection,
+    provider: EnvironmentLcuConnectionProvider | None,
+    champion_id: int | None,
+    bench: tuple[BenchChampion, ...],
+) -> tuple[tuple[BenchChampion, ...], str | None]:
+    # In Mayhem's initial pick, the session can omit its two real cards.
+    # This endpoint is the candidate set; the owned roster must not replace it.
+    subset_response = client.get(connection, SUBSET_CHAMPIONS_PATH)
+    subset = (
+        parse_subset_champions(subset_response.body, catalog)
+        if subset_response.ok else None
+    )
+    if subset is None:
+        if subset_response.error_code == "auth_rejected" and provider is not None:
+            provider.invalidate()
+        reason = "subset_invalid_response" if subset_response.ok else "subset_unavailable"
+        return bench, reason
+    seen = {champion_id} if champion_id is not None else set()
+    combined = []
+    for item in (*bench, *subset):
+        if item.champion_id not in seen:
+            seen.add(item.champion_id)
+            combined.append(item)
+    return tuple(combined[:MAXIMUM_BENCH_CHAMPIONS]), None
+
+
 def snapshot_to_event(snapshot: LcuContextSnapshot, *, sequence: int) -> dict[str, Any]:
     context = None
     if snapshot.gameflow_phase is not None:
@@ -676,6 +760,10 @@ def snapshot_to_event(snapshot: LcuContextSnapshot, *, sequence: int) -> dict[st
             "benchEnabled": snapshot.bench_enabled,
             "benchChampions": [item.as_dict() for item in snapshot.bench],
             "gameId": snapshot.game_id,
+            "gameResult": snapshot.game_result,
+            "gameResultRaw": snapshot.game_result_raw,
+            "gameResultEndpointStatus": snapshot.game_result_status,
+            "gameResultEndpointError": snapshot.game_result_error,
         }
     return {
         "type": "lcu_context_state",
