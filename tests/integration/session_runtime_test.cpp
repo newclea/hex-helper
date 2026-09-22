@@ -480,6 +480,21 @@ void TestSessionLifecycle(const std::filesystem::path& runtime_root,
               !duplicate.artifacts.has_value(),
           "same fingerprint must be idempotently rejected without artifacts");
 
+  StableOfferFixture refreshed = fixture;
+  for (std::size_t index = 0U; index < refreshed.ids.size(); ++index) {
+    refreshed.ids[index] += "-refreshed";
+    refreshed.state.current_offer->recognitions[index]->augment_id =
+        refreshed.ids[index];
+    refreshed.card_outputs[index].augment_id = refreshed.ids[index];
+  }
+  const auto round_conflict = runtime->AcceptOffer(
+      refreshed.state, refreshed.card_outputs, refreshed.frame, refreshed.rois,
+      refreshed.ids[1U]);
+  Require(
+      round_conflict.status.code == SessionRuntimeError::OfferRoundConflict &&
+          !round_conflict.accepted,
+      "different refreshed cards in one round must request worker replacement");
+
   const auto output_directory = runtime->OutputDirectory();
   const auto database_path = runtime->DatabasePath();
   const auto jsonl_path = runtime->JsonlPath();

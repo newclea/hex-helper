@@ -318,6 +318,8 @@ MakeProductTitlePreprocessingOcr(const vision::IOcrTitleRecognizer& ocr) {
       return "accepted_offer";
     case SessionRuntimeError::DuplicateOffer:
       return "duplicate_offer";
+    case SessionRuntimeError::OfferRoundConflict:
+      return "offer_round_conflict";
     case SessionRuntimeError::InvalidArgument:
       return "session_invalid_offer";
     case SessionRuntimeError::InvalidPath:

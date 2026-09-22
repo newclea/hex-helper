@@ -17,6 +17,7 @@ namespace lol_assistant::app {
 enum class SessionRuntimeError {
   Ok = 0,
   DuplicateOffer,
+  OfferRoundConflict,
   InvalidArgument,
   InvalidPath,
   StorageError,

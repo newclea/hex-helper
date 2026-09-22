@@ -749,6 +749,21 @@ void TestForceRecognitionBypassesPersistenceBackoffWithoutSkippingStorage() {
           "forced burst must bypass backoff but retry the real persistence seam");
 }
 
+void TestOfferRoundConflictRequestsWorkerReplacement() {
+  ScriptedOcr ocr{{ExactSimpleScan()}};
+  FaultInjectingRuntime runtime{{SessionRuntimeError::OfferRoundConflict}};
+  AugmentFrameProcessor processor{ocr,    SimpleCandidates(), runtime,
+                                  "Ahri", std::nullopt,       DetectorConfig()};
+
+  const auto awaiting = ProcessVisibleForced(processor, 1U);
+  const auto conflict = ProcessVisibleForced(processor, 2U);
+  Require(awaiting.reason == "awaiting_ocr_consensus:1/2" &&
+              conflict.reason == "offer_round_conflict" &&
+              !conflict.accepted && runtime.calls() == 1U,
+          "same-round refresh must request a new worker instead of reporting "
+          "a generic validation error");
+}
+
 void RequireFailureStopsAtThreeScans(const OcrScan& scan,
                                      const std::string_view context) {
   ScriptedOcr ocr{{scan}};
@@ -1213,6 +1228,7 @@ int main() {
     TestEligibleWindowRereadUsesLowConfidenceRois();
     TestForceRecognitionKeepsRawDetectorAndUnknownFailClosed();
     TestForceRecognitionBypassesPersistenceBackoffWithoutSkippingStorage();
+    TestOfferRoundConflictRequestsWorkerReplacement();
     TestRetryableRecognitionFailuresStopAtThreeScans();
     TestPersistenceRollbackRetryAndSelectedConsumption();
     TestFuzzyAloneCannotAcceptButNormalizedCan();

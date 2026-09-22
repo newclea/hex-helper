@@ -670,7 +670,7 @@ AcceptedOfferResult Phase1SessionRuntime::AcceptOffer(
       return result;
     }
     if (impl_->accepted_rounds[offer_round]) {
-      result.status = {SessionRuntimeError::InvalidArgument,
+      result.status = {SessionRuntimeError::OfferRoundConflict,
                        "a different offer was already accepted for this round"};
       return result;
     }
