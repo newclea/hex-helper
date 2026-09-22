@@ -403,6 +403,7 @@ class RecognitionApp:
             return self.model.vision_allowed()
 
     def _start_workers(self) -> None:
+        self.speech.preload()
         league = resolve_league_root(self.args.league_root)
         if league is None:
             self.model.apply_lcu(

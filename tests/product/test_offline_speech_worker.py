@@ -22,6 +22,7 @@ from offline_speech_worker import (
     PlaybackComplete,
     build_sherpa_tts,
     run_protocol,
+    _speech_segments,
 )
 
 
@@ -36,8 +37,14 @@ class FakeTts:
         self.audio = audio or FakeAudio()
         self.calls = []
 
-    def generate(self, text, sid=0, speed=1.0):
+    @property
+    def sample_rate(self):
+        return self.audio.sample_rate
+
+    def generate(self, text, sid=0, speed=1.0, callback=None):
         self.calls.append((text, sid, speed))
+        if callback is not None:
+            callback(self.audio.samples, 1.0)
         return self.audio
 
 
@@ -50,7 +57,8 @@ class FakeRawStream:
         self.aborted = False
 
     def start(self):
-        for frames in self.frames:
+        for index in range(200):
+            frames = self.frames[index % len(self.frames)]
             output = bytearray(frames * 4)
             try:
                 self.callback(output, frames, None, None)
@@ -61,6 +69,7 @@ class FakeRawStream:
             except PlaybackAbort:
                 break
             self.received.extend(output)
+            time.sleep(0.001)
         return self
 
     def abort(self):
@@ -76,10 +85,10 @@ class BlockingTts(FakeTts):
         self.entered = threading.Event()
         self.release = threading.Event()
 
-    def generate(self, text, sid=0, speed=1.0):
+    def generate(self, text, sid=0, speed=1.0, callback=None):
         self.entered.set()
         self.release.wait(2.0)
-        return super().generate(text, sid, speed)
+        return super().generate(text, sid, speed, callback)
 
 
 def fake_paths(root):
@@ -114,6 +123,7 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
             self.events.append,
             tts_factory=lambda paths: tts,
             raw_output_stream_factory=make_stream,
+            prewarm_texts=(),
         )
 
     def wait_for(self, predicate):
@@ -149,6 +159,56 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
         self.assertEqual(
             [{"event": "started", "request_id": 1}, {"event": "finished", "request_id": 1}],
             scoped,
+        )
+
+    def test_streaming_playback_starts_before_generation_returns(self):
+        playback_started = threading.Event()
+        release_generation = threading.Event()
+
+        class StreamingTts(FakeTts):
+            def generate(tts_self, text, sid=0, speed=1.0, callback=None):
+                tts_self.calls.append((text, sid, speed))
+                callback(tts_self.audio.samples, 0.5)
+                self.assertTrue(playback_started.wait(1.0))
+                release_generation.wait(1.0)
+                return tts_self.audio
+
+        class SignallingStream(FakeRawStream):
+            def start(stream_self):
+                playback_started.set()
+                return super().start()
+
+        self.engine.close()
+        self.engine = self.make_engine(StreamingTts(), SignallingStream)
+        self.engine.start()
+        self.engine.speak(1, "动态推荐")
+
+        self.assertTrue(playback_started.wait(1.0))
+        release_generation.set()
+        self.wait_for(lambda: {"event": "finished", "request_id": 1} in self.events)
+
+    def test_start_prewarms_fixed_phrase_for_cached_playback(self):
+        tts = FakeTts()
+        self.engine.close()
+        self.engine = OfflineSpeechEngine(
+            fake_paths(Path(self.temp.name)),
+            self.events.append,
+            tts_factory=lambda paths: tts,
+            raw_output_stream_factory=lambda **kwargs: FakeRawStream(**kwargs),
+            prewarm_texts=("正在为你查看可选英雄。",),
+        )
+        self.engine.start()
+        self.wait_for(lambda: len(tts.calls) == 1)
+
+        self.engine.speak(1, "正在为你查看可选英雄。")
+        self.wait_for(lambda: {"event": "finished", "request_id": 1} in self.events)
+
+        self.assertEqual(1, len(tts.calls))
+
+    def test_dynamic_text_is_generated_in_short_playable_segments(self):
+        self.assertEqual(
+            ("推荐选择珠光护手，", "当前玩法胜率优先。"),
+            _speech_segments("推荐选择珠光护手，当前玩法胜率优先。"),
         )
 
     def test_empty_text_emits_error_without_synthesis(self):
@@ -192,6 +252,7 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
 
         stale = [event for event in self.events if event.get("request_id") == 1]
         self.assertEqual([{"event": "cancelled", "request_id": 1}], stale)
+        self.assertIsNone(self.engine._cached_audio("旧请求"))
 
     def test_stale_raw_stream_callback_cannot_finish_newer_request(self):
         callbacks = []
@@ -328,6 +389,7 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
 
         self.assertEqual("tts", result[0])
         self.assertTrue(calls["validated"])
+        self.assertEqual(1, calls["config"]["max_num_sentences"])
         self.assertNotIn("data_dir", calls["vits"])
 
     def test_build_sherpa_tts_rejects_invalid_config(self):

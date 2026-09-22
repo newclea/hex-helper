@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import queue
 import sys
 import threading
 from array import array
@@ -11,6 +12,11 @@ from pathlib import Path
 from typing import Any, Callable, TextIO
 
 from offline_speech_assets import OfflineSpeechPaths, resolve_offline_speech_paths
+
+
+PREWARM_TEXTS = ("正在为你查看可选英雄。",)
+MAX_CACHE_ITEMS = 16
+SPEECH_BREAKS = frozenset("，,。！？!?；;")
 
 
 class PlaybackComplete(Exception):
@@ -38,6 +44,7 @@ def build_sherpa_tts(paths: OfflineSpeechPaths) -> Any:
     config = sherpa_onnx.OfflineTtsConfig(
         model=model,
         rule_fsts=",".join(str(path) for path in paths.rule_fsts),
+        max_num_sentences=1,
     )
     if not config.validate():
         raise ValueError("offline speech configuration is invalid")
@@ -66,6 +73,13 @@ class _RequestControl:
     cancelled: threading.Event = field(default_factory=threading.Event)
 
 
+@dataclass
+class _StreamingAudio:
+    chunks: queue.Queue[bytes] = field(default_factory=queue.Queue)
+    completed: threading.Event = field(default_factory=threading.Event)
+    failed: threading.Event = field(default_factory=threading.Event)
+
+
 class OfflineSpeechEngine:
     def __init__(
         self,
@@ -73,14 +87,18 @@ class OfflineSpeechEngine:
         emit: Callable[[dict[str, Any]], None],
         tts_factory: Callable[[OfflineSpeechPaths], Any] = build_sherpa_tts,
         raw_output_stream_factory: Callable[..., Any] = create_raw_output_stream,
+        prewarm_texts: tuple[str, ...] = PREWARM_TEXTS,
     ) -> None:
         self._paths = paths
         self._emit = emit
         self._tts_factory = tts_factory
         self._raw_output_stream_factory = raw_output_stream_factory
+        self._prewarm_texts = prewarm_texts
         self._lock = threading.RLock()
         self._synthesis_lock = threading.Lock()
+        self._cache_lock = threading.Lock()
         self._tts: Any = None
+        self._audio_cache: dict[str, tuple[bytes, int]] = {}
         self._current: _RequestControl | None = None
         self._playback_threads: set[threading.Thread] = set()
         self._generation_threads: set[threading.Thread] = set()
@@ -102,6 +120,7 @@ class OfflineSpeechEngine:
                 return False
             self._tts = tts
         self._emit({"event": "ready"})
+        self._start_prewarm()
         return True
 
     def speak(self, request_id: int, text: str) -> bool:
@@ -148,12 +167,11 @@ class OfflineSpeechEngine:
 
     def _generate(self, control: _RequestControl, text: str) -> None:
         try:
-            with self._synthesis_lock:
-                audio = self._tts.generate(text, sid=0, speed=1.0)
-            pcm = array("f", audio.samples).tobytes()
-            if not pcm:
-                raise ValueError("speech synthesis returned no samples")
-            self._begin_playback(control, pcm, int(audio.sample_rate))
+            cached = self._cached_audio(text)
+            if cached is not None:
+                self._begin_playback(control, *cached)
+            else:
+                self._generate_streaming(control, text)
         except Exception as error:
             if self._is_current(control):
                 self._emit_error(control.request_id, f"offline speech failed: {error}")
@@ -161,6 +179,89 @@ class OfflineSpeechEngine:
         finally:
             with self._lock:
                 self._generation_threads.discard(threading.current_thread())
+
+    def _generate_streaming(self, control: _RequestControl, text: str) -> None:
+        state = _StreamingAudio()
+        playback_started = False
+        full_pcm = bytearray()
+        sample_rate = int(self._tts.sample_rate)
+
+        def receive(samples: Any, _progress: float) -> int:
+            nonlocal playback_started
+            if not self._is_current(control):
+                return 0
+            pcm = array("f", samples).tobytes()
+            if pcm:
+                state.chunks.put(pcm)
+                if not playback_started:
+                    playback_started = True
+                    self._begin_streaming_playback(control, state, int(self._tts.sample_rate))
+            return 1
+
+        try:
+            with self._synthesis_lock:
+                cached = self._cached_audio(text)
+                if cached is not None:
+                    self._begin_playback(control, *cached)
+                    return
+                for segment in _speech_segments(text):
+                    audio = self._tts.generate(segment, sid=0, speed=1.0, callback=receive)
+                    full_pcm.extend(array("f", audio.samples).tobytes())
+            if not self._is_current(control):
+                return
+            pcm = bytes(full_pcm)
+            if not pcm:
+                raise ValueError("speech synthesis returned no samples")
+            self._cache_audio(text, pcm, sample_rate)
+            if not playback_started:
+                state.chunks.put(pcm)
+                self._begin_streaming_playback(control, state, sample_rate)
+        except Exception:
+            state.failed.set()
+            raise
+        finally:
+            state.completed.set()
+
+    def _begin_streaming_playback(
+        self,
+        control: _RequestControl,
+        state: _StreamingAudio,
+        sample_rate: int,
+    ) -> None:
+        with self._lock:
+            if not self._is_current_locked(control):
+                return
+            owner = threading.Thread(
+                target=self._streaming_playback_owner,
+                args=(control, state, sample_rate),
+                name=f"offline-speech-playback-{control.request_id}",
+                daemon=True,
+            )
+            self._playback_threads.add(owner)
+            owner.start()
+
+    def _streaming_playback_owner(
+        self,
+        control: _RequestControl,
+        state: _StreamingAudio,
+        sample_rate: int,
+    ) -> None:
+        stream = None
+        playback_done = threading.Event()
+        callback = self._make_streaming_audio_callback(control, state)
+        try:
+            stream = self._create_stream(sample_rate, callback, playback_done)
+            if not self._start_stream(control, stream):
+                return
+            self._wait_for_playback(control, stream, playback_done)
+        except Exception as error:
+            if self._is_current(control):
+                self._emit_error(control.request_id, f"offline speech failed: {error}")
+                self._clear_request(control)
+        finally:
+            if stream is not None:
+                self._close_stream(stream)
+            self._discard_playback_thread()
 
     def _begin_playback(self, control: _RequestControl, pcm: bytes, sample_rate: int) -> None:
         with self._lock:
@@ -228,13 +329,43 @@ class OfflineSpeechEngine:
 
         return callback
 
+    @staticmethod
+    def _make_streaming_audio_callback(
+        control: _RequestControl,
+        state: _StreamingAudio,
+    ) -> Callable[..., None]:
+        pending = memoryview(b"")
+
+        def callback(outdata: Any, frames: int, time_info: Any, status: Any) -> None:
+            nonlocal pending
+            block = bytearray(frames * 4)
+            if control.cancelled.is_set() or state.failed.is_set():
+                outdata[:] = block
+                raise PlaybackAbort()
+            offset = 0
+            while offset < len(block):
+                if not pending:
+                    try:
+                        pending = memoryview(state.chunks.get_nowait())
+                    except queue.Empty:
+                        break
+                count = min(len(pending), len(block) - offset)
+                block[offset : offset + count] = pending[:count]
+                pending = pending[count:]
+                offset += count
+            outdata[:] = block
+            if state.completed.is_set() and state.chunks.empty() and not pending:
+                raise PlaybackComplete()
+
+        return callback
+
     def _start_stream(self, control: _RequestControl, stream: Any) -> bool:
         with self._lock:
             if not self._is_current_locked(control):
                 return False
             self._emit({"event": "started", "request_id": control.request_id})
-            stream.start()
-            return True
+        stream.start()
+        return True
 
     def _wait_for_playback(
         self,
@@ -273,6 +404,50 @@ class OfflineSpeechEngine:
         self._current = None
         return control
 
+    def _start_prewarm(self) -> None:
+        if not self._prewarm_texts:
+            return
+        thread = threading.Thread(
+            target=self._prewarm,
+            name="offline-speech-prewarm",
+            daemon=True,
+        )
+        with self._lock:
+            if self._closed:
+                return
+            self._generation_threads.add(thread)
+        thread.start()
+
+    def _prewarm(self) -> None:
+        try:
+            for text in self._prewarm_texts:
+                with self._lock:
+                    if self._closed:
+                        return
+                with self._synthesis_lock:
+                    if self._cached_audio(text) is not None:
+                        continue
+                    audio = self._tts.generate(text, sid=0, speed=1.0)
+                pcm = array("f", audio.samples).tobytes()
+                if pcm:
+                    self._cache_audio(text, pcm, int(audio.sample_rate))
+        except Exception:
+            return
+        finally:
+            with self._lock:
+                self._generation_threads.discard(threading.current_thread())
+
+    def _cached_audio(self, text: str) -> tuple[bytes, int] | None:
+        with self._cache_lock:
+            return self._audio_cache.get(text)
+
+    def _cache_audio(self, text: str, pcm: bytes, sample_rate: int) -> None:
+        with self._cache_lock:
+            self._audio_cache[text] = (pcm, sample_rate)
+            while len(self._audio_cache) > MAX_CACHE_ITEMS:
+                oldest = next(iter(self._audio_cache))
+                del self._audio_cache[oldest]
+
     @staticmethod
     def _close_stream(stream: Any) -> None:
         try:
@@ -300,6 +475,18 @@ def _prepare_audio_blocks(pcm: bytes) -> tuple[tuple[memoryview, ...], memoryvie
         for offset in range(0, len(padded_view), block_size)
     )
     return blocks, memoryview(bytes(block_size))
+
+
+def _speech_segments(text: str) -> tuple[str, ...]:
+    segments: list[str] = []
+    start = 0
+    for index, character in enumerate(text):
+        if character in SPEECH_BREAKS:
+            segments.append(text[start : index + 1])
+            start = index + 1
+    if start < len(text):
+        segments.append(text[start:])
+    return tuple(segment for segment in segments if segment)
 
 
 def _write_emitter(output_stream: TextIO) -> Callable[[dict[str, Any]], None]:

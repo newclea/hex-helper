@@ -41,6 +41,9 @@ class SpeechAdapter(Protocol):
     def speak(self, text: str) -> bool:
         ...
 
+    def wait_started(self, timeout: float | None = None) -> bool | None:
+        ...
+
     def wait_finished(self, timeout: float | None = None) -> bool | None:
         ...
 
@@ -130,6 +133,8 @@ class SpeechService:
         self._playback_timeout_seconds = max(0.01, playback_timeout_seconds)
         self._dispatch_generation = 0
         self._adapter_available: bool | None = None
+        self._adapter_start_lock = threading.Lock()
+        self._preload_thread: threading.Thread | None = None
         if not enabled:
             self._queue.mute()
         self._thread = threading.Thread(target=self._run, daemon=True)
@@ -163,6 +168,14 @@ class SpeechService:
                 self._queue.mute()
                 self._cancel_adapter()
             self._condition.notify_all()
+        if enabled:
+            self.preload()
+
+    def preload(self) -> None:
+        with self._condition:
+            if self._closed or not self._enabled:
+                return
+        self._start_preload()
 
     def close(self) -> None:
         with self._condition:
@@ -174,6 +187,8 @@ class SpeechService:
             self._condition.notify_all()
         self._thread.join(timeout=2.0)
         self._close_adapter()
+        if self._preload_thread is not None:
+            self._preload_thread.join(timeout=2.0)
 
     def _run(self) -> None:
         while True:
@@ -187,7 +202,6 @@ class SpeechService:
             if not self._speak(message.summary):
                 self._clear_current()
                 continue
-            LOGGER.info("speech started id=%s kind=%s", message.message_id, message.kind)
             if not self._dispatch_is_valid(message, generation):
                 self._cancel_adapter()
                 self._clear_current()
@@ -216,17 +230,29 @@ class SpeechService:
             )
 
     def _ensure_adapter(self) -> bool:
-        if self._adapter_available is None:
-            try:
-                self._adapter_available = self._adapter.start()
-            except Exception:
-                LOGGER.exception("speech adapter start failed")
-                self._adapter_available = False
-        return self._adapter_available
+        with self._adapter_start_lock:
+            if self._adapter_available is None:
+                try:
+                    self._adapter_available = self._adapter.start()
+                except Exception:
+                    LOGGER.exception("speech adapter start failed")
+                    self._adapter_available = False
+            return self._adapter_available
+
+    def _start_preload(self) -> None:
+        if self._adapter_available is not None:
+            return
+        if self._preload_thread is not None and self._preload_thread.is_alive():
+            return
+        self._preload_thread = threading.Thread(target=self._ensure_adapter, daemon=True)
+        self._preload_thread.start()
 
     def _wait_for_speech(self, message: SpeechMessage) -> bool:
         deadline = time.monotonic() + self._playback_timeout_seconds
+        started_logged = False
         while True:
+            if not started_logged:
+                started_logged = self._log_started_if_ready(message)
             remaining = deadline - time.monotonic()
             if remaining <= 0:
                 LOGGER.warning("speech timed out id=%s kind=%s", message.message_id, message.kind)
@@ -234,12 +260,20 @@ class SpeechService:
                 return False
             completion = self._speech_completion(min(PLAYBACK_POLL_SECONDS, remaining))
             if completion is not None:
+                if not started_logged:
+                    self._log_started_if_ready(message)
                 if not completion:
                     LOGGER.warning("speech failed id=%s kind=%s", message.message_id, message.kind)
                 return completion
             with self._condition:
                 if self._closed:
                     return False
+
+    def _log_started_if_ready(self, message: SpeechMessage) -> bool:
+        if not self._speech_started(0):
+            return False
+        LOGGER.info("speech started id=%s kind=%s", message.message_id, message.kind)
+        return True
 
     def _clear_current(self) -> None:
         with self._condition:
@@ -257,6 +291,13 @@ class SpeechService:
             return self._adapter.wait_finished(timeout=timeout)
         except Exception:
             LOGGER.exception("speech adapter wait failed")
+            return False
+
+    def _speech_started(self, timeout: float) -> bool | None:
+        try:
+            return self._adapter.wait_started(timeout=timeout)
+        except Exception:
+            LOGGER.exception("speech adapter start wait failed")
             return False
 
     def _cancel_adapter(self) -> None:

@@ -31,10 +31,12 @@ class OfflineSpeechAdapter:
         self._process: subprocess.Popen | None = None
         self._reader: threading.Thread | None = None
         self._ready = threading.Event()
+        self._started = threading.Event()
         self._completion = threading.Event()
         self._write_lock = threading.Lock()
         self._state_lock = threading.Lock()
         self._ready_ok = False
+        self._started_ok = False
         self._completion_ok = False
         self._closed = False
         self._unavailable = False
@@ -72,9 +74,16 @@ class OfflineSpeechAdapter:
             self._request_sequence += 1
             request_id = self._request_sequence
             self._current_request_id = request_id
+            self._started_ok = False
+            self._started.clear()
             self._completion_ok = False
             self._completion.clear()
         return self._write({"command": "speak", "request_id": request_id, "text": text})
+
+    def wait_started(self, timeout: float | None = None) -> bool | None:
+        if not self._started.wait(timeout):
+            return None
+        return self._started_ok
 
     def wait_finished(self, timeout: float | None = None) -> bool | None:
         if not self._completion.wait(timeout):
@@ -94,8 +103,10 @@ class OfflineSpeechAdapter:
             was_ready = self._ready_ok
             self._closed = True
             self._ready_ok = False
+            self._started_ok = False
             self._completion_ok = False
             self._ready.set()
+            self._started.set()
             self._completion.set()
             process = self._process
         if process is None:
@@ -115,6 +126,7 @@ class OfflineSpeechAdapter:
 
     def _launch_process(self) -> bool:
         self._ready.clear()
+        self._started.clear()
         self._ready_ok = False
         self._completion.clear()
         self._completion_ok = False
@@ -190,11 +202,15 @@ class OfflineSpeechAdapter:
                 self._ready.set()
             elif type(request_id) is not int:
                 raise ValueError("request-scoped event is missing request_id")
+            elif request_id == self._current_request_id and event == "started":
+                self._started_ok = True
+                self._started.set()
             elif request_id == self._current_request_id and event == "error":
                 failure = str(message.get("message") or "unknown worker error")
                 self._fail(f"Offline speech worker error: {failure}")
                 self._disable_locked()
-            elif request_id == self._current_request_id and event != "started":
+            elif request_id == self._current_request_id:
+                self._started.set()
                 self._completion_ok = event == "finished"
                 self._completion.set()
         if failure is None:
@@ -266,8 +282,10 @@ class OfflineSpeechAdapter:
     def _disable_locked(self) -> None:
         self._unavailable = True
         self._ready_ok = False
+        self._started_ok = False
         self._completion_ok = False
         self._ready.set()
+        self._started.set()
         self._completion.set()
 
     @staticmethod

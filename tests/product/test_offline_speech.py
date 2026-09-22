@@ -145,6 +145,17 @@ class OfflineSpeechAdapterTests(unittest.TestCase):
         self.assertFalse(adapter.wait_finished(0.2))
         self.assertFalse(adapter.speak("会话已停用"))
 
+    def test_wait_started_tracks_real_worker_started_event(self):
+        process = FakeProcess([{"event": "ready"}])
+        adapter, _ = self.make_adapter(process)
+        self.addCleanup(adapter.close)
+        self.assertTrue(adapter.speak("开始播放"))
+        self.assertIsNone(adapter.wait_started(0.01))
+
+        process.stdout.put({"event": "started", "request_id": 1})
+
+        self.assertTrue(adapter.wait_started(0.2))
+
     def test_worker_error_logs_cause_and_disables_session(self):
         process = FakeProcess([{"event": "ready"}])
         adapter, factory = self.make_adapter(process)

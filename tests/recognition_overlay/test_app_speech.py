@@ -145,6 +145,17 @@ class RecognitionAppSpeechTests(unittest.TestCase):
         app.live_client.stop.assert_called_once_with()
         app.diagnostics.close.assert_called_once_with()
 
+    def test_start_workers_preloads_speech_before_pollers(self) -> None:
+        app = make_app()
+        app.args = SimpleNamespace(league_root=None)
+        order: list[str] = []
+        app.speech.preload.side_effect = lambda: order.append("speech")
+        app.poller.start.side_effect = lambda: order.append("poller")
+        with patch("app.resolve_league_root", return_value=Path("C:/League")):
+            app._start_workers()
+
+        self.assertEqual(["speech", "poller"], order[:2])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -147,6 +147,9 @@ class FakeAdapter:
         self.spoken.append(text)
         return True
 
+    def wait_started(self, timeout=None) -> bool | None:
+        return True
+
     def wait_finished(self, timeout=None) -> bool | None:
         return True if self.finished.wait(timeout) else None
 
@@ -269,13 +272,12 @@ class SpeechServiceTests(unittest.TestCase):
         self.assertEqual(["first", "second"], adapter.spoken)
         self.assertGreaterEqual(adapter.cancelled, 1)
 
-    def test_adapter_starts_lazily_and_failure_does_not_raise(self) -> None:
+    def test_adapter_preloads_in_background_and_failure_does_not_raise(self) -> None:
         import time
 
         adapter = FakeAdapter(start_ok=False)
         service = SpeechService(adapter, clock=lambda: 1.0)
-        self.assertEqual(0, adapter.started)
-        service.publish(message("one"))
+        service.preload()
         deadline = time.monotonic() + 1.0
         while adapter.started == 0 and time.monotonic() < deadline:
             time.sleep(0.01)
