@@ -1,3 +1,4 @@
 assets/speech/** -whitespace
+assets/speech/melo-tts-zh_en-int8/** -text
 third_party/speech/licenses/** -whitespace
 vendor/speech/** -diff -text

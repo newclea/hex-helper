@@ -35,6 +35,17 @@ REQUIRED_MODEL_FILES = (
     "dict/stop_words.utf8",
     "dict/user.dict.utf8",
 )
+TEXT_MODEL_FILES = frozenset(
+    relative
+    for relative in REQUIRED_MODEL_FILES
+    if relative not in {
+        "model.int8.onnx",
+        "date.fst",
+        "new_heteronym.fst",
+        "number.fst",
+        "phone.fst",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -76,12 +87,24 @@ def resolve_offline_speech_paths(bundle_root: Path) -> OfflineSpeechPaths:
     )
 
 
-def _sha256(path: Path) -> str:
+def _sha256(path: Path, normalize_newlines: bool = False) -> str:
     digest = hashlib.sha256()
+    if normalize_newlines:
+        digest.update(path.read_bytes().replace(b"\r\n", b"\n"))
+        return digest.hexdigest()
     with path.open("rb") as stream:
         while chunk := stream.read(1024 * 1024):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _is_model_text_file(relative_text: str) -> bool:
+    path = Path(relative_text)
+    try:
+        model_relative = path.relative_to(MODEL_DIRECTORY).as_posix()
+    except ValueError:
+        return False
+    return model_relative in TEXT_MODEL_FILES
 
 
 def _manifest_target(bundle_root: Path, relative_text: str) -> Path | None:
@@ -168,7 +191,10 @@ def verify_manifest(bundle_root: Path, manifest_path: Path) -> list[str]:
             errors.append(f"unsafe manifest path: {relative_text}")
         elif not target.is_file():
             errors.append(f"manifest file is missing: {relative_text}")
-        elif _sha256(target) != expected:
+        else:
+            actual = _sha256(target, normalize_newlines=_is_model_text_file(relative_text))
+            if actual == expected:
+                continue
             errors.append(f"manifest checksum mismatch: {relative_text}")
     return errors
 

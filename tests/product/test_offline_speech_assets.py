@@ -8,6 +8,7 @@ from pathlib import Path
 from offline_speech_assets import (
     EXPECTED_WHEEL_FILES,
     REQUIRED_MODEL_FILES,
+    TEXT_MODEL_FILES,
     resolve_offline_speech_paths,
     verify_manifest,
 )
@@ -66,6 +67,31 @@ class OfflineSpeechAssetTests(unittest.TestCase):
             self.make_bundle(root)
             manifest = self.write_manifest(root)
             self.assertEqual([], verify_manifest(root, manifest))
+
+    def test_manifest_accepts_crlf_for_declared_model_text_files(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.make_bundle(root)
+            model_root = root / "assets" / "speech" / "melo-tts-zh_en-int8"
+            for relative in TEXT_MODEL_FILES:
+                (model_root / relative).write_bytes(b"first line\nsecond line\n")
+            manifest = self.write_manifest(root)
+            for relative in TEXT_MODEL_FILES:
+                (model_root / relative).write_bytes(b"first line\r\nsecond line\r\n")
+            self.assertEqual([], verify_manifest(root, manifest))
+
+    def test_manifest_rejects_crlf_change_for_binary_model_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.make_bundle(root)
+            model_path = (
+                root / "assets" / "speech" / "melo-tts-zh_en-int8" / "model.int8.onnx"
+            )
+            model_path.write_bytes(b"binary\ncontent\n")
+            manifest = self.write_manifest(root)
+            model_path.write_bytes(b"binary\r\ncontent\r\n")
+            errors = verify_manifest(root, manifest)
+            self.assertTrue(any("model.int8.onnx" in error for error in errors))
 
     def test_manifest_rejects_missing_changed_and_parent_paths(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
