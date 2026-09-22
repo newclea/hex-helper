@@ -8,6 +8,8 @@ import logging
 from pathlib import Path
 from typing import Mapping, Sequence
 
+from agent_config import AgentSettings, parse_agent_settings
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -38,6 +40,11 @@ def load_voice_settings(primary: Path, legacy: Path) -> VoiceSettings:
     enabled_value = read_config_value("voice_enabled", paths)
     enabled = enabled_value if isinstance(enabled_value, bool) else True
     return VoiceSettings(enabled=enabled)
+
+
+def load_agent_settings(primary: Path, legacy: Path) -> AgentSettings:
+    value = read_config_value("agent", (primary, legacy))
+    return parse_agent_settings(value)
 
 
 def _remove_temporary(path: Path) -> None:

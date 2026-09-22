@@ -7,7 +7,9 @@ import unittest
 from unittest.mock import patch
 
 from overlay_config import (
+    AgentSettings,
     VoiceSettings,
+    load_agent_settings,
     load_voice_settings,
     read_config_value,
     update_overlay_config,
@@ -64,6 +66,86 @@ class OverlayConfigTests(unittest.TestCase):
         settings = load_voice_settings(self.primary, self.legacy)
 
         self.assertEqual(VoiceSettings(enabled=True), settings)
+
+    def test_agent_defaults_to_unconfigured(self) -> None:
+        settings = load_agent_settings(self.primary, self.legacy)
+
+        self.assertEqual(AgentSettings(), settings)
+        self.assertFalse(settings.configured)
+
+    def test_agent_reads_valid_primary_config_and_redacts_token(self) -> None:
+        self.write_json(self.primary, {
+            "agent": {
+                "provider": "taiji_direct",
+                "endpoint": "http://agent.example/openapi/app_platform/app_create",
+                "forward_service": "hyaide-application-22835",
+                "token": "secret-token",
+                "timeout_seconds": 12,
+            },
+        })
+
+        settings = load_agent_settings(self.primary, self.legacy)
+
+        self.assertTrue(settings.configured)
+        self.assertEqual("secret-token", settings.token)
+        self.assertEqual(12.0, settings.timeout_seconds)
+        self.assertNotIn("secret-token", repr(settings))
+
+    def test_invalid_primary_agent_does_not_use_legacy_secret(self) -> None:
+        self.write_json(self.primary, {"agent": {"provider": "taiji_direct"}})
+        self.write_json(self.legacy, {
+            "agent": {
+                "provider": "taiji_direct",
+                "endpoint": "http://legacy.example/app_create",
+                "forward_service": "hyaide-application-1",
+                "token": "legacy-secret",
+            },
+        })
+
+        settings = load_agent_settings(self.primary, self.legacy)
+
+        self.assertFalse(settings.configured)
+        self.assertEqual("", settings.token)
+
+    def test_agent_rejects_invalid_timeouts(self) -> None:
+        for timeout in (True, False, 0, 31, "10", {"seconds": 10}):
+            with self.subTest(timeout=timeout):
+                self.write_json(self.primary, {
+                    "agent": self.agent_config(timeout_seconds=timeout),
+                })
+
+                settings = load_agent_settings(self.primary, self.legacy)
+
+                self.assertFalse(settings.configured)
+
+    def test_agent_rejects_invalid_endpoints(self) -> None:
+        invalid = (
+            " http://agent.example/app_create",
+            "http://agent.example/app_create ",
+            "ftp://agent.example/app_create",
+            "http:///missing-host",
+        )
+        for endpoint in invalid:
+            with self.subTest(endpoint=endpoint):
+                self.write_json(self.primary, {
+                    "agent": self.agent_config(endpoint=endpoint),
+                })
+
+                settings = load_agent_settings(self.primary, self.legacy)
+
+                self.assertFalse(settings.configured)
+
+    @staticmethod
+    def agent_config(**changes: object) -> dict[str, object]:
+        config: dict[str, object] = {
+            "provider": "taiji_direct",
+            "endpoint": "http://agent.example/openapi/app_platform/app_create",
+            "forward_service": "hyaide-application-22835",
+            "token": "secret-token",
+            "timeout_seconds": 10,
+        }
+        config.update(changes)
+        return config
 
     def test_read_config_value_uses_first_file_containing_key(self) -> None:
         self.write_json(self.primary, {"other": 1})
