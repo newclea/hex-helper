@@ -245,7 +245,7 @@ class CatOverlayInteractionTests(unittest.TestCase):
         window._draw()
         self.assertEqual(before, window._cat_screen_rect)
 
-    def test_wide_option_pill_sets_content_width(self) -> None:
+    def test_content_width_is_capped_at_twenty_measured_chinese_characters(self) -> None:
         window = make_window()
         window._canvas = RecordingCanvas()
         window._view.update(
@@ -255,7 +255,7 @@ class CatOverlayInteractionTests(unittest.TestCase):
                 "options": [{"id": "wide", "title": "甲" * 28, "available": True}],
             }
         )
-        self.assertEqual(300, window._bubble_model()["text_width"])
+        self.assertEqual(200, window._bubble_model()["text_width"])
 
     def test_introduction_width_uses_its_actual_smaller_font(self) -> None:
         window = make_window()

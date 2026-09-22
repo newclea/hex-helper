@@ -30,7 +30,6 @@ BUTTON_SELECTED_BORDER = "#967026"
 CAT_WIDTH = 118
 CAT_HEIGHT = 124
 BUBBLE_MINIMUM_CONTENT_WIDTH = 120
-BUBBLE_MAXIMUM_CONTENT_WIDTH = 780
 BUBBLE_PADDING = 12
 BUTTON_GAP = 6
 BUTTON_MINIMUM_HEIGHT = 30
@@ -710,6 +709,7 @@ class CatOverlayWindow:
         normal_font = ("Microsoft YaHei UI", 11)
         bold_font = ("Microsoft YaHei UI", 11, "bold")
         title_font = ("Microsoft YaHei UI", 10, "bold")
+        maximum_width = self._text_width("国" * 20, normal_font)
         paragraphs = normalize_blocks(model["blocks"], model["message"])
         body_measure = lambda value, bold: self._text_width(value, bold_font if bold else normal_font)
         intro_measure = lambda value, _bold: self._text_width(value, intro_font)
@@ -718,20 +718,20 @@ class CatOverlayWindow:
             default=BUBBLE_MINIMUM_CONTENT_WIDTH,
         )
         minimum_width = min(
-            BUBBLE_MAXIMUM_CONTENT_WIDTH,
+            maximum_width,
             max(BUBBLE_MINIMUM_CONTENT_WIDTH, pill_width),
         )
         body_width = content_width(
             paragraphs,
             body_measure,
             minimum_width,
-            BUBBLE_MAXIMUM_CONTENT_WIDTH,
+            maximum_width,
         )
         intro_width = content_width(
             normalize_blocks(None, model["introduction"]) if model["introduction"] else (),
             intro_measure,
             minimum_width,
-            BUBBLE_MAXIMUM_CONTENT_WIDTH,
+            maximum_width,
         )
         text_width = max(body_width, intro_width)
         model.update(

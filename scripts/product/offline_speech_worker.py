@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import threading
 from array import array
@@ -312,6 +313,13 @@ def _write_emitter(output_stream: TextIO) -> Callable[[dict[str, Any]], None]:
     return emit
 
 
+def _isolate_protocol_output() -> TextIO:
+    sys.stdout.flush()
+    protocol_fd = os.dup(sys.stdout.fileno())
+    os.dup2(sys.stderr.fileno(), sys.stdout.fileno())
+    return os.fdopen(protocol_fd, "w", encoding="utf-8", buffering=1)
+
+
 def _dispatch(engine: OfflineSpeechEngine, command: dict[str, Any], emit: Callable[[dict], None]) -> bool:
     name = command.get("command")
     if name == "close":
@@ -355,13 +363,17 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run the GameBuddy offline speech worker")
     parser.add_argument("--bundle-root", type=Path, required=True)
     arguments = parser.parse_args(argv)
+    protocol_stream = _isolate_protocol_output()
     try:
-        paths = resolve_offline_speech_paths(arguments.bundle_root)
-    except ValueError as error:
-        emitter = _write_emitter(sys.stdout)
-        emitter({"event": "error", "message": str(error)})
-        return 1
-    return run_protocol(paths, sys.stdin, sys.stdout)
+        try:
+            paths = resolve_offline_speech_paths(arguments.bundle_root)
+        except ValueError as error:
+            emitter = _write_emitter(protocol_stream)
+            emitter({"event": "error", "message": str(error)})
+            return 1
+        return run_protocol(paths, sys.stdin, protocol_stream)
+    finally:
+        protocol_stream.close()
 
 
 if __name__ == "__main__":

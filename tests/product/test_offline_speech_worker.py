@@ -3,6 +3,8 @@ from __future__ import annotations
 import inspect
 import io
 import json
+import subprocess
+import sys
 import threading
 import time
 import unittest
@@ -382,6 +384,36 @@ class OfflineSpeechWorkerTests(unittest.TestCase):
         self.assertEqual(0, result)
         self.assertEqual("ready", events[0]["event"])
         self.assertEqual("error", events[1]["event"])
+
+    def test_native_non_utf8_output_is_separated_from_protocol_stdout(self):
+        worker_dir = Path(__file__).parents[2] / "scripts" / "product"
+        source = "\n".join(
+            (
+                "import os, sys",
+                f"sys.path.insert(0, {str(worker_dir)!r})",
+                "import offline_speech_worker as worker",
+                "worker.resolve_offline_speech_paths = lambda root: object()",
+                "def fake_run(paths, input_stream, output_stream):",
+                "    os.write(1, b'\\x80native-log\\n')",
+                "    worker._write_emitter(output_stream)({'event': 'finished', 'request_id': 7})",
+                "    return 0",
+                "worker.run_protocol = fake_run",
+                "raise SystemExit(worker.main(['--bundle-root', '.']))",
+            )
+        )
+
+        completed = subprocess.run(
+            [sys.executable, "-c", source],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+
+        self.assertEqual(
+            {"event": "finished", "request_id": 7},
+            json.loads(completed.stdout.decode("utf-8")),
+        )
+        self.assertIn(b"\x80native-log", completed.stderr)
 
 
 if __name__ == "__main__":
