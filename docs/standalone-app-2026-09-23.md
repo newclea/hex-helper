@@ -1,6 +1,6 @@
 # 最新引擎本地接入与独立应用包
 
-本地工作分支：`codex/standalone-app`，基于 `main@56c01bb`。本轮通过独立分支交付，尚未合并到 `main`。
+本地工作分支：`codex/standalone-app`，基于 `main@56c01bb`。本轮变更已由 `codex/standalone-app` 合并到 `main`。
 `main` 是精简发布仓库，因此没有将源码分支的整个目录树 merge 进来；本地从
 `fix/death-force-ocr-engine@1e43732` 编译引擎并替换发布 EXE，Python 保留当前 main 的修复。
 

@@ -1,7 +1,7 @@
 # Windows 联调交接（2026-09-22）
 
 > 2026-09-23 最新本地续接：独立应用包与 `1e43732` 引擎接入已完成；详见
-> [最新集成记录](standalone-app-2026-09-23.md)。交付分支为 `codex/standalone-app`，尚未合并 `main`；下文为历史状态。
+> [最新集成记录](standalone-app-2026-09-23.md)。变更已由 `codex/standalone-app` 合并到 `main`；下文为历史状态。
 
 > 最新修复（优先于下文历史快照）：LCU 结算支持 `teams[].isPlayerTeam/isWinningTeam`，
 > 大厅继续获取延迟结算，严格匹配已进入对局的 gameId。首次 OCR 限 3～6 级/90 秒；

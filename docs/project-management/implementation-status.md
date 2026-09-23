@@ -158,4 +158,4 @@ PYTHONPATH=scripts/product:scripts/recognition_overlay \
 `codex/standalone-app` 本地接入 `1e43732` 编译的 EXE，轮次冲突专项 C++ 测试与 258 项 Python 测试通过。
 便携 ZIP 已生成，包内 GUI、中文 OCR 能力、模型合成和 worker 协议自检通过；
 仓库外解压、空白用户配置、无 Python 环境路径测试通过，固定/动态声卡播放协议通过。
-4 项旧 C++ 测试失败及实机验证限制详见 [集成记录](../standalone-app-2026-09-23.md)。本轮通过 `codex/standalone-app` 分支交付，尚未合并到 `main`。
+4 项旧 C++ 测试失败及实机验证限制详见 [集成记录](../standalone-app-2026-09-23.md)。本轮变更已由 `codex/standalone-app` 合并到 `main`。
