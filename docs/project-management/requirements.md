@@ -51,6 +51,8 @@
 | REQ-REL-001 | 保持启动入口 | 64 位 Windows 可继续通过 `一键启动小猫.cmd` 启动 | 两份实施计划 |
 | REQ-REL-002 | 双远端发布 | Woa Git 功能分支与 GitHub `main` 指向同一经核对的发布提交 | 用户发布要求 |
 | REQ-REL-003 | 范围隔离 | 不改变 OCR、推荐、LCU、Live Client 或 C++ 视觉引擎业务判断 | 修订规格 1 |
+| REQ-REL-004 | 独立应用包 | 解压双击启动，自带 Python、语音依赖、模型、VC 运行库和引擎，不要求普通用户安装开发环境 | 2026-09-23 用户要求 |
+| REQ-REL-005 | 最新引擎本地集成 | 编译 fix 分支最新引擎、验证轮次冲突修复，并明确实机与既有测试限制 | 2026-09-23 用户要求 |
 
 “修订规格”指
 [GameBuddy Windows Overlay 修订与语音陪伴设计](../superpowers/specs/2026-09-21-gamebuddy-windows-overlay-voice-design.md)。

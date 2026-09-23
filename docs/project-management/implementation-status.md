@@ -151,3 +151,11 @@ PYTHONPATH=scripts/product:scripts/recognition_overlay \
 
 详见 [修复记录](../fixes-2026-09-22-result-ocr-speech.md)。257 项测试与资源校验通过；
 下一局实机胜负播报和 FP32 声卡听感尚待联调。首次探测 3～6 级限时，原始 visible 不再绕过门控。
+
+
+### 2026-09-23 最新引擎与便携应用本地验证
+
+`codex/standalone-app` 本地接入 `1e43732` 编译的 EXE，轮次冲突专项 C++ 测试与 258 项 Python 测试通过。
+便携 ZIP 已生成，包内 GUI、中文 OCR 能力、模型合成和 worker 协议自检通过；
+仓库外解压、空白用户配置、无 Python 环境路径测试通过，固定/动态声卡播放协议通过。
+4 项旧 C++ 测试失败及实机验证限制详见 [集成记录](../standalone-app-2026-09-23.md)。本轮通过 `codex/standalone-app` 分支交付，尚未合并到 `main`。

@@ -203,7 +203,10 @@ class OfflineSpeechAdapter:
 
     def _worker_command(self) -> list[str]:
         if self._command is None:
-            prefix = [sys.executable, str(Path(__file__).with_name("offline_speech_worker.py"))]
+            if getattr(sys, "frozen", False):
+                prefix = [str(Path(sys.executable).with_name("OfflineSpeechWorker.exe"))]
+            else:
+                prefix = [sys.executable, str(Path(__file__).with_name("offline_speech_worker.py"))]
         elif isinstance(self._command, str):
             prefix = [self._command]
         else:

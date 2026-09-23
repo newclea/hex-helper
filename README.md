@@ -1,8 +1,20 @@
 # Hex Helper
 
-这是可直接运行的精简版 GameBuddy 小猫 Overlay。
+这是 GameBuddy 小猫 Overlay，支持源码启动与自带运行环境的便携应用包。
 
-## 运行环境
+## 普通用户：便携应用包
+
+解压 `GameBuddy-Windows-x64.zip`，双击 `GameBuddy.exe`。保留同目录的
+`_internal` 与 `OfflineSpeechWorker.exe`，无需 clone、安装 Python、Git 或 pip。
+模型、动画、推荐数据、语音依赖、Tcl/Tk、VC 运行库和识别 EXE 均在包内。
+Windows 10/11 x64 仍需具有简体中文 OCR 系统组件；Agent 服务配置使用用户自己的凭据。
+
+开发者构建：运行 `scripts/package_recognition_overlay.ps1`，输出到
+`outputs/local-build/dist/`；构建机需 Python 3.11 x64 和 Git LFS 的完整资源。
+构建会运行图形界面、模型合成、资源校验与 worker 通信自检。
+详见 [本地集成与打包验证](docs/standalone-app-2026-09-23.md)。
+
+## 源码运行环境
 
 - 64 位 Windows
 - Python 3.11

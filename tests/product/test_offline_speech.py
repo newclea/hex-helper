@@ -104,6 +104,16 @@ class FakeProcess:
 
 
 class OfflineSpeechAdapterTests(unittest.TestCase):
+    def test_packaged_app_uses_sibling_voice_executable(self):
+        with patch.object(sys, "frozen", True, create=True), \
+             patch.object(sys, "executable", "C:/GameBuddy/GameBuddy.exe"):
+            adapter = OfflineSpeechAdapter(bundle_root=Path("C:/GameBuddy/_internal"))
+            self.assertEqual(
+                [str(Path("C:/GameBuddy/OfflineSpeechWorker.exe")),
+                 "--bundle-root", str(Path("C:/GameBuddy/_internal"))],
+                adapter._worker_command(),
+            )
+
     def make_adapter(self, process, **kwargs):
         factory = Mock(return_value=process)
         adapter = OfflineSpeechAdapter(process_factory=factory, **kwargs)

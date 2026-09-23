@@ -1,8 +1,7 @@
-﻿SHA256  outputs/tmp/build/bin/lol_augment_assistant.exe
-6C018D55D74AD02FA857AE2E62A2342D202DBCBF91CD3B22A7F95F42731F6BCA
-built   2026-09-22 14:22:44 +0800 (GitHub Actions windows-2022)
-source  210de164030fd054909ec59eb8e5501fb8afc1ed
-ci      https://github.com/newclea/hex-helper/actions/runs/35694227362
-note    Eligible selection windows may OCR calibrated card regions after a low-confidence screen detection.
-check   MSVC build and focused C++ integration test passed.
-limit   Windows real-game validation remains pending.
+SHA256  outputs/tmp/build/bin/lol_augment_assistant.exe
+79274834A11BD48AE543E23737801D792100AA27520B261492C45BC960E4C1F1
+built   2026-09-23 13:11:54 +08:00 (local MSVC 2022 Release)
+source  1e43732838a9376996cc63aa35fe2e9d6d6ac404
+note    Same-round conflicts emit offer_round_conflict; Python keeps refreshing.
+check   session_runtime_test and augment_frame_processor_test passed; 10/14 broader tests passed.
+limit   Four pre-existing fixture/expectation failures documented in docs/standalone-app-2026-09-23.md; live-game validation pending.
